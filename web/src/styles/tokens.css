@@ -1,1 +1,25 @@
-/* design tokens: see docs/design/ */
+:root{
+  --paper:#F4F1EA; --sunken:#ECE7DC; --card:#FBF9F4; --ink:#1B1A17; --ink-2:#4A463F; --ink-3:#7A746A;
+  --rule:#D6CFC0; --rule-2:#BFB6A3;
+  --red:#C2361F; --red-2:#D4513B; --red-bg:#F6E2DC;
+  --ochre:#8F620B; --ochre-bg:#F3E7CC;
+  --graphite:#5F636A; --graphite-bg:#E6E3DC;
+  --green:#2F6B4F; --green-bg:#DCEBE1;
+  --blue:#2B4C7E; --blue-bg:#DDE5F0;
+  --on-ink:#F4F1EA;
+  --serif:"Iowan Old Style","Charter","Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+.dark{
+  --paper:#14130F; --sunken:#0F0E0B; --card:#1C1B17; --ink:#ECE6D8; --ink-2:#B9B2A3; --ink-3:#8A8376;
+  --rule:#2E2B25; --rule-2:#423E36;
+  --red:#F0603F; --red-2:#D94E2F; --red-bg:#3A1D16;
+  --ochre:#E0A93A; --ochre-bg:#33270F;
+  --graphite:#A3A8B0; --graphite-bg:#26262A;
+  --green:#5FB38A; --green-bg:#16291F;
+  --blue:#7FA3D9; --blue-bg:#18233A;
+  --on-ink:#14130F;
+}
+:root{color-scheme:light}
+.dark{color-scheme:dark}

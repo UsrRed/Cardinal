@@ -37,3 +37,5 @@
 - T21: ConsoleSession gains onClose(fn) (idle notification to the WS route); INTERFACES.md updated.
 - 2026-10-21T23:51:29.913Z — T21 terminé (WebSocket des runs et console de connexion Claude (pty))
 - 2026-10-21T23:52:23.270Z — T22 terminé (Câblage des routes et tests d'intégration sécurité HTTP)
+
+- T23: front foundation (tokens/app CSS from mockup, theme toggle, API client with CSRF, useRunEvents, shared components, date utils). No contract change.
