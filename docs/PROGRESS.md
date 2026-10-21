@@ -26,3 +26,4 @@
 - T14: auth lib implemented; added SessionStore(clock?) param, checkCsrf and cookie helpers to INTERFACES §12.
 - 2026-10-21T23:40:54.466Z — T14 terminé (Bibliothèque d'authentification: session, mot de passe, rate-limit, CSRF)
 - T15: executeRun pipeline (fetch→dedup→triage→digest→notify), defer backoff, partial digest on budget; no contract change.
+- 2026-10-21T23:42:46.796Z — T15 terminé (Pipeline d'un run (fetch→dedup→triage→digest→notify) et bus d'événements)
