@@ -16,3 +16,4 @@
 - T07: RSS/Atom connector (parseFeed, rssConnector, testFeedUrl), getConnector('rss') wired; error codes follow INTERFACES (fetch_failed/parse_failed/destination_blocked).
 - 2026-10-21T23:33:44.195Z — T07 terminé (Connecteur RSS/Atom et test d'URL)
 - T08: OSV connector; SourceContext gains optional osvBaseUrl (test override).
+- 2026-10-21T23:34:39.697Z — T08 terminé (Connecteur OSV)
