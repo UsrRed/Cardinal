@@ -160,7 +160,10 @@ interface FeedsRepo {
   due(now: number): Feed[];                               // enabled && nextRunAt ≤ now
   setSchedule(id: string, s: { lastRunAt?: number; nextRunAt: number | null; deferCount?: number }): void;
   getDeferCount(id: string): number;
+  duplicate(id: string, now: number): Feed | null;        // 'Copie de …', enabled=false
+  exportAll(): FeedInput[];                               // sans id
 }
+// delete(id) supprime aussi les seen_items du flux. Factories: createFeedsRepo(db), createSettingsRepo(db).
 interface RunsRepo {
   create(feedId: string, trigger: Run['trigger'], now: number): Run;
   get(id: string): Run | null; list(q: { feedId?: string; page: number; pageSize: number }): Page<Run>;

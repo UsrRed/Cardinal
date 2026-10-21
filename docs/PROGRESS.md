@@ -4,3 +4,6 @@
 - 2026-10-21T23:22:41.009Z — découpage strictement linéaire — aucune parallélisation possible
 - 2026-10-21T23:27:46.624Z — T01 terminé (Dépendances exactes, scripts npm et types/schémas partagés)
 - 2026-10-21T23:28:40.059Z — T02 terminé (Configuration PFLUX_* et logger pino)
+
+## T03
+- Migration 001, openDb/migrate, FeedsRepo (+duplicate, exportAll ajoutés au contrat), SettingsRepo, seedIfEmpty, helper tmpDataDir.
