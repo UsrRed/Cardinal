@@ -35,3 +35,4 @@
 - T20: settings/secrets/claude/auth routes (registerSettingsRoutes, registerAuthRoutes); no contract change.
 - 2026-10-21T23:49:31.484Z — T20 terminé (Routes API réglages, secrets, statut Claude et authentification)
 - T21: ConsoleSession gains onClose(fn) (idle notification to the WS route); INTERFACES.md updated.
+- 2026-10-21T23:51:29.913Z — T21 terminé (WebSocket des runs et console de connexion Claude (pty))
