@@ -18,6 +18,7 @@ export interface SourceContext {
   signal: AbortSignal;
   nvdApiKey: string | null;
   nvdLimiter: SlidingWindowLimiter;
+  osvBaseUrl?: string;
   onSourceError(target: string, code: string): void;
 }
 export interface SourceConnector<P> {
