@@ -33,3 +33,4 @@
 - 2026-10-21T23:46:54.242Z — T18 terminé (Routes API des flux: CRUD, duplication, pause, lancer, test URL, test ntfy, export/import)
 - 2026-10-21T23:48:08.615Z — T19 terminé (Routes API runs, digests, éléments et statistiques)
 - T20: settings/secrets/claude/auth routes (registerSettingsRoutes, registerAuthRoutes); no contract change.
+- 2026-10-21T23:49:31.484Z — T20 terminé (Routes API réglages, secrets, statut Claude et authentification)
