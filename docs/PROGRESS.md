@@ -32,3 +32,4 @@
 - 2026-10-21T23:45:49.788Z — T17 terminé (Squelette applicatif Fastify: deps, plugin d'accès, erreurs, statique, santé, point d'entrée)
 - 2026-10-21T23:46:54.242Z — T18 terminé (Routes API des flux: CRUD, duplication, pause, lancer, test URL, test ntfy, export/import)
 - 2026-10-21T23:48:08.615Z — T19 terminé (Routes API runs, digests, éléments et statistiques)
+- T20: settings/secrets/claude/auth routes (registerSettingsRoutes, registerAuthRoutes); no contract change.
