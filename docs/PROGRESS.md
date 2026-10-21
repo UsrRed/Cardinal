@@ -10,3 +10,4 @@
 - 2026-10-21T23:29:43.519Z — T03 terminé (Base SQLite, migrations, dépôts flux/réglages et seed)
 - T04: runs/digests/items/seen repos + retention purge implemented (factories createRunsRepo, createDigestsRepo, createItemsRepo, createSeenRepo); contracts unchanged.
 - 2026-10-21T23:31:00.290Z — T04 terminé (Dépôts runs, logs, digests, items, seen, rétention)
+- 2026-10-21T23:31:54.115Z — T05 terminé (Client HTTP anti-SSRF (ipPolicy + safeFetch))
