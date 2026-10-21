@@ -18,3 +18,4 @@
 - T08: OSV connector; SourceContext gains optional osvBaseUrl (test override).
 - 2026-10-21T23:34:39.697Z — T08 terminé (Connecteur OSV)
 - T09: NVD connector + SlidingWindowLimiter (getNvdLimiter singleton per key); getConnector now returns nvdConnector. No contract change.
+- 2026-10-21T23:35:42.088Z — T09 terminé (Connecteur NVD et limiteur à fenêtre glissante)
