@@ -463,7 +463,7 @@ export class AppError extends Error { constructor(public code: string, public st
 // src/app.ts
 export function buildApp(deps: AppDeps): Promise<FastifyInstance>;
 // src/deps.ts
-export interface AppDeps { config: Config; db: Db; repos: Repos; secrets: SecretsStore; runner: ClaudeRunner; fetch: SafeFetch; notifier: NtfyNotifier; queue: RunQueue; bus: RunEventBus; console: LoginConsole; sessions: SessionStore; sessionSecret: Buffer; clock: Clock; logger: Logger }
+export interface AppDeps { config: Config; db: Db; repos: Repos; secrets: SecretsStore; runner: ClaudeRunner; fetch: SafeFetch; notifier: NtfyNotifier; queue: RunQueue; bus: RunEventBus; console: LoginConsole; sessions: SessionStore; sessionSecret: Buffer; clock: Clock; logger: Logger; settings: () => Settings }
 export function createDeps(config: Config, overrides?: Partial<AppDeps>): AppDeps;
 ```
 
