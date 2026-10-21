@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>T</title>
+<item><title>First post</title><link>https://example.com/a</link><pubDate>Mon, 05 Jan 2026 10:00:00 GMT</pubDate><description>&lt;p&gt;Hello &lt;b&gt;world&lt;/b&gt;&lt;/p&gt;</description></item>
+<item><title>Old post</title><link>/old</link><pubDate>Mon, 01 Jan 2024 10:00:00 GMT</pubDate><description>Old</description></item>
+</channel></rss>

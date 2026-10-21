@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>T</title>
+<entry><title>Atom entry</title><link rel="alternate" href="https://example.com/atom1"/><id>urn:1</id><updated>2026-01-06T12:00:00Z</updated><content type="html">&lt;p&gt;Atom &lt;i&gt;body&lt;/i&gt;&lt;/p&gt;</content></entry>
+</feed>

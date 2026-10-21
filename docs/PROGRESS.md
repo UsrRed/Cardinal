@@ -13,3 +13,4 @@
 - 2026-10-21T23:31:54.115Z — T05 terminé (Client HTTP anti-SSRF (ipPolicy + safeFetch))
 - T06: ajout de filterUnseen(items, seenRepo, feedId, sourceType) dans INTERFACES §7.
 - 2026-10-21T23:32:45.894Z — T06 terminé (Déduplication, htmlToText, parseur XML sûr et types de sources)
+- T07: RSS/Atom connector (parseFeed, rssConnector, testFeedUrl), getConnector('rss') wired; error codes follow INTERFACES (fetch_failed/parse_failed/destination_blocked).
