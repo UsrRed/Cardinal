@@ -30,3 +30,4 @@
 - 2026-10-21T23:43:56.363Z — T16 terminé (File d'exécution persistée, ordonnanceur et verrou unique)
 - T17: AppDeps gains settings(): Settings (effective settings); authPlugin is registered unencapsulated on the root app; createDeps also opens/migrates/seeds the DB.
 - 2026-10-21T23:45:49.788Z — T17 terminé (Squelette applicatif Fastify: deps, plugin d'accès, erreurs, statique, santé, point d'entrée)
+- 2026-10-21T23:46:54.242Z — T18 terminé (Routes API des flux: CRUD, duplication, pause, lancer, test URL, test ntfy, export/import)
