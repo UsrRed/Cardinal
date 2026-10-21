@@ -294,3 +294,9 @@ textarea.input{font:16px/1.55 var(--serif);min-height:92px;resize:vertical}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
+
+.run-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:8px 0 4px;font:13px var(--mono)}
+.note{font:italic 15px/1.5 var(--serif);color:var(--ink-2);border-left:3px solid var(--ochre);padding:6px 12px;margin:12px 0}
+table.runs{width:100%;border-collapse:collapse;margin:18px 0;font:13px var(--mono)}
+table.runs th{text-align:left;font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:8px 10px;border-bottom:1px solid var(--ink)}
+table.runs td{padding:8px 10px;border-bottom:1px solid var(--rule)}
