@@ -385,11 +385,13 @@ export function loadSessionSecret(cfg: Config): Buffer;   // env ou <data>/sessi
 export interface Session { id: string; authenticated: boolean; createdAt: number }
 export function signCookie(value: string, secret: Buffer): string;   // `${value}.${base64url(hmacSha256)}`
 export function verifyCookie(signed: string, secret: Buffer): string | null;
-export class SessionStore { create(authenticated: boolean): Session; get(id: string): Session | null; destroy(id: string): void } // mémoire, TTL 30 j
+export class SessionStore { constructor(clock?: Clock); create(authenticated: boolean): Session; get(id: string): Session | null; destroy(id: string): void } // mémoire, TTL 30 j
 export function verifyPassword(input: string, expected: string): boolean; // timingSafeEqual(sha256(a), sha256(b))
 export class LoginRateLimiter { constructor(clock: Clock); check(ip: string): { allowed: boolean; delayMs: number; retryAfterS?: number }; fail(ip: string): void; reset(ip: string): void }
 // 5 échecs / 15 min / IP → 429 ; délai progressif avant réponse d'échec : 250 ms · 2^(échecs-1), max 4 s
-export function csrfToken(sessionId: string, secret: Buffer): string;
+export function csrfToken(sessionId: string, secret: Buffer): string;   // HMAC('csrf:'+id)
+export function checkCsrf(token: string | undefined, sessionId: string, secret: Buffer): boolean;
+// session.ts helpers: SESSION_COOKIE, isSecureRequest(req, trustProxy), sessionCookie(id, secret, secure), sessionIdFromCookieHeader(header, secret)
 export function originAllowed(req: { headers: IncomingHttpHeaders; protocol: string; host: string }, publicUrl: string | null): boolean;
 ```
 Cookie : `pflux_session` ; attributs `HttpOnly; SameSite=Lax; Path=/; Max-Age=2592000` + `Secure` si HTTPS (ou `X-Forwarded-Proto: https` avec `trustProxy`).

@@ -23,3 +23,4 @@
 - 2026-10-21T23:38:12.570Z — T11 terminé (Prompt durci et validation de sortie (anti-invention))
 - 2026-10-21T23:39:09.571Z — T12 terminé (Moteur Claude: lots, retry, budget, statut)
 - 2026-10-21T23:40:03.531Z — T13 terminé (Stockage des secrets et notifier ntfy)
+- T14: auth lib implemented; added SessionStore(clock?) param, checkCsrf and cookie helpers to INTERFACES §12.
