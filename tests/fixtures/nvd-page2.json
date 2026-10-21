@@ -1,0 +1,2 @@
+{"resultsPerPage":2,"startIndex":2,"totalResults":3,"format":"NVD_CVE","version":"2.0","timestamp":"2026-01-20T00:00:00.000","vulnerabilities":[
+{"cve":{"id":"CVE-2026-1003","published":"2026-01-12T10:00:00.000","descriptions":[{"lang":"en","value":"Auth bypass in foo (CVSS v4)."}],"metrics":{"cvssMetricV40":[{"cvssData":{"version":"4.0","baseScore":4.8,"baseSeverity":"MEDIUM"}}]},"references":[{"url":"https://example.com/adv3"}]}}]}

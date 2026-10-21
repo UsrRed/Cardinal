@@ -17,3 +17,4 @@
 - 2026-10-21T23:33:44.195Z — T07 terminé (Connecteur RSS/Atom et test d'URL)
 - T08: OSV connector; SourceContext gains optional osvBaseUrl (test override).
 - 2026-10-21T23:34:39.697Z — T08 terminé (Connecteur OSV)
+- T09: NVD connector + SlidingWindowLimiter (getNvdLimiter singleton per key); getConnector now returns nvdConnector. No contract change.
