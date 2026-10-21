@@ -12,3 +12,4 @@
 - 2026-10-21T23:31:00.290Z — T04 terminé (Dépôts runs, logs, digests, items, seen, rétention)
 - 2026-10-21T23:31:54.115Z — T05 terminé (Client HTTP anti-SSRF (ipPolicy + safeFetch))
 - T06: ajout de filterUnseen(items, seenRepo, feedId, sourceType) dans INTERFACES §7.
+- 2026-10-21T23:32:45.894Z — T06 terminé (Déduplication, htmlToText, parseur XML sûr et types de sources)
