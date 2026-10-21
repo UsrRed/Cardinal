@@ -23,3 +23,7 @@ Projet généré automatiquement par pj-gen.
 - `code-simplify`
 - `security-review`
 - `webapp-testing`
+
+## Référence visuelle
+- `docs/design/` contient la maquette de référence (ex. Claude Design). Le rendu final doit s'y conformer: structure, hiérarchie, style.
+- Consulte-la avant toute décision visuelle (layout, composants, thème).

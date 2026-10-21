@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Personnal Flux — maquette de référence</title>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --paper:#F4F1EA; --sunken:#ECE7DC; --card:#FBF9F4; --ink:#1B1A17; --ink-2:#4A463F; --ink-3:#7A746A;
+  --rule:#D6CFC0; --rule-2:#BFB6A3;
+  --red:#C2361F; --red-2:#D4513B; --red-bg:#F6E2DC;
+  --ochre:#8F620B; --ochre-bg:#F3E7CC;
+  --graphite:#5F636A; --graphite-bg:#E6E3DC;
+  --green:#2F6B4F; --green-bg:#DCEBE1;
+  --blue:#2B4C7E; --blue-bg:#DDE5F0;
+  --on-ink:#F4F1EA;
+  --serif:"Iowan Old Style","Charter","Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+.dark{
+  --paper:#14130F; --sunken:#0F0E0B; --card:#1C1B17; --ink:#ECE6D8; --ink-2:#B9B2A3; --ink-3:#8A8376;
+  --rule:#2E2B25; --rule-2:#423E36;
+  --red:#F0603F; --red-2:#D94E2F; --red-bg:#3A1D16;
+  --ochre:#E0A93A; --ochre-bg:#33270F;
+  --graphite:#A3A8B0; --graphite-bg:#26262A;
+  --green:#5FB38A; --green-bg:#16291F;
+  --blue:#7FA3D9; --blue-bg:#18233A;
+  --on-ink:#14130F;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#CFC8B8;color:#1B1A17;font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.mono{font-family:var(--mono)}
+.serif{font-family:var(--serif)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+
+/* ============ PLANCHES (habillage de la maquette) ============ */
+.doc-head{padding:40px 0 24px}
+.doc-head .kick{font:600 11px/1 var(--mono);letter-spacing:.14em;color:#5a5448}
+.doc-head h1{font:600 40px/1.1 var(--serif);margin:10px 0 8px;letter-spacing:-.01em}
+.doc-head p{max-width:760px;margin:0;color:#3d3932}
+.plate{max-width:1280px;margin:0 auto 48px;padding:0 24px}
+.plate-label{display:flex;gap:12px;align-items:baseline;font:600 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#3d3932;margin-bottom:10px}
+.plate-label b{background:#1B1A17;color:#F4F1EA;padding:4px 7px}
+.frame{border:1px solid #1B1A17;box-shadow:6px 6px 0 #1B1A17;overflow:hidden}
+
+/* ============ SHELL ============ */
+.app{display:grid;grid-template-columns:232px 1fr;background:var(--paper);color:var(--ink);min-height:640px}
+.side{border-right:1px solid var(--rule-2);padding:20px 0;display:flex;flex-direction:column;background:var(--paper)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 20px 18px;border-bottom:3px double var(--ink)}
+.mark{display:inline-grid;place-items:center;width:30px;height:30px;background:var(--red);color:#fff;font:700 13px/1 var(--mono);letter-spacing:-.02em}
+.wordmark{font:600 19px/1 var(--serif);letter-spacing:-.01em}
+.wordmark i{font-style:italic;color:var(--red)}
+.nav{display:flex;flex-direction:column;padding:12px 10px}
+.nav a{display:flex;justify-content:space-between;align-items:center;text-decoration:none;padding:8px 10px;font:500 14px/1.2 var(--sans);color:var(--ink-2);border-left:3px solid transparent}
+.nav a.on{color:var(--ink);border-left-color:var(--red);background:var(--sunken);font-weight:600}
+.count{font:600 11px/1 var(--mono);background:var(--red);color:#fff;padding:3px 6px}
+.count.mute{background:transparent;color:var(--ink-3);border:1px solid var(--rule-2)}
+.side-h{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:16px 20px 8px}
+.feedlist{list-style:none;margin:0;padding:0 10px}
+.feedlist li{display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:13.5px;color:var(--ink-2)}
+.feedlist li span.n{margin-left:auto;font:600 11px/1 var(--mono);color:var(--ink)}
+.dot{width:7px;height:7px;flex:none;background:var(--green)}
+.dot.off{background:transparent;border:1px solid var(--ink-3)}
+.dot.def{background:var(--blue)}
+.side-foot{margin-top:auto;padding:14px 20px 0;border-top:1px solid var(--rule);font:12px/1.7 var(--mono);color:var(--ink-3)}
+.side-foot b{color:var(--ink);font-weight:600}
+.main{padding:28px 32px 36px;min-width:0}
+
+/* ============ MASTHEAD ============ */
+.dateline{font:600 11px/1 var(--mono);letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.mast{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--ink)}
+.mast h2{font:600 34px/1.05 var(--serif);margin:8px 0 0;letter-spacing:-.015em}
+.mast-meta{font:12px/1 var(--mono);color:var(--ink-2);margin-top:12px;padding-top:8px;border-top:1px solid var(--rule)}
+.mast-meta span+span::before{content:" · ";color:var(--ink-3)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ============ BOUTONS / CONTRÔLES ============ */
+.btn{display:inline-flex;align-items:center;gap:6px;font:500 13.5px/1 var(--sans);padding:9px 14px;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:2px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .12s,color .12s,border-color .12s}
+.btn:hover{background:var(--sunken)}
+.btn:focus-visible,.seg a:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.btn.primary{background:var(--ink);color:var(--on-ink)}
+.btn.primary:hover{background:var(--red);border-color:var(--red);color:#fff}
+.btn.danger{color:var(--red);border-color:var(--red)}
+.btn.ghost{border-color:transparent;color:var(--ink-2)}
+.btn.ghost:hover{border-color:var(--rule-2)}
+.btn.sm{padding:6px 10px;font-size:12.5px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--ink)}
+.seg a{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:8px 11px;text-decoration:none;color:var(--ink-2)}
+.seg a+a{border-left:1px solid var(--ink)}
+.seg a.on{background:var(--ink);color:var(--on-ink)}
+
+/* ============ TAMPONS, PRIORITÉS ============ */
+.stamp{display:inline-flex;align-items:center;gap:5px;font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;padding:4px 6px;white-space:nowrap}
+.src{color:var(--ink);background:var(--card)}
+.s-ok{color:var(--green);background:var(--green-bg)}
+.s-run{color:#fff;background:var(--red);border-color:var(--red)}
+.s-queue{color:var(--ink-2);border-style:dashed}
+.s-def{color:var(--blue);background:var(--blue-bg)}
+.s-fail{color:var(--red);background:var(--red-bg)}
+.s-cancel{color:var(--ink-3);text-decoration:line-through}
+.s-budget{color:var(--ochre);background:var(--ochre-bg)}
+.s-pause{color:var(--ink-3);border-style:dashed}
+.prio{display:inline-flex;align-items:center;gap:6px;font:700 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;white-space:nowrap}
+.prio .bars{letter-spacing:-.5px;font-size:9px}
+.p-high{background:var(--red);color:#fff}
+.p-med{background:var(--ochre-bg);color:var(--ochre);box-shadow:inset 0 0 0 1px var(--ochre)}
+.p-low{color:var(--graphite);box-shadow:inset 0 0 0 1px var(--graphite);background:transparent}
+
+/* ============ CARTES FLUX (grille de colonnes filetées) ============ */
+.feeds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--ink);margin-top:22px;background:var(--card)}
+.feed{padding:20px 22px 18px;border-bottom:1px solid var(--rule-2);position:relative;display:flex;flex-direction:column;gap:12px}
+.feed:nth-child(odd){border-right:1px solid var(--rule-2)}
+.feed.paused{background:repeating-linear-gradient(-45deg,transparent 0 9px,var(--sunken) 9px 10px)}
+.feed-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.feed h3{font:600 22px/1.15 var(--serif);margin:0;letter-spacing:-.01em}
+.feed .instr{font:italic 15px/1.45 var(--serif);color:var(--ink-2);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feed .unread{position:absolute;right:22px;top:16px;text-align:right}
+.feed .unread b{display:block;font:600 40px/1 var(--serif);color:var(--red)}
+.feed .unread small{font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.feed.paused .unread b{color:var(--ink-3)}
+.meta{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:4px 22px;font:12px/1.4 var(--mono);color:var(--ink-2)}
+.meta dt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.meta dd{margin:0;color:var(--ink)}
+.minitape{height:6px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.minitape i{background:var(--ink)}
+.minitape i.now{background:repeating-linear-gradient(-45deg,var(--red) 0 4px,var(--red-2) 4px 8px);background-size:11.3px 11.3px;animation:crawl .9s linear infinite}
+.minitape i.todo{background:transparent;box-shadow:inset 0 0 0 1px var(--rule-2)}
+.feed .foot{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:auto;padding-top:4px}
+.feed .foot .sp{flex:1}
+.note{font:12px/1.4 var(--mono);color:var(--blue)}
+
+/* ============ RUBAN (pipeline d'un run) ============ */
+.tape{position:relative;background:var(--sunken);padding:16px 14px;border-top:1px solid var(--rule-2);border-bottom:1px solid var(--rule-2);margin:20px 0}
+.tape::before,.tape::after{content:"";position:absolute;left:0;right:0;height:6px;background:radial-gradient(circle at 6px 3px,var(--paper) 2.2px,transparent 2.8px) 0 0/12px 6px repeat-x}
+.tape::before{top:4px}.tape::after{bottom:4px}
+.tape ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.tape li{border:1px solid var(--ink);padding:10px 12px;font:12px/1.35 var(--mono);min-width:0}
+.tape li+li{border-left:0}
+.tape li b{display:block;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:11px;margin-bottom:3px}
+.tape li span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+.tape .done{background:var(--ink);color:var(--on-ink)}
+.tape .now{color:#fff;background:repeating-linear-gradient(-45deg,var(--red) 0 8px,var(--red-2) 8px 16px);background-size:22.6px 22.6px;animation:crawl 1.1s linear infinite;border-color:var(--red)}
+.tape .todo{border-style:dashed;color:var(--ink-3);background:var(--card)}
+.tape .err{background:var(--red-bg);color:var(--red)}
+@keyframes crawl{to{background-position:22.6px 0}}
+
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--ink);border-bottom:1px solid var(--rule-2)}
+.stats div{padding:12px 14px}
+.stats div+div{border-left:1px solid var(--rule)}
+.stats dt{font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.stats dd{margin:6px 0 0;font:600 24px/1 var(--serif)}
+.stats dd small{font:12px var(--mono);color:var(--ink-3);font-weight:400}
+.gauge{height:6px;background:var(--sunken);box-shadow:inset 0 0 0 1px var(--rule-2);margin-top:8px}
+.gauge i{display:block;height:100%;background:var(--ink)}
+
+.log{background:var(--sunken);border:1px solid var(--rule-2);font:12.5px/1.65 var(--mono);padding:12px 0;max-height:260px;overflow:auto}
+.log div{display:grid;grid-template-columns:76px 58px 1fr;gap:10px;padding:0 14px}
+.log time{color:var(--ink-3)}
+.log .lv{font-weight:700;letter-spacing:.06em}
+.lv.i{color:var(--ink-2)}.lv.w{color:var(--ochre)}.lv.e{color:var(--red)}
+.log .cur::after{content:"▌";animation:blink 1s steps(2) infinite;color:var(--red)}
+@keyframes blink{50%{opacity:0}}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;margin-top:22px}
+.h-sec{font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:8px;border-bottom:1px solid var(--ink);margin:0 0 10px;display:flex;justify-content:space-between}
+.h-sec span{color:var(--ink-3);font-weight:500}
+.runs{list-style:none;margin:0;padding:0}
+.runs li{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);font:12px/1.3 var(--mono);color:var(--ink-2)}
+.runs li .k{color:var(--ink);font-weight:600}
+.runs li .c{grid-column:2/4;color:var(--ink-3)}
+
+/* ============ ARTICLE / DIGEST ============ */
+.reader{background:var(--paper);color:var(--ink)}
+.readbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 24px;border-bottom:1px solid var(--rule-2);background:var(--paper)}
+.readbar .sp{flex:1}
+.article{max-width:700px;margin:0 auto;padding:40px 24px 56px}
+.kicker{font:700 11px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.article h1{font:600 42px/1.08 var(--serif);letter-spacing:-.02em;margin:12px 0 14px}
+.byline{font:12px/1.6 var(--mono);color:var(--ink-3);padding:10px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule-2)}
+.byline b{color:var(--ink);font-weight:600}
+.lede{font:20px/1.55 var(--serif);color:var(--ink);margin:24px 0 8px}
+.lede::first-letter{float:left;font:600 64px/.82 var(--serif);color:var(--red);padding:6px 10px 0 0}
+.article h2{font:700 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;margin:44px 0 0;padding:10px 0;border-top:3px double var(--ink);display:flex;justify-content:space-between}
+.article h2 span{color:var(--ink-3);font-weight:500}
+.sbody{font:17px/1.68 var(--serif);color:var(--ink-2);margin:12px 0 4px}
+.item{padding:22px 0 22px 18px;border-bottom:1px solid var(--rule);position:relative}
+.item::before{content:"";position:absolute;left:0;top:24px;bottom:24px;width:3px;background:var(--red)}
+.item.med::before{background:var(--ochre)}
+.item.low::before{background:transparent;border-left:1px dashed var(--graphite)}
+.item.read{opacity:.62}
+.item-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.item-head .sp{flex:1}
+.item h3{font:600 22px/1.25 var(--serif);margin:10px 0 6px;letter-spacing:-.005em}
+.why{font:italic 15px/1.5 var(--serif);color:var(--ink-3);margin:0 0 8px}
+.why b{font:700 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;font-style:normal;color:var(--ink-2);margin-right:6px}
+.item p.sum{font:17px/1.68 var(--serif);margin:0 0 12px;color:var(--ink)}
+.sources{border-left:4px solid transparent;border-image:repeating-linear-gradient(-45deg,var(--ink-3) 0 2px,transparent 2px 5px) 4;padding:4px 0 4px 12px;margin:0}
+.sources dt{font:700 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.sources dd{margin:0;font:13px/1.6 var(--mono);overflow-wrap:anywhere}
+.sources a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px}
+.sources a:hover{color:var(--red)}
+.readbtn{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border:1px solid var(--rule-2);background:transparent;padding:6px 9px;cursor:pointer}
+.readbtn.done{color:var(--green);border-color:var(--green)}
+.colophon{margin-top:36px;font:12px/1.7 var(--mono);color:var(--ink-3);border-top:1px solid var(--ink);padding-top:12px}
+
+/* ============ FIL ============ */
+.filters{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:18px 0 0;padding:12px 0;border-bottom:1px solid var(--ink)}
+.filters label{font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:-6px}
+.filters .sp{flex:1}
+.wire{list-style:none;margin:0;padding:0}
+.wire li{display:grid;grid-template-columns:12px 112px minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 4px;border-bottom:1px solid var(--rule)}
+.wire .u{width:8px;height:8px;background:var(--red);border-radius:50%}
+.wire .r{width:8px;height:8px;border:1px solid var(--ink-3);border-radius:50%}
+.wire .t{font:600 16.5px/1.3 var(--serif);color:var(--ink);text-decoration:none}
+.wire .t:hover{text-decoration:underline;text-decoration-color:var(--red)}
+.wire .m{font:11.5px/1.4 var(--mono);color:var(--ink-3);margin-top:3px}
+.wire li.isread .t{font-weight:400;color:var(--ink-2)}
+.wire .day{display:block;grid-template-columns:none;font:700 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:16px 4px 8px;border-bottom:1px solid var(--rule-2)}
+
+/* ============ ÉTATS ============ */
+.states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule-2);background:var(--card);margin-top:26px}
+.state{padding:24px 22px;min-height:220px;display:flex;flex-direction:column;gap:10px}
+.state+.state{border-left:1px solid var(--rule-2)}
+.state .tag{font:700 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.state h4{font:600 20px/1.2 var(--serif);margin:0}
+.state p{margin:0;color:var(--ink-2);font-size:14px}
+.empty-mark{font:600 52px/1 var(--serif);color:var(--rule-2);letter-spacing:.1em}
+.compose{height:11px;background:repeating-linear-gradient(90deg,var(--rule-2) 0 2px,transparent 2px 5px);animation:pulse 1.4s ease-in-out infinite}
+.compose.w60{width:60%}.compose.w80{width:80%}.compose.w40{width:40%}.compose.h{height:22px;width:70%}
+@keyframes pulse{50%{opacity:.35}}
+.err-box{border:1px solid var(--red);background:var(--red-bg);padding:12px 14px;color:var(--ink)}
+.err-box b{color:var(--red);font:700 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:6px}
+.ref{font:12px var(--mono);color:var(--ink-3)}
+.banner{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 16px;border:1px solid currentColor;margin-top:14px}
+.banner p{margin:0;color:var(--ink);font-size:14px;flex:1;min-width:240px}
+.banner.def{color:var(--blue);background:var(--blue-bg)}
+.banner.bud{color:var(--ochre);background:var(--ochre-bg)}
+.banner .stamp{transform:rotate(-2deg);background:var(--card)}
+
+/* ============ FORMULAIRE ============ */
+.form-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;margin-top:22px}
+.field{margin-bottom:20px}
+.field>label{display:block;font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin-bottom:7px}
+.input,textarea.input,select.input{width:100%;font:15px/1.4 var(--sans);color:var(--ink);background:var(--card);border:1px solid var(--rule-2);border-bottom:2px solid var(--ink);border-radius:0;padding:9px 11px}
+textarea.input{font:16px/1.55 var(--serif);min-height:92px;resize:vertical}
+.input.bad{border-color:var(--red);border-bottom-color:var(--red);background:var(--red-bg)}
+.ferr{font:12px/1.4 var(--mono);color:var(--red);margin-top:6px}
+.ferr::before{content:"✕ "}
+.fok{font:12px/1.4 var(--mono);color:var(--green);margin-top:6px}
+.fok::before{content:"✓ "}
+.hint{font-size:13px;color:var(--ink-3);margin-top:6px}
+.srcpick{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--ink)}
+.srcpick div{padding:12px 14px;cursor:pointer}
+.srcpick div+div{border-left:1px solid var(--ink)}
+.srcpick b{display:block;font:700 13px/1 var(--mono);letter-spacing:.1em}
+.srcpick span{display:block;font-size:12.5px;color:var(--ink-3);margin-top:6px;line-height:1.35}
+.srcpick .on{background:var(--ink);color:var(--on-ink)}
+.srcpick .on span{color:var(--rule-2)}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pkg{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:8px;margin-bottom:8px}
+.help{background:var(--sunken);border-top:3px solid var(--ink);padding:18px 18px 20px;align-self:start}
+.help h4{font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;margin:0 0 12px}
+.help p{font:14.5px/1.55 var(--serif);color:var(--ink-2);margin:0 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 14px}
+.chips span{font:600 11.5px/1 var(--mono);border:1px solid var(--rule-2);background:var(--card);padding:5px 7px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px}
+.toggle i{width:34px;height:18px;border:1px solid var(--ink);position:relative;background:var(--ink)}
+.toggle i::after{content:"";position:absolute;top:2px;right:2px;width:12px;height:12px;background:var(--on-ink)}
+.toggle.off i{background:transparent}
+.toggle.off i::after{left:2px;right:auto;background:var(--ink)}
+
+/* ============ RÉGLAGES ============ */
+.set{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.set>h4{font:600 18px/1.2 var(--serif);margin:0}
+.set>h4 small{display:block;font:12.5px/1.45 var(--sans);color:var(--ink-3);margin-top:6px;font-weight:400}
+.secret{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--rule-2);background:var(--card);padding:9px 11px}
+.secret .mask{font:13px var(--mono);color:var(--ink-3);letter-spacing:.2em}
+.secret .sp{flex:1}
+.term{background:#100F0C;color:#E8E2D3;font:12.5px/1.6 var(--mono);border:1px solid #000;margin-top:12px}
+.term-bar{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid #2E2B25;font-size:11px;color:#8A8376;letter-spacing:.08em;text-transform:uppercase}
+.term-bar .sp{flex:1}
+.term-bar .live{color:#5FB38A}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}
+.term .y{color:#E0A93A}.term .g{color:#5FB38A}.term .c{background:#E8E2D3;color:#100F0C}
+
+/* ============ MOBILE + LOGIN ============ */
+.duo{display:grid;grid-template-columns:auto minmax(0,1fr);gap:36px;align-items:start}
+.phone{width:380px;border:10px solid #0b0a08;border-radius:34px;overflow:hidden;background:#14130F;box-shadow:6px 6px 0 #1B1A17}
+.phone .status{display:flex;justify-content:space-between;font:600 12px/1 var(--sans);color:#ECE6D8;padding:12px 22px 8px}
+.notif{margin:8px 10px 14px;background:#24221d;border-radius:14px;padding:12px 14px;color:#ECE6D8}
+.notif .app-l{display:flex;align-items:center;gap:8px;font:600 11px/1 var(--sans);color:#B9B2A3;margin-bottom:6px}
+.notif .app-l i{width:16px;height:16px;border-radius:4px;background:#3b8e5a;display:inline-block}
+.notif .app-l span{margin-left:auto;font-weight:400}
+.notif b{display:block;font:600 14px/1.3 var(--sans);margin-bottom:3px}
+.notif p{margin:0;font:13px/1.4 var(--sans);color:#B9B2A3}
+.phone .reader .article{padding:22px 18px 30px}
+.phone .article h1{font-size:29px}
+.phone .lede{font-size:17px}
+.phone .lede::first-letter{font-size:50px}
+.phone .item h3{font-size:19px}
+.phone .item p.sum{font-size:16px}
+.phone .readbar{padding:10px 14px}
+.login{background:var(--paper);color:var(--ink);min-height:560px;display:grid;place-items:center;padding:40px 20px;background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 28px}
+.login-card{width:min(400px,100%);background:var(--card);border:1px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:28px 28px 24px}
+.login-card .brand{padding:0 0 16px;margin-bottom:20px}
+.login-card p.sub{font:italic 15px/1.5 var(--serif);color:var(--ink-2);margin:0 0 18px}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1060px){
+  .two,.form-grid{grid-template-columns:1fr}
+  .duo{grid-template-columns:1fr}
+  .phone{margin:0 auto}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{border-right:0;border-bottom:1px solid var(--rule-2);padding:14px 0 0}
+  .nav{flex-direction:row;overflow:auto}
+  .nav a{border-left:0;border-bottom:3px solid transparent}
+  .nav a.on{border-bottom-color:var(--red)}
+  .side-h,.feedlist,.side-foot{display:none}
+  .main{padding:20px 16px 28px}
+  .feeds{grid-template-columns:1fr}
+  .feed:nth-child(odd){border-right:0}
+  .tape ol{grid-template-columns:1fr}
+  .tape li+li{border-left:1px solid var(--ink);border-top:0}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats div:nth-child(3){border-left:0}
+  .states{grid-template-columns:1fr}
+  .state+.state{border-left:0;border-top:1px solid var(--rule-2)}
+  .set{grid-template-columns:1fr;gap:10px}
+  .row{grid-template-columns:1fr}
+  .wire li{grid-template-columns:12px minmax(0,1fr) auto}
+  .wire li .pc{display:none}
+  .article h1{font-size:32px}
+  .srcpick{grid-template-columns:1fr}
+  .srcpick div+div{border-left:0;border-top:1px solid var(--ink)}
+  .phone{width:100%;max-width:380px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="doc-head"><div class="wrap">
+  <div class="kick">MAQUETTE DE RÉFÉRENCE · PERSONNAL FLUX · v1 · 22.10.2026</div>
+  <h1>Personnal Flux — planches de référence</h1>
+  <p>Direction artistique « La dépêche » : l’outil se présente comme une petite salle de rédaction personnelle. Papier journal chaud, encre noire, un seul rouge vermillon de correcteur. Les flux sont composés en colonnes filetées et chaque run avance sur un ruban perforé de téléscripteur. Les sources sont présentées comme des citations hachurées : ce sont des données, pas des ordres.</p>
+</div></header>
+
+<!-- ================= PLANCHE 01 : FLUX ================= -->
+<section class="plate">
+  <div class="plate-label"><b>01</b> Flux de veille — écran principal · thème clair</div>
+  <div class="frame">
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><span class="mark">PF</span><span class="wordmark">Personnal <i>Flux</i></span></div>
+      <nav class="nav">
+        <a href="#" class="on">Flux <span class="count mute">4</span></a>
+        <a href="#">Fil <span class="count">27</span></a>
+        <a href="#">Runs <span class="count mute">1</span></a>
+        <a href="#">Réglages</a>
+      </nav>
+      <div class="side-h">Flux suivis</div>
+      <ul class="feedlist">
+        <li><i class="dot"></i>Veille sécu — blogs<span class="n">12</span></li>
+        <li><i class="dot"></i>CVE dépendances<span class="n">9</span></li>
+        <li><i class="dot def"></i>CVE produits<span class="n">6</span></li>
+        <li><i class="dot off"></i>Copie de CVE dépendances<span class="n">—</span></li>
+      </ul>
+      <div class="side-foot">
+        Claude : <b>connecté</b><br>
+        File : <b>1 / 1</b> en cours<br>
+        Cumul : <b>4,12 $</b> · 1,94 M tok.
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="mast">
+        <div>
+          <div class="dateline">Jeudi 22 octobre 2026 · Europe/Paris · 14:06</div>
+          <h2>Flux de veille</h2>
+          <div class="mast-meta"><span>4 flux</span><span>3 actifs</span><span>27 non lus</span><span>prochain run 20:00</span></div>
+        </div>
+        <div class="actions">
+          <a class="btn ghost sm" href="#">Importer JSON</a>
+          <a class="btn ghost sm" href="#">Exporter JSON</a>
+          <a class="btn primary" href="#">+ Nouveau flux</a>
+        </div>
+      </div>
+
+      <div class="feeds">
+        <article class="feed">
+          <div class="feed-top"><span class="stamp src">RSS · 3 URL</span><span class="stamp s-run">● En cours</span></div>
+          <h3>Veille sécu — blogs</h3>
+          <p class="instr">« M’intéressent les incidents majeurs et les nouvelles techniques d’attaque, ignorer les annonces marketing. »</p>
+          <div class="unread"><b>12</b><small>non lus</small></div>
+          <div class="minitape" title="Étape : triage"><i></i><i></i><i class="now"></i><i class="todo"></i><i class="todo"></i></div>
+          <dl class="meta"><dt>Dernier run</dt><dt>Prochain</dt><dt>Fréquence</dt><dd>08:00 · réussi</dd><dd>20:00</dd><dd>6 h</dd></dl>
+          <div class="foot"><a class="btn sm" href="#">Ouvrir le run</a><a class="btn sm ghost" href="#">Fil</a><span class="sp"></span><a class="btn sm ghost" href="#">Pause</a><a class="btn sm ghost" href="#" aria-label="Plus d’actions">⋯</a></div>
+        </article>
+
+        <article class="feed">
+          <div class="feed-top"><span class="stamp src">OSV · 3 paquets</span><span class="stamp s-ok">Réussi</span></div>
+          <h3>CVE dépendances</h3>
+          <p class="instr">« Vulnérabilités de fastify (npm), django (PyPI) et golang.org/x/net (Go). Sévérité et version corrigée en tête. »</p>
+          <div class="unread"><b>9</b><small>non lus</small></div>
+          <dl class="meta"><dt>Dernier run</dt><dt>Prochain</dt><dt>Fréquence</dt><dd>07:00 · 0,09 $</dd><dd>demain 07:00</dd><dd>24 h</dd></dl>
+          <div class="foot"><a class="btn sm primary" href="#">▶ Lancer maintenant</a><a class="btn sm ghost" href="#">Fil</a><span class="sp"></span><a class="btn sm ghost" href="#">Pause</a><a class="btn sm ghost" href="#" aria-label="Plus d’actions">⋯</a></div>
+        </article>
+
+        <article class="feed">
+          <div class="feed-top"><span class="stamp src">NVD · ≥ HIGH</span><span class="stamp s-def">Reporté</span></div>
+          <h3>CVE produits — WireGuard, Apple iOS</h3>
+          <p class="instr">« Écarter les faux positifs où le mot-clé n’apparaît qu’en passant dans la description. »</p>
+          <div class="unread"><b>6</b><small>non lus</small></div>
+          <div class="note">↻ Limite d’usage Claude — nouvelle tentative à 15:06</div>
+          <dl class="meta"><dt>Dernier run</dt><dt>Prochain</dt><dt>Fréquence</dt><dd>14:06 · reporté</dd><dd>15:06</dd><dd>12 h</dd></dl>
+          <div class="foot"><a class="btn sm primary" href="#">▶ Lancer maintenant</a><a class="btn sm ghost" href="#">Fil</a><span class="sp"></span><a class="btn sm ghost" href="#">Pause</a><a class="btn sm ghost" href="#" aria-label="Plus d’actions">⋯</a></div>
+        </article>
+
+        <article class="feed paused">
+          <div class="feed-top"><span class="stamp src">OSV · 3 paquets</span><span class="stamp s-pause">‖ En pause</span></div>
+          <h3>Copie de CVE dépendances</h3>
+          <p class="instr">« Vulnérabilités de fastify (npm), django (PyPI) et golang.org/x/net (Go). Sévérité et version corrigée en tête. »</p>
+          <div class="unread"><b>—</b><small>jamais lancé</small></div>
+          <dl class="meta"><dt>Dernier run</dt><dt>Prochain</dt><dt>Fréquence</dt><dd>—</dd><dd>désactivé</dd><dd>24 h</dd></dl>
+          <div class="foot"><a class="btn sm" href="#">Reprendre</a><a class="btn sm ghost" href="#">Éditer</a><span class="sp"></span><a class="btn sm ghost" href="#">Dupliquer</a><a class="btn sm danger" href="#">Supprimer</a></div>
+        </article>
+      </div>
+    </main>
+  </div>
+  </div>
+</section>
+
+<!-- ================= PLANCHE 02 : RUN EN DIRECT ================= -->
+<section class="plate">
+  <div class="plate-label"><b>02</b> Run en direct — ruban, budget, journal, historique</div>
+  <div class="frame">
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><span class="mark">PF</span><span class="wordmark">Personnal <i>Flux</i></span></div>
+      <nav class="nav">
+        <a href="#">Flux <span class="count mute">4</span></a>
+        <a href="#">Fil <span class="count">27</span></a>
+        <a href="#" class="on">Runs <span class="count mute">1</span></a>
+        <a href="#">Réglages</a>
+      </nav>
+      <div class="side-h">File d’exécution · concurrence 1</div>
+      <ul class="feedlist">
+        <li><i class="dot" style="background:var(--red)"></i>#142 Veille sécu<span class="n">triage</span></li>
+        <li><i class="dot off"></i>#143 CVE dépendances<span class="n">en file</span></li>
+      </ul>
+      <div class="side-foot">Claude : <b>connecté</b><br>Cumul : <b>4,12 $</b> · 1,94 M tok.</div>
+    </aside>
+    <main class="main">
+      <div class="mast">
+        <div>
+          <div class="dateline">Veille sécu — blogs / Run #142 · démarré 14:02:11 · manuel</div>
+          <h2>Triage en cours <span class="stamp s-run" style="vertical-align:middle;margin-left:8px">● En cours</span></h2>
+        </div>
+        <div class="actions"><a class="btn danger" href="#">✕ Annuler le run</a></div>
+      </div>
+
+      <div class="tape" role="list" aria-label="Étapes du run">
+        <ol>
+          <li class="done"><b>01 Fetch</b><span>3/3 sources · 149 items</span></li>
+          <li class="done"><b>02 Dedup</b><span>118 déjà vus · 31 neufs</span></li>
+          <li class="now"><b>03 Triage</b><span>paquet 1/1 · sonnet</span></li>
+          <li class="todo"><b>04 Digest</b><span>en attente</span></li>
+          <li class="todo"><b>05 Notify</b><span>ntfy.sh/pf-veille</span></li>
+        </ol>
+      </div>
+
+      <dl class="stats">
+        <div><dt>Nouveaux</dt><dd>31 <small>/ 149</small></dd></div>
+        <div><dt>Tokens</dt><dd>48 210 <small>in · 3 904 out</small></dd></div>
+        <div><dt>Durée</dt><dd>2:41</dd></div>
+        <div><dt>Budget</dt><dd>0,14 $ <small>/ 0,50 $</small></dd><div class="gauge" style="padding:0"><i style="width:28%"></i></div></div>
+      </dl>
+
+      <div class="two">
+        <div>
+          <h4 class="h-sec">Journal <span>direct · WebSocket</span></h4>
+          <div class="log" aria-live="polite">
+            <div><time>14:02:11</time><span class="lv i">INFO</span><span>run #142 mis en file (lancer maintenant)</span></div>
+            <div><time>14:02:12</time><span class="lv i">INFO</span><span>fetch krebsonsecurity.com/feed — 50 items</span></div>
+            <div><time>14:02:13</time><span class="lv i">INFO</span><span>fetch www.bleepingcomputer.com/feed — 60 items</span></div>
+            <div><time>14:02:14</time><span class="lv w">WARN</span><span>fetch blog.exemple.org/atom — 39 items, 11 ignorés (hors fenêtre 7 j)</span></div>
+            <div><time>14:02:14</time><span class="lv i">INFO</span><span>dedup — 118 déjà vus, 31 nouveaux</span></div>
+            <div><time>14:02:15</time><span class="lv i">INFO</span><span>triage — paquet 1/1 (31 items), modèle sonnet, 0 outil</span></div>
+            <div><time>14:03:40</time><span class="lv w">WARN</span><span>sortie rejetée : URL non fournie en entrée — nouvelle tentative 1/1</span></div>
+            <div><time>14:04:52</time><span class="lv i">INFO</span><span class="cur">triage — sortie valide, 9 retenus · 0,14 $ </span></div>
+          </div>
+        </div>
+        <div>
+          <h4 class="h-sec">Historique <span>7 statuts</span></h4>
+          <ul class="runs">
+            <li><span class="stamp s-run">En cours</span><span class="k">#142</span><span>14:02</span><span class="c">Veille sécu · triage</span></li>
+            <li><span class="stamp s-queue">En file</span><span class="k">#143</span><span>14:03</span><span class="c">CVE dépendances</span></li>
+            <li><span class="stamp s-def">Reporté</span><span class="k">#141</span><span>14:06</span><span class="c">CVE produits · limite d’usage → 15:06</span></li>
+            <li><span class="stamp s-ok">Réussi</span><span class="k">#140</span><span>08:00</span><span class="c">9 retenus / 24 · 0,11 $ · digest ↗</span></li>
+            <li><span class="stamp s-ok">Réussi</span><span class="k">#139</span><span>07:00</span><span class="c">aucune nouveauté · 0,00 $</span></li>
+            <li><span class="stamp s-budget">Budget</span><span class="k">#138</span><span>hier</span><span class="c">0,50 $ atteint · digest partiel ↗</span></li>
+            <li><span class="stamp s-fail">Échec</span><span class="k">#137</span><span>hier</span><span class="c">sortie invalide après 2 essais · réf. 7f3a91c2</span></li>
+            <li><span class="stamp s-cancel">Annulé</span><span class="k">#136</span><span>lun.</span><span class="c">annulé pendant le fetch</span></li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+  </div>
+</section>
+
+<!-- ================= PLANCHE 03 : DIGEST ================= -->
+<section class="plate">
+  <div class="plate-label"><b>03</b> Digest « article » — /digests/:id · thème clair</div>
+  <div class="frame">
+  <div class="reader">
+    <div class="readbar">
+      <a class="btn ghost sm" href="#">← Veille sécu — blogs</a>
+      <span class="sp"></span>
+      <span class="seg" aria-label="Thème"><a href="#">Auto</a><a href="#" class="on">Clair</a><a href="#">Sombre</a></span>
+      <a class="btn sm" href="#">Export .md</a>
+      <a class="btn sm" href="#">Export .json</a>
+    </div>
+    <article class="article">
+      <div class="kicker">Digest · Veille sécu — blogs · Run #140</div>
+      <h1>Une chaîne d’approvisionnement npm détournée, et un retour en force du phishing par QR code</h1>
+      <div class="byline"><b>22 octobre 2026, 08:04</b> (Europe/Paris) · 9 retenus sur 24 nouveaux · 3 sources · 41 312 tokens · 0,11 $</div>
+      <p class="lede">Deux incidents majeurs dominent la période : la compromission d’un mainteneur npm, qui a publié des versions piégées pendant six heures, et une campagne de phishing visant les tenants Microsoft 365 qui contourne l’authentification multifacteur. Les annonces commerciales ont été écartées.</p>
+
+      <h2>Incidents majeurs <span>3 éléments</span></h2>
+      <p class="sbody">La compromission npm est la plus urgente : vérifiez vos lockfiles pour les versions publiées entre 02:10 et 08:30 UTC.</p>
+
+      <div class="item">
+        <div class="item-head"><span class="prio p-high"><span class="bars">▮▮▮</span> Haute</span><span class="stamp src">KrebsOnSecurity</span><span class="sp"></span><button class="readbtn">Marquer comme lu</button></div>
+        <h3>Un mainteneur npm compromis publie des versions piégées de deux paquets populaires</h3>
+        <p class="why"><b>Pourquoi</b>Incident majeur de chaîne d’approvisionnement, impact direct sur des dépendances courantes.</p>
+        <p class="sum">Un jeton de publication volé a permis de pousser des versions contenant un script post-install qui exfiltrait les variables d’environnement CI. Les versions ont été retirées du registre ; les jetons exposés doivent être révoqués.</p>
+        <dl class="sources"><dt>Sources · 2 URL fournies en entrée</dt>
+          <dd><a href="#" rel="noopener noreferrer" target="_blank">krebsonsecurity.com/2026/10/npm-maintainer-account-hijacked ↗</a></dd>
+          <dd><a href="#" rel="noopener noreferrer" target="_blank">github.com/advisories/GHSA-x7c4-9q2m-3h8p ↗</a></dd>
+        </dl>
+      </div>
+
+      <div class="item med">
+        <div class="item-head"><span class="prio p-med"><span class="bars">▮▮▯</span> Moyenne</span><span class="stamp src">BleepingComputer</span><span class="sp"></span><button class="readbtn done">✓ Lu</button></div>
+        <h3>Phishing par QR code : contournement de MFA sur Microsoft 365</h3>
+        <p class="why"><b>Pourquoi</b>Nouvelle technique d’attaque (adversary-in-the-middle) documentée avec des indicateurs.</p>
+        <p class="sum">Les courriels embarquent un QR code qui mène vers un proxy inverse capturant le cookie de session après l’étape MFA. La campagne vise surtout les services RH.</p>
+        <dl class="sources"><dt>Sources · 1 URL fournie en entrée</dt>
+          <dd><a href="#" rel="noopener noreferrer" target="_blank">bleepingcomputer.com/news/security/qr-code-phishing-m365-aitm ↗</a></dd>
+        </dl>
+      </div>
+
+      <h2>Techniques d’attaque <span>1 élément</span></h2>
+      <div class="item low">
+        <div class="item-head"><span class="prio p-low"><span class="bars">▮▯▯</span> Basse</span><span class="stamp src">blog.exemple.org</span><span class="sp"></span><button class="readbtn">Marquer comme lu</button></div>
+        <h3>Abus des tâches planifiées Windows pour la persistance « sans fichier »</h3>
+        <p class="why"><b>Pourquoi</b>Technique connue, présentée avec une variante, mais sans exploitation active signalée.</p>
+        <p class="sum">L’article détaille le stockage d’une charge encodée dans les propriétés d’une tâche planifiée, puis son exécution par PowerShell. Il propose des règles de détection Sysmon.</p>
+        <dl class="sources"><dt>Sources · 1 URL fournie en entrée</dt>
+          <dd><a href="#" rel="noopener noreferrer" target="_blank">blog.exemple.org/2026/10/scheduled-task-fileless ↗</a></dd>
+        </dl>
+      </div>
+
+      <div class="colophon">Rédigé par Claude (sonnet) à partir des seules données fournies. Tout le texte est échappé et chaque élément cite des URL présentes dans les sources. · <a href="#">Historique des digests de ce flux →</a></div>
+    </article>
+  </div>
+  </div>
+</section>
+
+<!-- ================= PLANCHE 04 : FIL + ÉTATS ================= -->
+<section class="plate">
+  <div class="plate-label"><b>04</b> Fil continu, états vide / chargement / erreur, bandeaux de run</div>
+  <div class="frame">
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><span class="mark">PF</span><span class="wordmark">Personnal <i>Flux</i></span></div>
+      <nav class="nav">
+        <a href="#">Flux <span class="count mute">4</span></a>
+        <a href="#" class="on">Fil <span class="count">27</span></a>
+        <a href="#">Runs <span class="count mute">1</span></a>
+        <a href="#">Réglages</a>
+      </nav>
+      <div class="side-h">Filtrer par flux</div>
+      <ul class="feedlist">
+        <li><i class="dot"></i>Tous les flux<span class="n">27</span></li>
+        <li><i class="dot"></i>Veille sécu — blogs<span class="n">12</span></li>
+        <li><i class="dot"></i>CVE dépendances<span class="n">9</span></li>
+        <li><i class="dot def"></i>CVE produits<span class="n">6</span></li>
+      </ul>
+      <div class="side-foot">Claude : <b>connecté</b><br>Cumul : <b>4,12 $</b></div>
+    </aside>
+    <main class="main">
+      <div class="mast">
+        <div><div class="dateline">Tous les flux · les plus récents en tête</div><h2>Le fil</h2></div>
+        <div class="actions"><a class="btn" href="#">✓ Tout marquer lu</a></div>
+      </div>
+      <div class="filters">
+        <label>Priorité</label>
+        <span class="seg"><a href="#">Toutes</a><a href="#" class="on">Haute</a><a href="#">Moyenne</a><a href="#">Basse</a></span>
+        <label>État</label>
+        <span class="seg"><a href="#" class="on">Non lus</a><a href="#">Lus</a><a href="#">Tous</a></span>
+      </div>
+      <ul class="wire">
+        <li class="day">Aujourd’hui · jeudi 22 octobre</li>
+        <li><i class="u" aria-label="non lu"></i><span class="pc"><span class="prio p-high"><span class="bars">▮▮▮</span> Haute</span></span><div><a class="t" href="#">CVE-2026-41877 — fastify : contournement de la validation de content-type</a><div class="m">CVE dépendances · OSV · 07:00 · CVSS 8.1 · corrigé en 5.4.2</div></div><button class="readbtn">Lu</button></li>
+        <li><i class="u" aria-label="non lu"></i><span class="pc"><span class="prio p-high"><span class="bars">▮▮▮</span> Haute</span></span><div><a class="t" href="#">Un mainteneur npm compromis publie des versions piégées de deux paquets populaires</a><div class="m">Veille sécu — blogs · RSS · 08:04 · digest #140</div></div><button class="readbtn">Lu</button></li>
+        <li class="day">Hier · mercredi 21 octobre</li>
+        <li><i class="u" aria-label="non lu"></i><span class="pc"><span class="prio p-high"><span class="bars">▮▮▮</span> Haute</span></span><div><a class="t" href="#">CVE-2026-39012 — WireGuard (Windows) : élévation de privilèges locale via le service tunnel</a><div class="m">CVE produits · NVD · 19:12 · CVSS 7.8 HIGH</div></div><button class="readbtn">Lu</button></li>
+        <li class="isread"><i class="r" aria-label="lu"></i><span class="pc"><span class="prio p-high"><span class="bars">▮▮▮</span> Haute</span></span><div><a class="t" href="#">GHSA-7h2x-… — django : injection SQL dans JSONField sur Oracle</a><div class="m">CVE dépendances · OSV · 07:00 · lu à 09:14</div></div><button class="readbtn done">✓ Lu</button></li>
+      </ul>
+
+      <div class="states">
+        <div class="state">
+          <span class="tag">État vide</span>
+          <div class="empty-mark">¶ ¶ ¶</div>
+          <h4>Aucun flux pour l’instant.</h4>
+          <p>Un flux réunit un sujet, une consigne et une source : RSS, OSV ou NVD.</p>
+          <div class="actions"><a class="btn primary sm" href="#">+ Créer un flux</a><a class="btn ghost sm" href="#">Importer JSON</a></div>
+        </div>
+        <div class="state" aria-busy="true">
+          <span class="tag">Chargement</span>
+          <div class="compose h"></div><div class="compose w80"></div><div class="compose w60"></div><div class="compose w40"></div>
+          <p class="mono" style="font-size:12px;color:var(--ink-3)">Composition en cours…</p>
+        </div>
+        <div class="state">
+          <span class="tag">Erreur</span>
+          <div class="err-box"><b>Erreur interne</b>Impossible de charger le fil. Réessayez dans un instant.</div>
+          <span class="ref">Référence : req-7f3a91c2</span>
+          <div class="actions"><a class="btn sm" href="#">⟳ Réessayer</a></div>
+        </div>
+      </div>
+
+      <div class="banner def"><span class="stamp s-def">Reporté</span><p><b>Limite d’usage Claude atteinte.</b> Le run #141 n’a pas échoué. Il reprendra automatiquement à 15:06, puis à intervalles croissants jusqu’à 6 h.</p><a class="btn sm" href="#">Voir Réglages</a></div>
+      <div class="banner bud"><span class="stamp s-budget">Budget</span><p><b>0,50 $ atteint.</b> 2 paquets sur 3 ont été triés et un digest partiel a été publié avec 14 éléments.</p><a class="btn sm" href="#">Ouvrir le digest</a></div>
+    </main>
+  </div>
+  </div>
+</section>
+
+<!-- ================= PLANCHE 05 : FORMULAIRE ================= -->
+<section class="plate">
+  <div class="plate-label"><b>05</b> Créer / éditer un flux — aide contextuelle et erreurs par champ</div>
+  <div class="frame">
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><span class="mark">PF</span><span class="wordmark">Personnal <i>Flux</i></span></div>
+      <nav class="nav">
+        <a href="#" class="on">Flux <span class="count mute">4</span></a>
+        <a href="#">Fil <span class="count">27</span></a>
+        <a href="#">Runs</a>
+        <a href="#">Réglages</a>
+      </nav>
+      <div class="side-foot">Claude : <b>connecté</b></div>
+    </aside>
+    <main class="main">
+      <div class="mast"><div><div class="dateline">Flux / nouveau</div><h2>Nouveau flux de veille</h2></div>
+        <div class="actions"><a class="btn ghost" href="#">Annuler</a><a class="btn primary" href="#">Enregistrer</a></div></div>
+      <div class="form-grid">
+        <div>
+          <div class="field"><label>Nom</label><input class="input" value="CVE dépendances"></div>
+          <div class="field"><label>Consigne en langage naturel</label>
+            <textarea class="input">Vulnérabilités de fastify, django et golang.org/x/net. Mets en tête la sévérité et la version corrigée ; ignore les avis retirés.</textarea>
+            <div class="hint">Claude trie et rédige d’après cette consigne. Le contenu des sources ne peut pas la modifier.</div></div>
+          <div class="field"><label>Type de source</label>
+            <div class="srcpick">
+              <div><b>RSS</b><span>Blogs, médias, flux Atom. 1 à 20 URL.</span></div>
+              <div class="on"><b>OSV</b><span>CVE de vos dépendances : nom + écosystème.</span></div>
+              <div><b>NVD</b><span>CVE de produits par mots-clés.</span></div>
+            </div></div>
+          <div class="field"><label>Paquets suivis</label>
+            <div class="pkg"><input class="input" value="fastify"><select class="input"><option>npm</option></select><a class="btn ghost sm" href="#">✕</a></div>
+            <div class="pkg"><input class="input" value="django"><select class="input"><option>PyPI</option></select><a class="btn ghost sm" href="#">✕</a></div>
+            <div class="pkg"><input class="input bad" value="golang.org/x/net"><select class="input bad"><option>golang</option></select><a class="btn ghost sm" href="#">✕</a></div>
+            <div class="ferr">packages[2].ecosystem : écosystème inconnu. Valeurs acceptées : PyPI, npm, Go, crates.io, Maven, NuGet, RubyGems, Packagist.</div>
+            <a class="btn sm" href="#" style="margin-top:10px">+ Ajouter un paquet</a></div>
+          <div class="row">
+            <div class="field"><label>Fréquence (h)</label><input class="input bad" value="0"><div class="ferr">Entre 1 et 720 heures.</div></div>
+            <div class="field"><label>Fraîcheur (jours)</label><input class="input" value="7"></div>
+            <div class="field"><label>Budget par run</label><input class="input" value="0,50 $"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Modèle</label><select class="input"><option>sonnet</option></select></div>
+            <div class="field"><label>Notifier à partir de</label><select class="input"><option>haute</option></select></div>
+            <div class="field"><label>Notifications</label><span class="toggle"><i></i> Activées</span></div>
+          </div>
+          <div class="field"><label>ntfy — surcharge pour ce flux (facultatif)</label>
+            <div class="row" style="grid-template-columns:2fr 1fr auto"><input class="input" value="http://192.168.1.20:8080"><input class="input" value="cve-deps"><a class="btn sm" href="#">Tester</a></div>
+            <div class="ferr">Destination refusée par la politique réseau.</div>
+            <div class="hint">Un ntfy du LAN doit figurer dans PFLUX_SSRF_ALLOWLIST (ex. 192.168.1.20:8080).</div></div>
+          <div class="field"><label>Exemple RSS — tester l’URL</label>
+            <div class="row" style="grid-template-columns:1fr auto"><input class="input" value="https://krebsonsecurity.com/feed/"><a class="btn sm" href="#">Tester l’URL</a></div>
+            <div class="fok">OK — 50 items</div></div>
+        </div>
+        <aside class="help">
+          <h4>Aide · Source OSV</h4>
+          <p>OSV.dev réunit les avis de sécurité par paquet. Indiquez le nom exact publié sur le registre et son écosystème.</p>
+          <div class="chips"><span>PyPI</span><span>npm</span><span>Go</span><span>crates.io</span><span>Maven</span><span>NuGet</span><span>RubyGems</span><span>Packagist</span></div>
+          <p>Exemples : <span class="mono">fastify</span> · npm, <span class="mono">django</span> · PyPI, <span class="mono">golang.org/x/net</span> · Go, <span class="mono">org.apache.logging.log4j:log4j-core</span> · Maven.</p>
+          <h4 style="margin-top:20px">Autres types</h4>
+          <p><b>RSS</b> : l’URL du flux lui-même, par exemple <span class="mono">…/feed/</span>, <span class="mono">…/atom.xml</span>, <span class="mono">…/rss</span>.</p>
+          <p><b>NVD</b> : mots-clés courts et distinctifs (« WireGuard », « Apple iOS »). Sans clé, 5 requêtes par 30 s ; avec une clé NVD, 50. Une sévérité minimale limite le bruit.</p>
+        </aside>
+      </div>
+    </main>
+  </div>
+  </div>
+</section>
+
+<!-- ================= PLANCHE 06 : RÉGLAGES ================= -->
+<section class="plate">
+  <div class="plate-label"><b>06</b> Réglages — connexion Claude, console, secrets jamais réaffichés, ntfy</div>
+  <div class="frame">
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><span class="mark">PF</span><span class="wordmark">Personnal <i>Flux</i></span></div>
+      <nav class="nav">
+        <a href="#">Flux <span class="count mute">4</span></a>
+        <a href="#">Fil <span class="count">27</span></a>
+        <a href="#">Runs</a>
+        <a href="#" class="on">Réglages</a>
+      </nav>
+      <div class="side-foot">Mode : <b>local</b> · 127.0.0.1:8787</div>
+    </aside>
+    <main class="main">
+      <div class="mast"><div><div class="dateline">Configuration de l’instance</div><h2>Réglages</h2></div></div>
+
+      <div class="set">
+        <h4>Claude<small>Session dédiée dans /data/claude-home, sans télémétrie et sans outils.</small></h4>
+        <div>
+          <div class="actions"><span class="stamp s-ok">● Connecté · abonnement</span><span class="ref">Vérifié à 14:01 · tokens cumulés 1,94 M · 4,12 $</span><a class="btn sm" href="#">⟳ Revérifier</a><a class="btn sm" href="#">Ouvrir la console de connexion</a></div>
+          <div class="term">
+            <div class="term-bar"><span class="live">● pty actif</span><span>claude /login</span><span class="sp"></span><span>fermeture auto dans 9:12</span><a class="btn sm" href="#" style="color:#E8E2D3;border-color:#423E36;padding:4px 8px">Fermer</a></div>
+<pre>$ claude /login
+<span class="y">?</span> Select login method:
+  <span class="g">❯ Claude account with subscription</span>
+    Anthropic Console account (API usage billing)
+
+Browser didn't open? Use the url below to sign in:
+https://claude.ai/oauth/authorize?code=true&amp;client_id=…
+
+Paste code here if prompted &gt; <span class="c"> </span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="set">
+        <h4>Clé API Anthropic<small>Facultative si l’abonnement est connecté.</small></h4>
+        <div><div class="secret"><span class="stamp s-ok">Configurée</span><span class="mask">••••••••••••</span><span class="ref">source : variable d’environnement (prioritaire)</span><span class="sp"></span><button class="btn sm" disabled>Remplacer</button><button class="btn sm" disabled>Effacer</button></div>
+        <div class="hint">PFLUX_ANTHROPIC_API_KEY prime sur une valeur saisie ici.</div></div>
+      </div>
+
+      <div class="set">
+        <h4>Clé NVD<small>Relève la limite de 5 à 50 requêtes par 30 s.</small></h4>
+        <div class="secret"><span class="stamp s-ok">Configurée</span><span class="mask">••••••••••••</span><span class="ref">source : saisie UI · fichier 600</span><span class="sp"></span><a class="btn sm" href="#">Remplacer</a><a class="btn sm danger" href="#">Effacer</a></div>
+      </div>
+
+      <div class="set">
+        <h4>Notifications ntfy<small>Réglage global, surchargeable par flux. Sujet vide = désactivé.</small></h4>
+        <div>
+          <div class="row" style="grid-template-columns:2fr 1fr"><div class="field"><label>Serveur</label><input class="input" value="https://ntfy.sh"></div><div class="field"><label>Sujet</label><input class="input" value="pf-veille-8c21"></div></div>
+          <div class="field"><label>Jeton (facultatif)</label><div class="secret"><span class="stamp s-queue">Non configuré</span><span class="ref">envoi anonyme</span><span class="sp"></span><a class="btn sm" href="#">Saisir</a></div></div>
+          <div class="actions"><a class="btn sm" href="#">Tester la notification</a><span class="fok" style="margin:0">Message de test envoyé.</span></div>
+        </div>
+      </div>
+
+      <div class="set">
+        <h4>Instance<small>URL publique utilisée dans les liens de notification.</small></h4>
+        <div class="row" style="grid-template-columns:2fr 1.2fr .8fr .8fr">
+          <div class="field"><label>URL publique</label><input class="input" value="https://veille.maison.ts.net"></div>
+          <div class="field"><label>Fuseau (IANA)</label><input class="input bad" value="Europe/Pariss"><div class="ferr">Fuseau inconnu.</div></div>
+          <div class="field"><label>Concurrence</label><input class="input" value="1"></div>
+          <div class="field"><label>Rétention (j)</label><input class="input" value="0"><div class="hint">0 = tout garder</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  </div>
+</section>
+
+<!-- ================= PLANCHE 07 : MOBILE SOMBRE + LOGIN ================= -->
+<section class="plate">
+  <div class="plate-label"><b>07</b> Mobile depuis ntfy · thème sombre — et connexion en mode exposé</div>
+  <div class="duo">
+    <div class="phone dark">
+      <div class="status"><span>14:07</span><span>5G ▮▮▮</span></div>
+      <div class="notif">
+        <div class="app-l"><i></i>ntfy<span>maintenant</span></div>
+        <b>[Personnal Flux] CVE dépendances — CVE-2026-41877 fastify</b>
+        <p>Contournement de la validation du content-type permettant d’envoyer un corps non validé. Corrigé en 5.4.2 ; mise à jour recommandée.</p>
+      </div>
+      <div class="reader dark">
+        <div class="readbar"><a class="btn ghost sm" href="#">← Fil</a><span class="sp"></span><span class="seg"><a href="#">☀</a><a href="#" class="on">☾</a></span></div>
+        <article class="article">
+          <div class="kicker">Digest · CVE dépendances</div>
+          <h1>fastify et django : deux correctifs à appliquer aujourd’hui</h1>
+          <div class="byline"><b>22 oct. 2026, 07:03</b> · 2 retenus sur 3</div>
+          <p class="lede">Une vulnérabilité de sévérité haute touche fastify avant 5.4.2. Une autre, moyenne, concerne django sur Oracle.</p>
+          <div class="item">
+            <div class="item-head"><span class="prio p-high"><span class="bars">▮▮▮</span> Haute</span><span class="sp"></span><button class="readbtn">Lu</button></div>
+            <h3>CVE-2026-41877 — contournement du content-type</h3>
+            <p class="why"><b>Pourquoi</b>Dépendance suivie, CVSS 8.1, exploitable à distance.</p>
+            <p class="sum">Un en-tête Content-Type malformé désactive la validation du schéma de corps. Corrigé en 5.4.2.</p>
+            <dl class="sources"><dt>Sources · 2 URL</dt><dd><a href="#" rel="noopener noreferrer" target="_blank">osv.dev/vulnerability/GHSA-… ↗</a></dd><dd><a href="#" rel="noopener noreferrer" target="_blank">nvd.nist.gov/vuln/detail/CVE-2026-41877 ↗</a></dd></dl>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="login">
+        <form class="login-card" onsubmit="return false">
+          <div class="brand"><span class="mark">PF</span><span class="wordmark">Personnal <i>Flux</i></span></div>
+          <p class="sub">Instance exposée. Saisissez le mot de passe de l’instance pour continuer.</p>
+          <div class="field"><label for="pw">Mot de passe</label><input id="pw" class="input bad" type="password" value="xxxxxxxxxxxx"></div>
+          <div class="err-box" style="margin-bottom:16px"><b>Trop de tentatives</b>Réessayez dans 4 min.</div>
+          <button class="btn primary" style="width:100%;justify-content:center" disabled>Se connecter</button>
+          <p class="ref" style="margin:14px 0 0">Session de 30 jours · cookie HttpOnly · aucune ressource externe</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
