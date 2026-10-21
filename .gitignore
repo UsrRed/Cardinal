@@ -4,3 +4,6 @@ dist/
 *.log
 __pycache__/
 .venv/
+data/
+playwright-report/
+test-results/
