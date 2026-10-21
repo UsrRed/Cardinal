@@ -21,3 +21,4 @@
 - 2026-10-21T23:35:42.088Z — T09 terminé (Connecteur NVD et limiteur à fenêtre glissante)
 - 2026-10-21T23:37:07.880Z — T10 terminé (Runner Claude: env reconstruit, arguments, stream-json, classification, CLI et faux runner)
 - 2026-10-21T23:38:12.570Z — T11 terminé (Prompt durci et validation de sortie (anti-invention))
+- 2026-10-21T23:39:09.571Z — T12 terminé (Moteur Claude: lots, retry, budget, statut)
