@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Shell } from './components/Shell.js';
 import { Masthead } from './components/Masthead.js';
 import { Empty } from './components/States.js';
+import { FeedsPage } from './pages/FeedsPage.js';
+import { FeedFormPage } from './pages/FeedFormPage.js';
 
 function Placeholder({ title }: { title: string }) {
   return (
@@ -17,7 +19,9 @@ export function App() {
     <BrowserRouter>
       <Shell>
         <Routes>
-          <Route path="/" element={<Placeholder title="Flux de veille" />} />
+          <Route path="/" element={<FeedsPage />} />
+          <Route path="/feeds/new" element={<FeedFormPage />} />
+          <Route path="/feeds/:id/edit" element={<FeedFormPage />} />
           <Route path="*" element={<Placeholder title="Personnal Flux" />} />
         </Routes>
       </Shell>
