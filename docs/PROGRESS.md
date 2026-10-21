@@ -19,3 +19,4 @@
 - 2026-10-21T23:34:39.697Z — T08 terminé (Connecteur OSV)
 - T09: NVD connector + SlidingWindowLimiter (getNvdLimiter singleton per key); getConnector now returns nvdConnector. No contract change.
 - 2026-10-21T23:35:42.088Z — T09 terminé (Connecteur NVD et limiteur à fenêtre glissante)
+- 2026-10-21T23:37:07.880Z — T10 terminé (Runner Claude: env reconstruit, arguments, stream-json, classification, CLI et faux runner)
