@@ -7,3 +7,4 @@
 
 ## T03
 - Migration 001, openDb/migrate, FeedsRepo (+duplicate, exportAll ajoutés au contrat), SettingsRepo, seedIfEmpty, helper tmpDataDir.
+- 2026-10-21T23:29:43.519Z — T03 terminé (Base SQLite, migrations, dépôts flux/réglages et seed)
