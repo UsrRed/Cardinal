@@ -5,22 +5,56 @@ import type { Clock } from '../shared/clock.js';
 import type { Logger } from '../log/logger.js';
 
 export class Scheduler {
-  constructor(_o: {
-    feeds: FeedsRepo;
-    runs: RunsRepo;
-    queue: RunQueue;
-    clock: Clock;
-    tickMs: number;
-    logger: Logger;
-  }) {}
+  private timer: unknown = null;
+  private running = false;
+
+  constructor(
+    private o: {
+      feeds: FeedsRepo;
+      runs: RunsRepo;
+      queue: RunQueue;
+      clock: Clock;
+      tickMs: number;
+      logger: Logger;
+    },
+  ) {}
+
   tick(): void {
-    throw new Error('not implemented');
+    const { feeds, runs, queue, clock, logger } = this.o;
+    const now = clock.now();
+    for (const feed of feeds.due(now)) {
+      if (runs.activeForFeed(feed.id)) continue;
+      const freq = feed.frequencyHours * 3_600_000;
+      const due = feed.nextRunAt ? Date.parse(feed.nextRunAt) : now;
+      const trigger = now - due >= freq ? 'catchup' : 'schedule';
+      try {
+        queue.enqueue(feed.id, trigger);
+        feeds.setSchedule(feed.id, { nextRunAt: now + freq });
+      } catch (e) {
+        logger.warn({ feedId: feed.id, err: (e as Error).message }, 'scheduler enqueue failed');
+      }
+    }
   }
+
   start(): void {
-    throw new Error('not implemented');
+    if (this.running) return;
+    this.running = true;
+    const loop = () => {
+      if (!this.running) return;
+      try {
+        this.tick();
+      } catch (e) {
+        this.o.logger.error({ err: (e as Error).message }, 'scheduler tick failed');
+      }
+      this.timer = this.o.clock.setTimeout(loop, this.o.tickMs);
+    };
+    loop();
   }
+
   stop(): void {
-    throw new Error('not implemented');
+    this.running = false;
+    if (this.timer !== null) this.o.clock.clearTimeout(this.timer);
+    this.timer = null;
   }
 }
 
