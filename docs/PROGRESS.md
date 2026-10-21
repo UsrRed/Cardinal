@@ -40,3 +40,4 @@
 
 - T23: front foundation (tokens/app CSS from mockup, theme toggle, API client with CSRF, useRunEvents, shared components, date utils). No contract change.
 - 2026-10-21T23:55:53.448Z — T23 terminé (Front: socle (tokens, thème, shell, client API, états, composants communs))
+- 2026-10-21T23:57:59.156Z — T24 terminé (Front: liste des flux, formulaire avec aide contextuelle, export/import)
