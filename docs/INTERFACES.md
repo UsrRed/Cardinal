@@ -247,6 +247,7 @@ Endpoints : OSV `POST https://api.osv.dev/v1/querybatch` `{queries:[{package:{na
 export function normalizeUrl(url: string): string;  // schéma+hôte minuscules, sans fragment, sans utm_*, sans slash final
 export function normalizeKey(item: Pick<RawItem,'sourceKey'|'keyKind'>): string; // url → normalizeUrl ; id → toUpperCase()
 export function dedupKey(sourceType: SourceType, normalizedKey: string): string;  // sha256 hex de `${sourceType}:${normalizedKey}`
+export function filterUnseen(items: RawItem[], seenRepo: Pick<SeenRepo,"filterUnseen">, feedId: string, sourceType: SourceType): { item: RawItem; key: string }[]; // écarte déjà-vus et doublons du lot
 ```
 
 ## 8. Claude — `src/claude`
