@@ -13,14 +13,14 @@ export function parseStreamJson(stdout: string): {
   for (const line of stdout.split('\n')) {
     const s = line.trim();
     if (!s.startsWith('{')) continue;
-    let ev: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any;
+    let ev: Record<string, unknown>;
     try {
       ev = JSON.parse(s);
     } catch {
       continue;
     }
     if (ev.type !== 'result') continue;
-    const u = ev.usage ?? {};
+    const u = (ev.usage ?? {}) as Record<string, unknown>;
     usage.inputTokens = Number(u.input_tokens) || 0;
     usage.outputTokens = Number(u.output_tokens) || 0;
     usage.costUsd = Number(ev.total_cost_usd) || 0;
