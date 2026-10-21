@@ -8,6 +8,7 @@ import { registerRunRoutes } from './runs.js';
 import { registerStatsRoutes } from './stats.js';
 import { registerAuthRoutes } from './auth.js';
 import { registerSettingsRoutes } from './settings.js';
+import { wsRoutes } from './ws.js';
 
 export async function registerRoutes(app: FastifyInstance, deps: AppDeps): Promise<void> {
   await app.register(healthRoutes);
@@ -18,4 +19,5 @@ export async function registerRoutes(app: FastifyInstance, deps: AppDeps): Promi
   await registerStatsRoutes(app, deps);
   await registerAuthRoutes(app, deps);
   await registerSettingsRoutes(app, deps);
+  await wsRoutes(app, deps);
 }

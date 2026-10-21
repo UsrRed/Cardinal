@@ -448,7 +448,7 @@ export class LoginConsole {
   constructor(o: { bin: string; home: string; getApiKey(): string | null; clock: Clock; idleMs?: number /*600000*/; spawnPty?: typeof import('node-pty').spawn });
   open(cols: number, rows: number): ConsoleSession | null;   // null si déjà ouverte
 }
-export interface ConsoleSession { write(d: string): void; resize(c: number, r: number): void; onData(fn: (d: string) => void): void; onExit(fn: (code: number) => void): void; close(reason: 'idle'|'client'|'error'): void }
+export interface ConsoleSession { write(d: string): void; resize(c: number, r: number): void; onData(fn: (d: string) => void): void; onExit(fn: (code: number) => void): void; onClose(fn: (reason: 'idle'|'client'|'error') => void): void; close(reason: 'idle'|'client'|'error'): void }
 ```
 
 ## 15. Divers
