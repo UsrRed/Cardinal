@@ -29,3 +29,4 @@
 - 2026-10-21T23:42:46.796Z — T15 terminé (Pipeline d'un run (fetch→dedup→triage→digest→notify) et bus d'événements)
 - 2026-10-21T23:43:56.363Z — T16 terminé (File d'exécution persistée, ordonnanceur et verrou unique)
 - T17: AppDeps gains settings(): Settings (effective settings); authPlugin is registered unencapsulated on the root app; createDeps also opens/migrates/seeds the DB.
+- 2026-10-21T23:45:49.788Z — T17 terminé (Squelette applicatif Fastify: deps, plugin d'accès, erreurs, statique, santé, point d'entrée)
