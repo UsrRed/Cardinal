@@ -24,3 +24,4 @@
 - 2026-10-21T23:39:09.571Z — T12 terminé (Moteur Claude: lots, retry, budget, statut)
 - 2026-10-21T23:40:03.531Z — T13 terminé (Stockage des secrets et notifier ntfy)
 - T14: auth lib implemented; added SessionStore(clock?) param, checkCsrf and cookie helpers to INTERFACES §12.
+- 2026-10-21T23:40:54.466Z — T14 terminé (Bibliothèque d'authentification: session, mot de passe, rate-limit, CSRF)
