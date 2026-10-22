@@ -49,3 +49,4 @@
 - 2026-10-22T00:09:40.990Z — T29 terminé (Test e2e Playwright: flux RSS → run → digest → marquer lu)
 - 2026-10-22 — T30: Dockerfile (image épinglée par digest), compose durci, .env.example, docs/ci/workflow.example.yml, README FR, docs/DONNEES-ENVOYEES.md, tests tests/unit/delivery.test.ts. Aucun changement de contrat.
 - 2026-10-22T00:11:57.853Z — T30 terminé (Livrable: Dockerfile, compose, CI exemple, README et documents de transparence)
+- fix(F7): added POST /api/items/read-all ({feedId?, priority?}); StreamPage passes active priority filter.

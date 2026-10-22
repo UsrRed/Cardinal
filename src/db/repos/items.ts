@@ -6,7 +6,7 @@ export interface ItemsRepo {
   insertMany(rows: Omit<Item, 'id' | 'read' | 'createdAt'>[], now: number): Item[];
   stream(q: { feedId?: string; priority?: Priority; read?: boolean; page: number; pageSize: number }): Page<Item>;
   markRead(ids: string[], read: boolean): number;
-  markAllRead(feedId?: string): number;
+  markAllRead(feedId?: string, priority?: Priority): number;
 }
 
 interface ItemRow {
@@ -58,10 +58,12 @@ export function createItemsRepo(db: Db): ItemsRepo {
       const up = db.prepare('UPDATE items SET read = ? WHERE id = ?');
       return db.transaction(() => ids.reduce((n, id) => n + up.run(read ? 1 : 0, id).changes, 0))();
     },
-    markAllRead(feedId) {
-      return feedId === undefined
-        ? db.prepare('UPDATE items SET read = 1 WHERE read = 0').run().changes
-        : db.prepare('UPDATE items SET read = 1 WHERE read = 0 AND feed_id = ?').run(feedId).changes;
+    markAllRead(feedId, priority) {
+      const conds = ['read = 0'];
+      const args: unknown[] = [];
+      if (feedId !== undefined) { conds.push('feed_id = ?'); args.push(feedId); }
+      if (priority !== undefined) { conds.push('priority = ?'); args.push(priority); }
+      return db.prepare(`UPDATE items SET read = 1 WHERE ${conds.join(' AND ')}`).run(...args).changes;
     },
   };
 }

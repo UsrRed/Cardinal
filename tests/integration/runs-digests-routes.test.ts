@@ -66,6 +66,17 @@ describe('runs/digests/items/stats routes', () => {
     expect((await call('POST', '/api/items/nope/read', {})).statusCode).toBe(404);
   });
 
+  it('POST /api/items/read-all marks all unread, optionally by priority', async () => {
+    const { call, r, feed, row } = await make();
+    const run = r.runs.create(feed.id, 'manual', 2);
+    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [], partial: false }, 3);
+    r.items.insertMany([row(d, run.id, 'i1', 'high'), row(d, run.id, 'i2', 'low'), row(d, run.id, 'i3', 'high')], 4);
+    expect(JSON.parse((await call('POST', '/api/items/read-all', { priority: 'high' })).body).updated).toBe(2);
+    expect(JSON.parse((await call('POST', '/api/items/read-all', {})).body).updated).toBe(1);
+    expect(JSON.parse((await call('POST', '/api/items/read-all', {})).body).updated).toBe(0);
+    expect((await call('POST', '/api/items/read-all', { priority: 'bad' })).statusCode).toBe(400);
+  });
+
   it('paginates digests (page 2)', async () => {
     const { call, r, feed } = await make();
     for (let i = 0; i < 3; i++) {

@@ -37,6 +37,12 @@ export async function registerItemRoutes(app: FastifyInstance, deps: AppDeps): P
     if (items.markRead([id], body.read ?? true) === 0) throw new AppError('not_found', 404);
     return { ok: true };
   });
+  app.post('/api/items/read-all', async (req) => {
+    const body = (req.body ?? {}) as { feedId?: unknown; priority?: unknown };
+    const { priority } = filters({ priority: body.priority });
+    if (body.feedId !== undefined && (typeof body.feedId !== 'string' || !feeds.get(body.feedId))) throw new AppError('not_found', 404);
+    return { updated: items.markAllRead(body.feedId as string | undefined, priority) };
+  });
   app.post('/api/feeds/:id/items/read-all', async (req) => {
     const feedId = (req.params as { id: string }).id;
     if (!feeds.get(feedId)) throw new AppError('not_found', 404);

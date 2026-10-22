@@ -18,7 +18,7 @@ export function StreamPage() {
       <Masthead title="Fil global" />
       <ItemFilters priority={priority} read={read} busy={busy}
         onPriority={(v) => { setPriority(v); setPage(1); }} onRead={(v) => { setRead(v); setPage(1); }}
-        onMarkAll={() => void act(() => post('/api/items/read-all', {}))} />
+        onMarkAll={() => void act(() => post('/api/items/read-all', priority === 'all' ? {} : { priority }))} />
       <ItemWire loading={loading} error={error} items={data} onRetry={reload} onPage={setPage}
         onToggleRead={(i) => void act(() => post(`/api/items/${i.id}/read`, { read: !i.read }))} />
     </>

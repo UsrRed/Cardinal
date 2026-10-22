@@ -186,7 +186,7 @@ interface DigestsRepo {
 interface ItemsRepo {
   insertMany(rows: Omit<Item,'id'|'read'|'createdAt'>[], now: number): Item[];
   stream(q: { feedId?: string; priority?: Priority; read?: boolean; page: number; pageSize: number }): Page<Item>; // createdAt DESC
-  markRead(ids: string[], read: boolean): number; markAllRead(feedId?: string): number;
+  markRead(ids: string[], read: boolean): number; markAllRead(feedId?: string, priority?: Priority): number;
 }
 interface SeenRepo {
   filterUnseen(feedId: string, keys: string[]): Set<string>;
@@ -424,7 +424,7 @@ Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Erreurs :
 | GET | `/api/digests/:id/export.md` · `.json` | — | `text/markdown` / `application/json`, `Content-Disposition: attachment; filename="digest-<id>.md|json"` |
 | GET | `/api/items` | `?feedId&priority&read=true\|false&page&pageSize` | `Page<Item>` |
 | POST | `/api/items/:id/read` | `{read?:boolean}` (défaut true) | `{ok:true}` |
-| POST | `/api/items/read-all` | `{feedId?}` | `{updated}` |
+| POST | `/api/items/read-all` | `{feedId?, priority?}` | `{updated}` |
 | GET | `/api/settings` | — | `Settings` |
 | PATCH | `/api/settings` | `settingsPatch` | `Settings` |
 | PUT/DELETE | `/api/settings/secrets/:name` | PUT: `{value}` | `SecretState` (jamais la valeur) |
