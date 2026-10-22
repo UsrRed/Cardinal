@@ -145,7 +145,7 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │       │   ├── ConfirmDialog.tsx Pagination.tsx SegFilter.tsx SecretField.tsx
 │       │   ├── SourceHelp.tsx            # aide contextuelle rss/osv/nvd
 │       │   ├── SafeText.tsx              # paragraphes de texte échappé (pas de dangerouslySetInnerHTML)
-│       │   └── LoginTerminal.tsx         # xterm.js + WS console
+│       │   └── LoginTerminal.tsx         # xterm.js + WS console (bouton Coller + champ de repli)
 │       └── pages/
 │           ├── FeedsPage.tsx             # "/" cartes flux, export/import
 │           ├── FeedFormPage.tsx          # "/feeds/new", "/feeds/:id/edit"
