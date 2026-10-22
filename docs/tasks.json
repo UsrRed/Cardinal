@@ -1039,6 +1039,42 @@
       "status": "done",
       "commitSha": "8524df397bbe0abb6d6785fe41736bf468e8a1d7",
       "worktreeDir": null
+    },
+    {
+      "taskKey": "T31",
+      "position": 30,
+      "title": "Moderniser le style visuel global de l'UI (tokens, cartes, boutons, ombres)",
+      "description": "Rafraîchir l'apparence du front sans toucher à la structure, aux routes ni aux contrats d'INTERFACES (aucune modification de contrat). Travailler uniquement sur la couche de style (tokens CSS du thème clair/sombre et feuilles de style des composants communs), en restant fidèle à la maquette de docs/design/ (structure, hiérarchie) et sans aucune ressource externe (pas de CDN, pas de police distante : pile de polices système moderne, ex. system-ui/Inter si déjà embarquée). Changements attendus : rayons de bordure plus généreux (8–14 px) au lieu des angles carrés ; ombres douces à plusieurs niveaux et bordures fines à faible contraste ; palette plus raffinée (fonds légèrement nuancés, couleur d'accent cohérente, contraste AA conservé en clair et en sombre) ; typographie plus aérée (échelle de tailles, interlignage, titres plus affirmés) ; espacements plus généreux dans les cartes de flux, le shell (en-tête/navigation) et les pages digest ; boutons, champs de formulaire, badges de priorité et puces avec états hover/focus-visible/active et transitions courtes (120–180 ms, désactivées si prefers-reduced-motion) ; cartes avec léger effet de survol. Les thèmes clair/sombre doivent continuer à fonctionner. Mettre à jour la capture d'écran existante si elle est versionnée, et ajouter une ligne dans docs/PROGRESS.md. Lire d'abord docs/ARCHITECTURE.md pour localiser les fichiers de tokens/styles du front (src/web/...).",
+      "filesHint": [
+        "docs/ARCHITECTURE.md",
+        "docs/design/",
+        "src/web/styles/tokens.css",
+        "src/web/styles/global.css",
+        "src/web/components/",
+        "docs/PROGRESS.md"
+      ],
+      "writes": [
+        "docs/ARCHITECTURE.md",
+        "docs/design/",
+        "src/web/styles/tokens.css",
+        "src/web/styles/global.css",
+        "src/web/components/",
+        "docs/PROGRESS.md"
+      ],
+      "acceptance": [
+        "Les cartes, boutons, champs et badges ont des angles arrondis (≥ 8 px) et des ombres douces, visibles sur la liste des flux, le détail de flux et la page digest",
+        "Les thèmes clair et sombre s'affichent correctement avec un contraste de texte suffisant (AA) et une couleur d'accent cohérente",
+        "Les éléments interactifs ont des états hover, focus-visible et active avec transition courte, désactivée sous prefers-reduced-motion",
+        "Aucune ressource externe n'est ajoutée : le test existant d'absence de ressources externes passe",
+        "Les tests existants (unitaires front et e2e Playwright) et le build (npm run build) passent sans modification de la logique ni des contrats d'interface",
+        "docs/PROGRESS.md mentionne la refonte visuelle"
+      ],
+      "dependsOn": [],
+      "after": [],
+      "phase": "core",
+      "status": "pending",
+      "commitSha": null,
+      "worktreeDir": null
     }
   ]
 }

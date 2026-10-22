@@ -295,3 +295,6 @@ Critères d'acceptation :
 
    Aucun fichier n'existe sous `.github/workflows/`.
 7. Le nom « Personnal Flux » est utilisé partout et le préfixe `PFLUX_` est utilisé pour toutes les variables d'environnement.
+
+## Micro-révisions
+- T31 (2026-10-22): le design fait vieux/carre, rend le plus moderne
