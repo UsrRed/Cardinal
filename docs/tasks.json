@@ -1036,8 +1036,8 @@
         "T28"
       ],
       "phase": "polish",
-      "status": "pending",
-      "commitSha": null,
+      "status": "done",
+      "commitSha": "8524df397bbe0abb6d6785fe41736bf468e8a1d7",
       "worktreeDir": null
     }
   ]
