@@ -297,4 +297,5 @@ Critères d'acceptation :
 7. Le nom « Personnal Flux » est utilisé partout et le préfixe `PFLUX_` est utilisé pour toutes les variables d'environnement.
 
 ## Micro-révisions
+- T32 (2026-10-22): la console est bugge, je ne peux pas saisir le code lorsqu'il est demander, ajoute un bouton qui me permet de paste le texte
 - T31 (2026-10-22): le design fait vieux/carre, rend le plus moderne

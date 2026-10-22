@@ -1075,6 +1075,35 @@
       "status": "done",
       "commitSha": "0fada32030cd001d442e75d4df472501d238d201",
       "worktreeDir": null
+    },
+    {
+      "taskKey": "T32",
+      "position": 31,
+      "title": "Bouton « Coller » dans la console de connexion Claude",
+      "description": "Dans la console xterm de connexion Claude (Réglages, WebSocket `claude /login`, tâche T27), la saisie du code demandé par le CLI ne fonctionne pas pour l'utilisateur. Ajouter un bouton « Coller » dans la barre d'outils de la console. Au clic, il lit le presse-papiers avec `navigator.clipboard.readText()` et envoie le texte au pty via le même canal WebSocket que la saisie clavier (message d'entrée existant, sans modification du contrat WS). Si la lecture du presse-papiers est refusée ou indisponible (contexte non sécurisé, permission refusée), prévoir un repli : un petit champ texte (ou prompt inline) où coller le texte, avec un bouton « Envoyer » qui l'envoie au pty. Le bouton est désactivé quand la WebSocket n'est pas connectée. Gérer aussi le collage natif (Ctrl+Maj+V / clic droit) et redonner le focus au terminal après l'envoi, si cela ne fonctionne pas déjà. Aucun message d'erreur brut côté UI, aucune ressource externe, style conforme aux tokens existants. Ne pas toucher aux contrats d'INTERFACES ni à `.github/workflows/*`. Consulter docs/ARCHITECTURE.md pour localiser le composant de la console de connexion Claude.",
+      "filesHint": [
+        "docs/ARCHITECTURE.md",
+        "src/web/components/ClaudeConsole.tsx",
+        "src/web/pages/Settings.tsx"
+      ],
+      "writes": [
+        "docs/ARCHITECTURE.md",
+        "src/web/components/ClaudeConsole.tsx",
+        "src/web/pages/Settings.tsx"
+      ],
+      "acceptance": [
+        "Dans Réglages, la console de connexion Claude affiche un bouton « Coller » visible à côté du terminal.",
+        "Copier un code ailleurs puis cliquer sur « Coller » insère le texte dans la console (envoyé au pty) et l'utilisateur peut valider avec Entrée pour terminer le login.",
+        "Si l'accès au presse-papiers est refusé ou indisponible, un champ de repli permet de coller le texte manuellement et de l'envoyer au pty, sans erreur brute affichée.",
+        "Le bouton est désactivé quand la console n'est pas connectée à la WebSocket.",
+        "Un test (unitaire ou composant) vérifie que le clic sur « Coller » envoie le texte du presse-papiers via la WebSocket, et le test d'absence de ressources externes ainsi que la suite existante passent."
+      ],
+      "dependsOn": [],
+      "after": [],
+      "phase": "core",
+      "status": "pending",
+      "commitSha": null,
+      "worktreeDir": null
     }
   ]
 }
