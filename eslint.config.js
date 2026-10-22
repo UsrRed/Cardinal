@@ -12,6 +12,18 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/db/repos/*.ts'],
+    rules: { '@typescript-eslint/no-explicit-any': 'off' },
+  },
+  {
+    files: ['src/notify/ntfy.ts'],
+    rules: { 'preserve-caught-error': 'off' },
+  },
+  {
+    files: ['tests/fixtures/**/*.mjs'],
+    languageOptions: { globals: { process: 'readonly', setInterval: 'readonly' } },
+  },
+  {
     files: ['web/**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
