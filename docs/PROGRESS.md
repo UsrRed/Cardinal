@@ -43,3 +43,4 @@
 - 2026-10-21T23:57:59.156Z — T24 terminé (Front: liste des flux, formulaire avec aide contextuelle, export/import)
 - 2026-10-21T23:59:24.535Z — T25 terminé (Front: suivi de run en direct et historique des runs)
 - 2026-10-22T00:01:00.692Z — T26 terminé (Front: page digest article, détail de flux (fil, digests) et fil global)
+- 2026-10-22T00:02:51.724Z — T27 terminé (Front: réglages, connexion Claude (terminal xterm) et page de login)
