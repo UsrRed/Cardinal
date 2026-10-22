@@ -320,3 +320,11 @@ table.runs td{padding:8px 10px;border-bottom:1px solid var(--rule)}
 :not(.states)>.state .compose.w80{width:80%}:not(.states)>.state .compose.w60{width:60%}
 .err-box{margin:18px 0;border-left-width:4px}
 .err-box .btn{margin-top:2px}
+
+/* feedback d'interaction */
+.btn:active:not([disabled]){transform:translateY(1px)}
+table.runs tbody tr{transition:background .12s}
+table.runs tbody tr:hover{background:var(--sunken)}
+.feed{transition:background .12s}
+.feed:hover{background:var(--sunken)}
+.btn[aria-busy="true"]{opacity:.7;cursor:progress}
