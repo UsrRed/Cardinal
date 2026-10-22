@@ -27,4 +27,14 @@ describe('api client', () => {
     expect(calls.find((c) => c.url === '/api/feeds' && c.headers['X-CSRF-Token'] === undefined)).toBeTruthy();
     expect(calls.filter((c) => c.url === '/api/feeds').pop()!.headers['X-CSRF-Token']).toBe('tok');
   });
+  it('logs in without fetching a CSRF token (401 before login in exposed mode)', async () => {
+    const urls: string[] = [];
+    vi.stubGlobal('fetch', async (url: string) => {
+      urls.push(url);
+      if (url === '/api/csrf') return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 });
+      return new Response(JSON.stringify({ ok: true, token: 't' }), { status: 200 });
+    });
+    await api('POST', '/api/auth/login', { password: 'x' });
+    expect(urls).toEqual(['/api/auth/login']);
+  });
 });

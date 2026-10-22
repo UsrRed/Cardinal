@@ -21,6 +21,9 @@ export function errorMessage(e: unknown): string {
 
 let csrf: string | null = null;
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS']);
+// Exempt server-side too (auth plugin): in exposed mode /api/csrf answers 401
+// until logged in, so fetching a token first would make login impossible.
+const NO_CSRF = new Set(['/api/auth/login']);
 
 async function getCsrf(force = false): Promise<string> {
   if (csrf && !force) return csrf;
@@ -40,7 +43,7 @@ export async function api<T>(method: string, path: string, body?: unknown, retri
   const m = method.toUpperCase();
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
-  if (!SAFE.has(m)) headers['X-CSRF-Token'] = await getCsrf();
+  if (!SAFE.has(m) && !NO_CSRF.has(path)) headers['X-CSRF-Token'] = await getCsrf();
   const res = await fetch(path, {
     method: m, headers, credentials: 'same-origin',
     body: body === undefined ? undefined : JSON.stringify(body),
