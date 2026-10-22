@@ -10,6 +10,7 @@ export function normalizeUrl(url: string): string {
     return url.trim();
   }
   u.hash = '';
+  if (u.pathname.length > 1) u.pathname = u.pathname.replace(/\/+$/, '');
   for (const k of [...u.searchParams.keys()]) {
     if (k.toLowerCase().startsWith('utm_')) u.searchParams.delete(k);
   }
