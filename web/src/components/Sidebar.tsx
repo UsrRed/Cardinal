@@ -15,7 +15,7 @@ export function Sidebar({ feedCount, unreadTotal, activeRuns, feeds = [], footer
       <div className="brand"><span className="mark">PF</span><span className="wordmark">Personnal <i>Flux</i></span></div>
       <nav className="nav" aria-label="Navigation principale">
         <NavLink to="/" end className={link}>Flux {feedCount !== undefined && <span className="count mute">{feedCount}</span>}</NavLink>
-        <NavLink to="/feed" className={link}>Fil {!!unreadTotal && <span className="count">{unreadTotal}</span>}</NavLink>
+        <NavLink to="/stream" className={link}>Fil {!!unreadTotal && <span className="count">{unreadTotal}</span>}</NavLink>
         <NavLink to="/runs" className={link}>Runs {!!activeRuns && <span className="count mute">{activeRuns}</span>}</NavLink>
         <NavLink to="/settings" className={link}>Réglages</NavLink>
       </nav>
@@ -23,9 +23,11 @@ export function Sidebar({ feedCount, unreadTotal, activeRuns, feeds = [], footer
       <ul className="feedlist">
         {feeds.map((f) => (
           <li key={f.id}>
-            <i className={f.enabled ? (f.deferred ? 'dot def' : 'dot') : 'dot off'} />
-            {f.name}
-            <span className="n">{f.enabled ? f.unread : '—'}</span>
+            <NavLink to={`/feeds/${f.id}`} className={link}>
+              <i className={f.enabled ? (f.deferred ? 'dot def' : 'dot') : 'dot off'} title={f.enabled ? (f.deferred ? 'reporté' : 'actif') : 'pause'} />
+              {f.name}
+              <span className="n">{f.enabled ? f.unread : '—'}</span>
+            </NavLink>
           </li>
         ))}
       </ul>
