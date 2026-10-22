@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<rss version="2.0"><channel><title>E2E feed</title>
+<item><title>Alpha release</title><link>https://example.com/alpha</link><pubDate>{{NOW}}</pubDate><description>Alpha shipped.</description></item>
+<item><title>Beta release</title><link>https://example.com/beta</link><pubDate>{{NOW}}</pubDate><description>Beta shipped.</description></item>
+</channel></rss>

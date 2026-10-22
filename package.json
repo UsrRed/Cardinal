@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.web.json --noEmit",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test": "vitest run && npm run build && playwright test --pass-with-no-tests",
+    "test": "vitest run && npm run build && playwright test",
     "ci": "npm run lint && npm run typecheck && npm test"
   },
   "devDependencies": {

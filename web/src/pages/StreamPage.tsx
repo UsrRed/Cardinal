@@ -20,7 +20,7 @@ export function StreamPage() {
         onPriority={(v) => { setPriority(v); setPage(1); }} onRead={(v) => { setRead(v); setPage(1); }}
         onMarkAll={() => void act(() => post('/api/items/read-all', {}))} />
       <ItemWire loading={loading} error={error} items={data} onRetry={reload} onPage={setPage}
-        onToggleRead={(i) => void act(() => post('/api/items/read', { ids: [i.id], read: !i.read }))} />
+        onToggleRead={(i) => void act(() => post(`/api/items/${i.id}/read`, { read: !i.read }))} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import type { Digest, Item } from '../../../src/shared/types.js';
-import { get } from '../api/client.js';
+import { get, post } from '../api/client.js';
 import { Masthead } from '../components/Masthead.js';
 import { PriorityBadge } from '../components/PriorityBadge.js';
 import { SafeText } from '../components/SafeText.js';
@@ -100,7 +100,8 @@ export function DigestPage() {
   return (
     <>
       <Masthead title="Digest" />
-      <DigestView loading={loading} error={error} digest={data} onRetry={reload} />
+      <DigestView loading={loading} error={error} digest={data} onRetry={reload}
+        onToggleRead={(i) => void post(`/api/items/${i.id}/read`, { read: !i.read }).then(reload, reload)} />
     </>
   );
 }

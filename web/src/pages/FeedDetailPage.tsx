@@ -87,9 +87,9 @@ export function FeedDetailPage() {
         <>
           <ItemFilters priority={priority} read={read} busy={busy}
             onPriority={(v) => { setPriority(v); setPage(1); }} onRead={(v) => { setRead(v); setPage(1); }}
-            onMarkAll={() => void act(() => post('/api/items/read-all', { feedId: id }))} />
+            onMarkAll={() => void act(() => post(`/api/feeds/${id}/items/read-all`))} />
           <ItemWire loading={items.loading} error={items.error} items={items.data} onRetry={items.reload} onPage={setPage}
-            onToggleRead={(i) => void act(() => post('/api/items/read', { ids: [i.id], read: !i.read }))} />
+            onToggleRead={(i) => void act(() => post(`/api/items/${i.id}/read`, { read: !i.read }))} />
         </>
       )}
       {tab === 'digests' && <DigestList loading={digests.loading} error={digests.error} digests={digests.data} onRetry={digests.reload} onPage={setPage} />}

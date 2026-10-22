@@ -82,7 +82,7 @@ describe('runs/digests/items/stats routes', () => {
     const run = r.runs.create(feed.id, 'manual', 5);
     expect(JSON.parse((await call('GET', `/api/runs?feedId=${feed.id}`)).body).total).toBe(1);
     const one = JSON.parse((await call('GET', `/api/runs/${run.id}`)).body);
-    expect(one.steps).toHaveLength(5);
+    expect(one.run.steps).toHaveLength(5);
     r.runs.appendLog(run.id, 'info', 'fetch', 'hello', 6);
     expect(JSON.parse((await call('GET', `/api/runs/${run.id}/logs`)).body)).toHaveLength(1);
     const c = await call('POST', `/api/runs/${run.id}/cancel`);

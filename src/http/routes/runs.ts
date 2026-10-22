@@ -16,7 +16,10 @@ export async function registerRunRoutes(app: FastifyInstance, deps: AppDeps): Pr
     const feedId = typeof q.feedId === 'string' && q.feedId ? q.feedId : undefined;
     return runs.list({ feedId, ...pageParams(q) });
   });
-  app.get('/api/runs/:id', async (req) => need((req.params as { id: string }).id));
+  app.get('/api/runs/:id', async (req) => {
+    const run = need((req.params as { id: string }).id);
+    return { run, logs: runs.logs(run.id) };
+  });
   app.get('/api/runs/:id/logs', async (req) => {
     const run = need((req.params as { id: string }).id);
     const after = Number((req.query as { after?: string }).after);

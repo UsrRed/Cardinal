@@ -131,10 +131,10 @@ describe('end to end via inject', () => {
     let status = '';
     for (let i = 0; i < 150 && !['succeeded', 'failed'].includes(status); i++) {
       await new Promise((r) => setTimeout(r, 40));
-      status = JSON.parse((await app.inject({ method: 'GET', url: `/api/runs/${runId}`, headers: auth })).body).status;
+      status = JSON.parse((await app.inject({ method: 'GET', url: `/api/runs/${runId}`, headers: auth })).body).run.status;
     }
     expect(status).toBe('succeeded');
-    const done = JSON.parse((await app.inject({ method: 'GET', url: `/api/runs/${runId}`, headers: auth })).body);
+    const done = JSON.parse((await app.inject({ method: 'GET', url: `/api/runs/${runId}`, headers: auth })).body).run;
     const d = await app.inject({ method: 'GET', url: `/api/digests/${done.digestId}`, headers: auth });
     expect(d.statusCode).toBe(200);
     const digest = JSON.parse(d.body);
