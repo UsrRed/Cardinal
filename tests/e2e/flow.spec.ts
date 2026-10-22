@@ -67,6 +67,17 @@ test('create rss feed, run now, open digest, mark read', async ({ page }) => {
   expect(problems).toEqual([]);
 });
 
+test('settings page: global ntfy test and Claude recheck hit existing routes', async ({ page }) => {
+  const problems = watchErrors(page);
+  await page.goto('/settings');
+  await expect(page.getByRole('button', { name: 'Revérifier' })).toBeVisible();
+  await page.getByRole('button', { name: 'Revérifier' }).click();
+  await page.getByRole('button', { name: 'Tester la notification' }).click();
+  await expect(page.getByText(/Notification envoyée|Échec de l’envoi/)).toBeVisible();
+  await page.screenshot({ path: `${SHOTS}/settings.png`, fullPage: true });
+  expect(problems.filter((p) => p.includes(' 404'))).toEqual([]);
+});
+
 test('app process is tracked for teardown', () => {
   const { pid } = JSON.parse(readFileSync(STATE_FILE, 'utf8')) as { pid: number };
   expect(() => process.kill(pid, 0)).not.toThrow();

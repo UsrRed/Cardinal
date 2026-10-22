@@ -39,7 +39,7 @@ const MUTATIONS: Array<['POST' | 'PUT' | 'PATCH' | 'DELETE', string, object?]> =
   ['PATCH', '/api/settings', {}],
   ['PUT', '/api/settings/secrets/nvdApiKey', { value: 'v' }],
   ['DELETE', '/api/settings/secrets/nvdApiKey'],
-  ['POST', '/api/claude/recheck', {}],
+  ['POST', '/api/claude/check', {}],
 ];
 
 describe('exposed mode without session', () => {

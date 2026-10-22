@@ -52,8 +52,8 @@ describe('settings routes', () => {
   it('reports claude status and ntfy not configured', async () => {
     const { call } = await local();
     expect((await call('GET', '/api/claude/status')).json().state).toBe('unknown');
-    expect((await call('POST', '/api/claude/recheck')).json().checkedAt).not.toBeNull();
-    expect((await call('POST', '/api/settings/test-ntfy')).json()).toEqual({ ok: false, error: 'not_configured' });
+    expect((await call('POST', '/api/claude/check')).json().checkedAt).not.toBeNull();
+    expect((await call('POST', '/api/settings/test-notify')).json()).toEqual({ ok: false, error: 'not_configured' });
   });
 });
 

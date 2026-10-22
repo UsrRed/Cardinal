@@ -37,14 +37,14 @@ export async function registerSettingsRoutes(app: FastifyInstance, deps: AppDeps
     return secrets.state(name);
   });
 
-  app.post('/api/settings/test-ntfy', async () => {
+  app.post('/api/settings/test-notify', async () => {
     const s = deps.settings();
     if (!s.ntfyTopic) return { ok: false, error: 'not_configured' };
     return deps.notifier.sendTest({ server: s.ntfyServer, topic: s.ntfyTopic, token: secrets.get('ntfyToken') });
   });
 
   app.get('/api/claude/status', async () => claudeStatus);
-  app.post('/api/claude/recheck', async () => {
+  app.post('/api/claude/check', async () => {
     claudeStatus = await checkClaudeStatus(deps.runner, secrets.get('anthropicApiKey') !== null);
     return claudeStatus;
   });
