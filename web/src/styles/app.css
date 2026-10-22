@@ -313,3 +313,10 @@ table.runs td{padding:8px 10px;border-bottom:1px solid var(--rule)}
 .console-host{background:#000;padding:6px;min-height:300px}
 .login{min-height:100vh;display:flex;align-items:center;justify-content:center}
 .login-box{width:320px;display:flex;flex-direction:column;gap:14px}
+
+/* états autonomes (hors grille .states) */
+:not(.states)>.state{border:1px dashed var(--rule-2);background:var(--card);margin:18px 0;min-height:160px;align-items:flex-start;justify-content:center}
+:not(.states)>.state .compose{width:100%}
+:not(.states)>.state .compose.w80{width:80%}:not(.states)>.state .compose.w60{width:60%}
+.err-box{margin:18px 0;border-left-width:4px}
+.err-box .btn{margin-top:2px}
