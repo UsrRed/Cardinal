@@ -44,3 +44,4 @@
 - 2026-10-21T23:59:24.535Z — T25 terminé (Front: suivi de run en direct et historique des runs)
 - 2026-10-22T00:01:00.692Z — T26 terminé (Front: page digest article, détail de flux (fil, digests) et fil global)
 - 2026-10-22T00:02:51.724Z — T27 terminé (Front: réglages, connexion Claude (terminal xterm) et page de login)
+- 2026-10-22T00:04:01.754Z — T28 terminé (Front: routage final, intégration visible et test d'absence de ressources externes)
