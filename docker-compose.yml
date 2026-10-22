@@ -1,0 +1,25 @@
+services:
+  pflux:
+    build: .
+    image: personnal-flux:local
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"
+    environment:
+      PFLUX_HOST: "0.0.0.0"
+      PFLUX_TZ: "${PFLUX_TZ:-UTC}"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - pflux-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  pflux-data:

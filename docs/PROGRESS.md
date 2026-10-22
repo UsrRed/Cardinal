@@ -47,3 +47,4 @@
 - 2026-10-22T00:04:01.754Z — T28 terminé (Front: routage final, intégration visible et test d'absence de ressources externes)
 - 2026-10-22 — T29: e2e Playwright ajouté; corrections de contrat constatées par l'e2e: GET /api/runs/:id renvoie maintenant {run, logs}; marquage lu via POST /api/items/:id/read {read} (INTERFACES mis à jour); « tout marquer lu » du détail de flux → POST /api/feeds/:id/items/read-all. Le « tout marquer lu » global du fil (/stream) n'a toujours pas de route serveur.
 - 2026-10-22T00:09:40.990Z — T29 terminé (Test e2e Playwright: flux RSS → run → digest → marquer lu)
+- 2026-10-22 — T30: Dockerfile (image épinglée par digest), compose durci, .env.example, docs/ci/workflow.example.yml, README FR, docs/DONNEES-ENVOYEES.md, tests tests/unit/delivery.test.ts. Aucun changement de contrat.
