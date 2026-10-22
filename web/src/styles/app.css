@@ -300,3 +300,12 @@ textarea.input{font:16px/1.55 var(--serif);min-height:92px;resize:vertical}
 table.runs{width:100%;border-collapse:collapse;margin:18px 0;font:13px var(--mono)}
 table.runs th{text-align:left;font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:8px 10px;border-bottom:1px solid var(--ink)}
 table.runs td{padding:8px 10px;border-bottom:1px solid var(--rule)}
+
+/* settings / login */
+.panel{max-width:640px;margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.panel h3{margin:0;font-family:var(--serif)}
+.secret-state{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.console-bar{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+.console-host{background:#000;padding:6px;min-height:300px}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-box{width:320px;display:flex;flex-direction:column;gap:14px}

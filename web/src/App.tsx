@@ -8,6 +8,8 @@ import { RunsPage } from './pages/RunsPage.js';
 import { DigestPage } from './pages/DigestPage.js';
 import { FeedDetailPage } from './pages/FeedDetailPage.js';
 import { StreamPage } from './pages/StreamPage.js';
+import { SettingsPage } from './pages/SettingsPage.js';
+import { LoginPage } from './pages/LoginPage.js';
 import { FeedFormPage } from './pages/FeedFormPage.js';
 
 function Placeholder({ title }: { title: string }) {
@@ -22,7 +24,9 @@ function Placeholder({ title }: { title: string }) {
 export function App() {
   return (
     <BrowserRouter>
-      <Shell>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<Shell>
         <Routes>
           <Route path="/" element={<FeedsPage />} />
           <Route path="/feeds/new" element={<FeedFormPage />} />
@@ -32,9 +36,11 @@ export function App() {
           <Route path="/digests/:id" element={<DigestPage />} />
           <Route path="/runs" element={<RunsPage />} />
           <Route path="/runs/:id" element={<RunPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Placeholder title="Personnal Flux" />} />
         </Routes>
-      </Shell>
+      </Shell>} />
+      </Routes>
     </BrowserRouter>
   );
 }
