@@ -51,3 +51,4 @@
 - 2026-10-22T00:11:57.853Z — T30 terminé (Livrable: Dockerfile, compose, CI exemple, README et documents de transparence)
 - fix(F7): added POST /api/items/read-all ({feedId?, priority?}); StreamPage passes active priority filter.
 - 2026-10-22T00:22:14.496Z — vérification finale OK — prêt à déployer
+- 2026-10-22 — T31: refonte visuelle (rayons 8–14 px, ombres multi-niveaux, palette/typo affinées, états hover/focus/active, survol des cartes) dans web/src/styles/{tokens,app}.css. Aucun changement de contrat.
