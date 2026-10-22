@@ -54,3 +54,4 @@
 - 2026-10-22 — T31: refonte visuelle (rayons 8–14 px, ombres multi-niveaux, palette/typo affinées, états hover/focus/active, survol des cartes) dans web/src/styles/{tokens,app}.css. Aucun changement de contrat.
 - 2026-10-22T09:20:51.439Z — T31 terminé (Moderniser le style visuel global de l'UI (tokens, cartes, boutons, ombres))
 - 2026-10-22T09:21:37.849Z — vérification finale OK — prêt à déployer
+- 2026-10-22T10:52:56.835Z — T32 terminé (Bouton « Coller » dans la console de connexion Claude)
