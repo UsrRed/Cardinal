@@ -20,6 +20,7 @@ async function main(): Promise<void> {
   const app = await buildApp(deps);
   const lock = acquireLock(config.dataDir);
   let scheduler: InstanceType<typeof Scheduler> | null = null;
+  let purgeTimer: ReturnType<typeof setInterval> | null = null;
   if (lock) {
     deps.queue.recover();
     scheduler = new Scheduler({
@@ -31,12 +32,26 @@ async function main(): Promise<void> {
       logger: deps.logger,
     });
     scheduler.start();
+    const { purge } = await import('./db/repos/retention.js');
+    const runPurge = () => {
+      const days = deps.settings().retentionDays;
+      if (!days) return;
+      try {
+        purge(deps.db, deps.clock.now() - days * 86_400_000);
+      } catch (e) {
+        deps.logger.error({ err: (e as Error).message }, 'retention purge failed');
+      }
+    };
+    runPurge();
+    purgeTimer = setInterval(runPurge, 3_600_000);
+    purgeTimer.unref();
   } else {
     deps.logger.warn('another instance holds the scheduler lock; scheduler disabled');
   }
 
   const shutdown = async () => {
     scheduler?.stop();
+    if (purgeTimer) clearInterval(purgeTimer);
     lock?.release();
     await app.close();
     deps.db.close();
