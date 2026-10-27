@@ -131,7 +131,7 @@ export interface Config {
   retentionDays: number;        // défaut 0
   tz: string;                   // PFLUX_TZ, défaut 'UTC'
   defaultModel: string;         // défaut 'sonnet'
-  defaultBudgetUsd: number;     // défaut 0.5
+  defaultBudgetUsd: number;     // défaut 1
   anthropicApiKey: string | null; nvdApiKey: string | null; ntfyToken: string | null;
   mcpToken: string | null;      // PFLUX_MCP_TOKEN (≥32 car.) ; null → /mcp absent (404)
   claudeBin: string;            // PFLUX_CLAUDE_BIN, défaut <root>/node_modules/.bin/claude

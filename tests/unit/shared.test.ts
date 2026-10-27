@@ -19,7 +19,7 @@ describe('feedInputSchema', () => {
   it('accepts valid input and applies defaults', () => {
     const r = feedInputSchema.parse(base);
     expect(r.model).toBe('sonnet');
-    expect(r.budgetUsd).toBe(0.5);
+    expect(r.budgetUsd).toBe(1);
   });
   it('rejects frequency 0 and 721', () => {
     expect(fields({ ...base, frequencyHours: 0 })).toHaveProperty('frequencyHours');
