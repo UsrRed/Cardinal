@@ -19,7 +19,7 @@ interface FormState {
 const EMPTY: FormState = {
   name: '', instructions: '', sourceType: 'rss', urls: '', packages: [{ name: '', ecosystem: 'PyPI' }],
   keywords: '', minSeverity: '', frequencyHours: '24', freshnessDays: '7', enabled: true,
-  notify: false, notifyThreshold: 'high', ntfyServer: '', ntfyTopic: '', model: 'sonnet', budgetUsd: '0.5',
+  notify: false, notifyThreshold: 'high', ntfyServer: '', ntfyTopic: '', model: 'sonnet', budgetUsd: '1',
 };
 
 const lines = (s: string) => s.split(/[\n,]/).map((x) => x.trim()).filter(Boolean);

@@ -182,7 +182,7 @@ export function loadConfig(env: NodeJS.ProcessEnv, opts?: { inContainer?: boolea
     retentionDays: int('PFLUX_RETENTION_DAYS', 0, 0, 36500),
     tz,
     defaultModel,
-    defaultBudgetUsd: num('PFLUX_DEFAULT_BUDGET_USD', 0.5, 0.01, 50),
+    defaultBudgetUsd: num('PFLUX_DEFAULT_BUDGET_USD', 1, 0.01, 50),
     anthropicApiKey: str('PFLUX_ANTHROPIC_API_KEY') ?? null,
     nvdApiKey: str('PFLUX_NVD_API_KEY') ?? null,
     ntfyToken: str('PFLUX_NTFY_TOKEN') ?? null,

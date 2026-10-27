@@ -142,7 +142,7 @@ L'interface est alors sur <http://127.0.0.1:8787>. Les données vivent dans le v
 | `PFLUX_RETENTION_DAYS` | `0` | Purge des anciens digests (0 = conserver) |
 | `PFLUX_TZ` | `UTC` | Fuseau horaire IANA |
 | `PFLUX_DEFAULT_MODEL` | `sonnet` | Modèle par défaut des nouveaux flux |
-| `PFLUX_DEFAULT_BUDGET_USD` | `0.5` | Budget par run par défaut |
+| `PFLUX_DEFAULT_BUDGET_USD` | `1` | Budget par run par défaut |
 | `PFLUX_ANTHROPIC_API_KEY` | — | Clé API Anthropic (secret) |
 | `PFLUX_NVD_API_KEY` | — | Clé API NVD (secret) |
 | `PFLUX_NTFY_TOKEN` | — | Jeton d'accès ntfy (secret) |

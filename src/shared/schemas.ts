@@ -91,7 +91,7 @@ const common = {
     .number({ error: 'Nombre requis.' })
     .min(0.01, { error: 'Au moins 0,01 $.' })
     .max(50, { error: '50 $ au maximum.' })
-    .default(0.5),
+    .default(1),
 };
 
 export const feedInputSchema = z.discriminatedUnion(
