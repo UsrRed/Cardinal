@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ApiError, post, resetCsrf } from '../api/client.js';
+import { Logo } from '../components/Logo.js';
 
 export function loginErrorText(e: unknown): string {
   if (e instanceof ApiError && e.code === 'rate_limited') return 'Trop de tentatives, réessayez plus tard.';
@@ -11,7 +12,7 @@ export function LoginView({ error, busy, onSubmit }: { error: string | null; bus
   return (
     <div className="login">
       <form className="login-box" onSubmit={(e) => { e.preventDefault(); onSubmit(password); }}>
-        <h2>Cardinal</h2>
+        <h2 className="login-brand"><Logo size={40} />Cardinal</h2>
         <div className="field">
           <label htmlFor="login-pw">Mot de passe</label>
           <input id="login-pw" className="input" type="password" autoComplete="current-password" autoFocus

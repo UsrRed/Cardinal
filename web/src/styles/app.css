@@ -492,3 +492,13 @@ table.runs tbody tr:hover{background:var(--sunken)}
   .icards{grid-template-columns:1fr}
   .dlinks li{grid-template-columns:1fr;gap:4px}
 }
+
+/* logo */
+.logo{flex:none;display:block}
+.logo .logo-body{fill:var(--red)}
+.logo .logo-wing{fill:#8A2312}
+.dark .logo .logo-wing{fill:#B8432A}
+.logo .logo-mask{fill:#1B1A17}
+.logo .logo-beak{fill:#E0A93A}
+.logo .logo-eye{fill:#F4F1EA}
+.login-brand{display:flex;align-items:center;gap:12px}
