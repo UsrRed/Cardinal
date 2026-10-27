@@ -1,7 +1,7 @@
-# Personnal Flux — Système de design « La dépêche »
+# Cardinal — Système de design « La dépêche »
 
 ## Parti pris
-Personnal Flux est conçu comme **une petite salle de rédaction personnelle**. Le vocabulaire visuel vient de la presse et du téléscripteur, ce qui colle à un outil de veille qui reçoit des dépêches, les trie et les publie en digests :
+Cardinal est conçu comme **une petite salle de rédaction personnelle**. Le vocabulaire visuel vient de la presse et du téléscripteur, ce qui colle à un outil de veille qui reçoit des dépêches, les trie et les publie en digests :
 - **papier journal chaud et encre noire**, un seul accent **rouge vermillon** de correcteur (actions primaires, priorité haute, non-lus) ;
 - **colonnes filetées** plutôt que des cartes ombrées. Les flux occupent les cellules d’une grille séparée par des filets d’1 px, sans ombre ni coins arrondis ;
 - **ruban perforé** (motif signature) : le pipeline `fetch → dedup → triage → digest → notify` d’un run est un ruban de télex à perforations, dont l’étape courante est hachurée et défile ;
@@ -104,7 +104,7 @@ Les nombres suivent la notation française : `0,14 $`, `48 210`, `1,94 M`.
 - **Secret** : tampon « Configurée » ou « Non configuré », masque `••••`, mention de la source (`variable d’environnement (prioritaire)` / `saisie UI`) et actions Remplacer / Effacer, désactivées si la valeur vient de l’environnement. La valeur n’est **jamais** affichée.
 - **Console de connexion** : panneau terminal sombre avec une barre (`● pty actif`, commande, compte à rebours de fermeture automatique, Fermer).
 - **Bandeaux de run** : « Reporté » en bleu (avec l’heure de reprise) et « Budget » en ocre (digest partiel), tampon incliné à −2°.
-- **Notification ntfy** : titre `[Personnal Flux] <flux> — <élément>`, corps ≤ 300 caractères.
+- **Notification ntfy** : titre `[Cardinal] <flux> — <élément>`, corps ≤ 300 caractères.
 
 ## États obligatoires (toutes les vues)
 - **Vide** : marque typographique `¶ ¶ ¶` en `--rule-2`, une phrase serif et une action primaire.

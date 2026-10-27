@@ -1,4 +1,4 @@
-# INTERFACES — Personnal Flux
+# INTERFACES — Cardinal
 
 > Contrats figés. Toute modification : mettre à jour ce fichier dans le même commit + note dans `docs/PROGRESS.md`. Dates : ISO 8601 UTC (`string`) dans l'API, `number` (ms epoch) en interne/DB.
 
@@ -143,7 +143,7 @@ export function loadConfig(env: NodeJS.ProcessEnv, opts?: { inContainer?: boolea
 export function resolveListenHost(expose: boolean, rawHost: string | undefined, inContainer: boolean): string;
 // expose → rawHost ?? '0.0.0.0' ; inContainer → rawHost ?? '127.0.0.1' ; sinon '127.0.0.1'
 ```
-`src/index.ts` : `ConfigError` → `console.error("Personnal Flux: configuration invalide: …")`, `process.exit(1)`.
+`src/index.ts` : `ConfigError` → `console.error("Cardinal: configuration invalide: …")`, `process.exit(1)`.
 
 ## 4. Base — `src/db`
 
@@ -205,7 +205,7 @@ export function isBlockedAddress(ip: string): boolean;                        //
 export function isAllowlisted(ip: string, port: number, list: AllowEntry[]): boolean;
 
 export type Resolver = (hostname: string) => Promise<string[]>;
-export interface SafeFetchOptions { resolver?: Resolver; allowlist: AllowEntry[]; maxBytes: number; timeoutMs: number; maxRedirects?: number /*5*/; userAgent?: string /* 'PersonnalFlux/<ver>' */ }
+export interface SafeFetchOptions { resolver?: Resolver; allowlist: AllowEntry[]; maxBytes: number; timeoutMs: number; maxRedirects?: number /*5*/; userAgent?: string /* 'Cardinal/<ver>' */ }
 export interface SafeRequest { method?: 'GET'|'POST'; headers?: Record<string,string>; body?: string | Buffer; signal?: AbortSignal }
 export interface SafeResponse { status: number; headers: Record<string,string>; url: string; body: Buffer; text(): string; json<T>(): T }
 export type SafeFetch = (url: string, req?: SafeRequest) => Promise<SafeResponse>;
@@ -363,7 +363,7 @@ export class NtfyNotifier {
 export const PRIORITY_MAP: Record<Priority, 2|3|4>;          // high 4, medium 3, low 2
 export function resolveTarget(feed: Feed, settings: Settings, token: string | null): NtfyTarget | null; // surcharge flux > global ; topic vide → null
 ```
-Titre : `[Personnal Flux] <flux> — <titre élément>` ; au-delà de 5 : 1 récap `[Personnal Flux] <flux> — N autres éléments`.
+Titre : `[Cardinal] <flux> — <titre élément>` ; au-delà de 5 : 1 récap `[Cardinal] <flux> — N autres éléments`.
 
 ## 11. Secrets — `src/secrets/index.ts`
 
@@ -414,7 +414,7 @@ Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Erreurs :
 | POST | `/api/feeds/:id/run` | — | `202 Run` ; 409 si actif |
 | POST | `/api/feeds/test-url` | `{url}` | `{ok:true,count}` \| `{ok:false,error}` |
 | POST | `/api/feeds/:id/test-notify` | — | `{ok:true}` \| `{ok:false,error}` |
-| GET | `/api/feeds/export` | — | `feedExport` (attachment `personnal-flux-feeds.json`) |
+| GET | `/api/feeds/export` | — | `feedExport` (attachment `cardinal-feeds.json`) |
 | POST | `/api/feeds/import` | `feedExport` | `{created:number, rejected:[{index, name?, fields}]}` |
 | GET | `/api/runs` | `?feedId&page&pageSize` | `Page<Run>` |
 | GET | `/api/runs/:id` | — | `{run: Run, logs: RunLog[]}` |

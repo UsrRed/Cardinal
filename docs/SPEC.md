@@ -1,10 +1,10 @@
-# SPEC — Personnal Flux
+# SPEC — Cardinal
 
-> Nom du produit : **Personnal Flux** (slug `personnal-flux`, préfixe des variables d'environnement `PFLUX_`). L'application ne porte jamais d'autre nom, que ce soit dans l'UI, les docs, les notifications ou l'image Docker.
+> Nom du produit : **Cardinal** (slug `cardinal`, préfixe des variables d'environnement `PFLUX_`). L'application ne porte jamais d'autre nom, que ce soit dans l'UI, les docs, les notifications ou l'image Docker.
 
 ## Objectif
 
-Personnal Flux est un outil de veille autonome, auto-hébergé et mono-utilisateur, sans système de comptes. L'utilisateur définit des **flux de veille** : un sujet et ses consignes en langage naturel, plus une source (RSS/Atom, OSV ou NVD). L'outil interroge chaque flux à la fréquence choisie. Il fait trier, prioriser et résumer les nouveautés par **Claude**, appelé via le CLI `claude` en mode headless, sans aucun outil et en traitant le contenu comme non fiable. Il produit ensuite des **digests lisibles façon article** et envoie des **notifications push ntfy** pour les éléments importants.
+Cardinal est un outil de veille autonome, auto-hébergé et mono-utilisateur, sans système de comptes. L'utilisateur définit des **flux de veille** : un sujet et ses consignes en langage naturel, plus une source (RSS/Atom, OSV ou NVD). L'outil interroge chaque flux à la fréquence choisie. Il fait trier, prioriser et résumer les nouveautés par **Claude**, appelé via le CLI `claude` en mode headless, sans aucun outil et en traitant le contenu comme non fiable. Il produit ensuite des **digests lisibles façon article** et envoie des **notifications push ntfy** pour les éléments importants.
 
 Le projet part de zéro. La stack (TypeScript/Node, Fastify, SQLite, Vite/React) est volontairement proche de pj-gen et gh-scanner, pour réutiliser les mêmes patterns d'appel à Claude et permettre plus tard une mise en commun de la gestion des sessions.
 
@@ -159,7 +159,7 @@ Critères d'acceptation :
 - [ ] Le serveur et le sujet globaux se règlent dans Réglages (défaut serveur `https://ntfy.sh`, sujet vide = désactivé) et peuvent être surchargés par flux. Jeton optionnel (`PFLUX_NTFY_TOKEN` ou saisie UI) envoyé en `Authorization: Bearer`. Sans jeton, l'envoi est anonyme.
 - [ ] Après un run, une notification part pour chaque **nouvel** élément de priorité ≥ seuil, dans la limite de 5 par run. Au-delà, une notification récapitulative est envoyée.
 - [ ] Contenu de la notification :
-  - titre : `[Personnal Flux] <flux> — <titre élément>` ;
+  - titre : `[Cardinal] <flux> — <titre élément>` ;
   - corps : résumé court (≤ 300 caractères) ;
   - `Priority` ntfy mappée (high→4, medium→3, low→2) ;
   - `Click` vers `<PFLUX_PUBLIC_URL>/digests/:id` si l'URL publique est définie, sans lien sinon.
@@ -294,7 +294,7 @@ Critères d'acceptation :
    - `docs/ARCHITECTURE.md` et `docs/INTERFACES.md` à jour.
 
    Aucun fichier n'existe sous `.github/workflows/`.
-7. Le nom « Personnal Flux » est utilisé partout et le préfixe `PFLUX_` est utilisé pour toutes les variables d'environnement.
+7. Le nom « Cardinal » est utilisé partout et le préfixe `PFLUX_` est utilisé pour toutes les variables d'environnement.
 
 ## Micro-révisions
 - T32 (2026-10-22): la console est bugge, je ne peux pas saisir le code lorsqu'il est demander, ajoute un bouton qui me permet de paste le texte

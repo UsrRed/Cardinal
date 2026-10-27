@@ -37,7 +37,7 @@ export function App() {
           <Route path="/runs" element={<RunsPage />} />
           <Route path="/runs/:id" element={<RunPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="*" element={<Placeholder title="Personnal Flux" />} />
+          <Route path="*" element={<Placeholder title="Cardinal" />} />
         </Routes>
       </Shell>} />
       </Routes>

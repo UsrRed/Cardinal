@@ -59,7 +59,7 @@ describe('NtfyNotifier', () => {
     expect(r).toEqual({ sent: 1, failed: 0 });
     const q = reqs[0]!;
     expect(q.url).toBe('/alerts');
-    expect(decode(q.headers.title as string)).toBe('[Personnal Flux] Veille — Titre 1');
+    expect(decode(q.headers.title as string)).toBe('[Cardinal] Veille — Titre 1');
     expect(q.headers.priority).toBe('4');
     expect(q.headers.click).toBe('https://pf.example/digests/d1');
     expect(q.headers.authorization).toBe('Bearer tok');

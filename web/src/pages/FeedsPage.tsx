@@ -57,7 +57,7 @@ export function FeedsPage() {
     const payload = await get<unknown>('/api/feeds/export');
     const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
     const a = document.createElement('a');
-    a.href = url; a.download = 'personnal-flux-feeds.json'; a.click();
+    a.href = url; a.download = 'cardinal-feeds.json'; a.click();
     URL.revokeObjectURL(url);
   });
 

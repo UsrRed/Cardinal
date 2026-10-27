@@ -1,4 +1,4 @@
-# ARCHITECTURE — Personnal Flux
+# ARCHITECTURE — Cardinal
 
 > Carte du dépôt. Pour localiser un module, partir de la section « Structure de fichiers ». Les contrats sont dans `docs/INTERFACES.md`.
 
@@ -225,7 +225,7 @@ Tables (migration 001) : `feeds`, `runs`, `run_logs`, `digests`, `items`, `seen_
 ## 6. Front — mise en œuvre de la maquette
 
 - `styles/tokens.css` reprend **à l'identique** les variables `:root` / `.dark` de `docs/design/` (papier, encre, rouge, ocre, graphite, vert, bleu ; piles de polices système serif/sans/mono, **aucune police distante**).
-- `Shell` = grille `232px 1fr` : `Sidebar` (marque `PF` rouge + wordmark « Personnal *Flux* », double filet, nav Flux / Fil / Runs / Réglages avec compteurs `.count`, liste des flux avec `.dot` actif/pause/reporté, pied avec coût cumulé et statut Claude) + `main`.
+- `Shell` = grille `232px 1fr` : `Sidebar` (marque `C` rouge + wordmark « Cardinal », double filet, nav Flux / Fil / Runs / Réglages avec compteurs `.count`, liste des flux avec `.dot` actif/pause/reporté, pied avec coût cumulé et statut Claude) + `main`.
 - `Masthead` : dateline mono majuscule, titre serif 34px, `mast-meta`, zone `.actions`.
 - Composants ↔ classes : `StatusStamp` (`.stamp .s-ok/.s-run/.s-queue/.s-def/.s-fail/.s-cancel/.s-budget/.s-pause`), `PriorityBadge` (`.prio .p-high/.p-med/.p-low` + barres), `FeedCard` (`.feed`, hachures `.paused`, gros compteur non-lus, `.meta` dl, `MiniTape` 5 étapes), `PipelineTape` (`.tape` perforé, `.done/.now/.todo/.err`, animation `crawl`), `StatsBar` (`.stats` + `.gauge` budget), `LogView` (`.log`, niveaux `.lv.i/.w/.e`, curseur), `RunList` (`.runs`), `SegFilter` (`.seg`), boutons `.btn primary/danger/ghost/sm`.
 - `DigestPage` : page article (serif, chapeau, sections, éléments avec badge, justification, résumé, liens `target="_blank" rel="noopener noreferrer"`), boutons export MD/JSON.
