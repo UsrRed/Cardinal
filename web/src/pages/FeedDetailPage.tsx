@@ -63,7 +63,7 @@ export function FeedDetailPage() {
     ? get<Page<Item>>(`/api/items?${itemsQuery({ feedId: id, priority, read, page })}`) : Promise.resolve(null),
   [id, tab, priority, read, page]);
   const digests = useAsync(() => tab === 'digests'
-    ? get<Page<DigestSummary>>(`/api/digests?feedId=${id}&page=${page}&pageSize=20`) : Promise.resolve(null), [id, tab, page]);
+    ? get<Page<DigestSummary>>(`/api/feeds/${id}/digests?page=${page}&pageSize=20`) : Promise.resolve(null), [id, tab, page]);
   const runs = useAsync(() => tab === 'runs'
     ? get<Page<Run>>(`/api/runs?feedId=${id}&page=${page}&pageSize=20`) : Promise.resolve(null), [id, tab, page]);
 
