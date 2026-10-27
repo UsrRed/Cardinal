@@ -97,3 +97,45 @@ function safeNormalize(u: string): string {
     return u;
   }
 }
+
+export interface DailyOutput {
+  title: string;
+  overview: string;
+  tiers: { priority: Priority; categories: { name: string; body: string; itemRefs: string[] }[] }[];
+}
+
+export const dailyOutputSchema: z.ZodType<DailyOutput> = z.object({
+  title: z.string().min(1).max(200),
+  overview: z.string().max(2000),
+  tiers: z
+    .array(z.object({
+      priority: z.enum(['high', 'medium', 'low']),
+      categories: z.array(z.object({ name: z.string().min(1).max(80), body: z.string().max(3000), itemRefs: z.array(z.string()) })).min(1).max(15),
+    }))
+    .min(1)
+    .max(3),
+});
+
+/** Schema check, known refs, each ref at most once, one tier per priority. */
+export function validateDailyOutput(json: unknown, refs: Set<string>): { ok: true; value: DailyOutput } | { ok: false; problems: string[] } {
+  const parsed = dailyOutputSchema.safeParse(json);
+  if (!parsed.success) {
+    return { ok: false, problems: parsed.error.issues.slice(0, 10).map((i) => `schéma: ${i.path.join('.') || '(racine)'}: ${i.message}`) };
+  }
+  const problems: string[] = [];
+  const seen = new Set<string>();
+  const prios = new Set<string>();
+  for (const t of parsed.data.tiers) {
+    if (prios.has(t.priority)) problems.push(`niveau dupliqué: ${t.priority}`);
+    prios.add(t.priority);
+    for (const c of t.categories) {
+      for (const r of c.itemRefs) {
+        if (!refs.has(r)) problems.push(`ref inconnue: ${r}`);
+        else if (seen.has(r)) problems.push(`ref citée plusieurs fois: ${r}`);
+        seen.add(r);
+      }
+    }
+  }
+  if (problems.length) return { ok: false, problems: problems.slice(0, 20) };
+  return { ok: true, value: parsed.data };
+}

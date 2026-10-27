@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { AppDeps } from '../../deps.js';
+import { registerDailyRoutes } from './daily.js';
 import { registerDigestRoutes } from './digests.js';
 import { feedsRoutes } from './feeds.js';
 import { healthRoutes } from './health.js';
@@ -17,6 +18,7 @@ export async function registerRoutes(app: FastifyInstance, deps: AppDeps): Promi
   await registerRunRoutes(app, deps);
   await registerDigestRoutes(app, deps);
   await registerItemRoutes(app, deps);
+  await registerDailyRoutes(app, deps);
   await registerStatsRoutes(app, deps);
   await registerAuthRoutes(app, deps);
   await registerSettingsRoutes(app, deps);

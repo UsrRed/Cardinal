@@ -67,3 +67,32 @@ export function buildCorrectionPrompt(original: string, problems: string[]): str
     'Corrige et renvoie uniquement l\'objet JSON complet et valide.',
   ].join('\n');
 }
+
+export interface DailyPromptItem {
+  ref: string;
+  title: string;
+  url: string | null;
+  feedName: string;
+  priority: string;
+  summary: string;
+}
+
+export const DAILY_MARKER = 'Tâche : résumé journalier';
+
+export function buildDailyPrompt(o: { day: string; items: DailyPromptItem[] }): string {
+  return [
+    SYSTEM_HEADER,
+    `${DAILY_MARKER} du ${o.day}, toutes sources de veille confondues.`,
+    [
+      'Les éléments ci-dessous ont déjà été retenus et triés (priorité high/medium/low) par chaque flux.',
+      '- "overview" : une passe globale sur l\'essentiel de la journée, en commençant par le plus important.',
+      '- "tiers" : un niveau par priorité présente, dans l\'ordre high puis medium puis low.',
+      '- Dans chaque niveau, regroupe les éléments en catégories thématiques que tu choisis (ex. Sécurité, Logiciels, Jeux vidéo…), avec un nom court et un texte de synthèse qui dit ce qui compte.',
+      '- Place chaque élément dans exactement une catégorie, au niveau de sa priorité, en le citant par sa ref.',
+      '- N\'écris pas d\'URL dans les textes : les liens sont ajoutés à partir des refs.',
+    ].join('\n'),
+    'Schéma : {"title":"≤200","overview":"≤2000","tiers":[{"priority":"high|medium|low","categories":[{"name":"≤80","body":"≤3000","itemRefs":["iN"]}]}]}',
+    ...o.items.map((it) =>
+      block(it.ref, [`title: ${it.title}`, `feed: ${it.feedName}`, `priority: ${it.priority}`, `url: ${it.url ?? ''}`, '', it.summary].join('\n'))),
+  ].join('\n\n');
+}

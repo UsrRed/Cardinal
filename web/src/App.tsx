@@ -8,6 +8,7 @@ import { RunsPage } from './pages/RunsPage.js';
 import { DigestPage } from './pages/DigestPage.js';
 import { FeedDetailPage } from './pages/FeedDetailPage.js';
 import { StreamPage } from './pages/StreamPage.js';
+import { DailyPage } from './pages/DailyPage.js';
 import { SettingsPage } from './pages/SettingsPage.js';
 import { LoginPage } from './pages/LoginPage.js';
 import { FeedFormPage } from './pages/FeedFormPage.js';
@@ -33,6 +34,7 @@ export function App() {
           <Route path="/feeds/:id/edit" element={<FeedFormPage />} />
           <Route path="/feeds/:id" element={<FeedDetailPage />} />
           <Route path="/stream" element={<StreamPage />} />
+          <Route path="/daily" element={<DailyPage />} />
           <Route path="/digests/:id" element={<DigestPage />} />
           <Route path="/runs" element={<RunsPage />} />
           <Route path="/runs/:id" element={<RunPage />} />

@@ -1,4 +1,5 @@
 import type { Usage } from '../shared/types.js';
+import { DAILY_MARKER } from './prompt.js';
 import { ClaudeError, type ClaudeErrorKind, type ClaudeRunner, type RunRequest, type RunResult } from './types.js';
 
 export type FakeStep =
@@ -46,6 +47,15 @@ function autoOutput(prompt: string, mutate?: 'invented_url' | 'unknown_ref'): un
     summary: `Résumé de ${b.ref}`,
     sources: [...new Set(b.body.match(URL_RE) ?? [])].slice(0, 3),
   }));
+  if (prompt.includes(DAILY_MARKER)) {
+    const refs = blocks.map((b) => b.ref);
+    if (mutate === 'unknown_ref' && refs.length) refs[0] = 'i9999';
+    return {
+      title: 'Résumé de test',
+      overview: 'Synthèse déterministe de la journée.',
+      tiers: [{ priority: 'high', categories: [{ name: 'Général', body: 'Éléments du jour.', itemRefs: refs }] }],
+    };
+  }
   if (mutate === 'invented_url' && items[0]) items[0].sources = ['https://invented.example.invalid/x'];
   if (mutate === 'unknown_ref' && items[0]) items[0].ref = 'i9999';
   return {

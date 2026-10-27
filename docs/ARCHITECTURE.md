@@ -42,7 +42,8 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   ├── ci/workflow.example.yml
 │   └── design/                           # maquette de référence (ne pas modifier)
 ├── migrations/
-│   └── 001_init.sql                      # 00N_*.sql appliquées au démarrage, dans l'ordre
+│   ├── 001_init.sql                      # 00N_*.sql appliquées au démarrage, dans l'ordre
+│   └── 002_daily.sql                     # daily_summaries
 ├── src/
 │   ├── index.ts                          # point d'entrée: loadConfig → openDb → migrate → seed → buildApp → lock+scheduler → listen
 │   ├── healthcheck.ts                    # → dist/healthcheck.js (GET /healthz sur 127.0.0.1:PORT, exit 0/1)
@@ -67,6 +68,7 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   │       ├── items.ts                  # ItemsRepo (éléments retenus, lu/non lu)
 │   │       ├── seen.ts                   # SeenRepo (seen_items)
 │   │       ├── settings.ts               # SettingsRepo (réglages UI non secrets)
+│   │       ├── daily.ts                  # DailyRepo (daily_summaries, éléments d'un jour local)
 │   │       └── retention.ts              # purge(olderThan)
 │   ├── net/
 │   │   ├── ipPolicy.ts                   # isBlockedAddress, parseAllowlist, isAllowlisted
@@ -112,6 +114,8 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   │   ├── rateLimit.ts                  # LoginRateLimiter (5/15 min/IP, délai progressif)
 │   │   ├── csrf.ts                       # csrfToken(sessionId), checkOrigin, csrf hook
 │   │   └── plugin.ts                     # plugin Fastify: auth gate + CSRF + en-têtes de sécurité
+│   ├── daily/
+│   │   └── index.ts                      # DailyService : résumé journalier global (Claude), tick auto de la veille
 │   ├── mcp/
 │   │   └── tools.ts                      # outils MCP (flux) : list/get/test-url/create/update/set-enabled/run
 │   ├── console/
@@ -126,6 +130,7 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │           ├── runs.ts                   # liste, détail, logs, cancel
 │           ├── digests.ts                # liste, détail, export.md/json
 │           ├── items.ts                  # fil, marquer lu
+│           ├── daily.ts                  # résumé journalier : lecture, génération
 │           ├── settings.ts               # réglages, secrets, statut Claude, test ntfy
 │           ├── stats.ts                  # usage cumulée
 │           ├── ws.ts                     # /api/ws/runs, /api/ws/console
@@ -155,7 +160,8 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │           ├── FeedDetailPage.tsx        # "/feeds/:id" (onglets: fil, digests, runs)
 │           ├── RunPage.tsx               # "/runs/:id" suivi en direct
 │           ├── DigestPage.tsx            # "/digests/:id" article
-│           ├── StreamPage.tsx            # "/stream" fil global filtrable
+│           ├── StreamPage.tsx            # "/stream" fil global filtrable (vue liste ou détaillée en cartes)
+│           ├── DailyPage.tsx             # "/daily" résumé journalier par niveaux et catégories
 │           ├── RunsPage.tsx              # "/runs" historique + coûts cumulés
 │           ├── SettingsPage.tsx          # "/settings"
 │           └── LoginPage.tsx             # "/login" (mode exposé)

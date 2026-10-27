@@ -17,6 +17,7 @@ import { createDigestsRepo } from './db/repos/digests.js';
 import { createItemsRepo } from './db/repos/items.js';
 import { createSeenRepo } from './db/repos/seen.js';
 import { createSettingsRepo } from './db/repos/settings.js';
+import { createDailyRepo } from './db/repos/daily.js';
 import { SecretsStore } from './secrets/index.js';
 import { createSafeFetch } from './net/safeFetch.js';
 import { CliClaudeRunner } from './claude/cliRunner.js';
@@ -24,6 +25,7 @@ import { FakeClaudeRunner } from './claude/fakeRunner.js';
 import { NtfyNotifier } from './notify/ntfy.js';
 import { RunEventBus } from './pipeline/runEvents.js';
 import { RunQueue } from './queue/index.js';
+import { DailyService } from './daily/index.js';
 import { LoginConsole } from './console/loginConsole.js';
 import { SessionStore, loadSessionSecret } from './auth/session.js';
 import { systemClock } from './shared/clock.js';
@@ -39,6 +41,7 @@ export interface AppDeps {
   fetch: SafeFetch;
   notifier: NtfyNotifier;
   queue: RunQueue;
+  daily: DailyService;
   bus: RunEventBus;
   console: LoginConsole;
   sessions: SessionStore;
@@ -65,6 +68,7 @@ export function createDeps(config: Config, overrides: Partial<AppDeps> = {}): Ap
     items: createItemsRepo(db),
     seen: createSeenRepo(db),
     settings: createSettingsRepo(db),
+    daily: createDailyRepo(db),
   };
   const secrets =
     overrides.secrets ??
@@ -106,9 +110,15 @@ export function createDeps(config: Config, overrides: Partial<AppDeps> = {}): Ap
       { db: repos, runner, fetch, notifier, secrets, settings, bus, clock, config, logger },
       { concurrency: () => settings().maxConcurrentRuns },
     );
+  const daily =
+    overrides.daily ??
+    new DailyService({
+      daily: repos.daily, runner, clock, logger, timezone: () => settings().timezone,
+      model: config.defaultModel, budgetUsd: config.defaultBudgetUsd,
+    });
   const sessionSecret = overrides.sessionSecret ?? loadSessionSecret(config);
   return {
-    config, db, repos, secrets, runner, fetch, notifier, queue, bus,
+    config, db, repos, secrets, runner, fetch, notifier, queue, daily, bus,
     console: overrides.console ?? new LoginConsole({ bin: config.claudeBin, home, getApiKey, clock }),
     sessions: overrides.sessions ?? new SessionStore(clock),
     sessionSecret, clock, logger, settings,
