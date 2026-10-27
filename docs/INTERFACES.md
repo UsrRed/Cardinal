@@ -133,6 +133,7 @@ export interface Config {
   defaultModel: string;         // défaut 'sonnet'
   defaultBudgetUsd: number;     // défaut 0.5
   anthropicApiKey: string | null; nvdApiKey: string | null; ntfyToken: string | null;
+  mcpToken: string | null;      // PFLUX_MCP_TOKEN (≥32 car.) ; null → /mcp absent (404)
   claudeBin: string;            // PFLUX_CLAUDE_BIN, défaut <root>/node_modules/.bin/claude
   claudeRunner: 'cli' | 'fake'; // défaut 'cli'
   logLevel: 'fatal'|'error'|'warn'|'info'|'debug'|'trace'; // défaut 'info'
@@ -434,6 +435,10 @@ Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Erreurs :
 | GET | `/api/stats` | — | `GlobalStats` |
 
 Pagination : `page` ≥ 1 (défaut 1), `pageSize` 1..100 (défaut 20).
+
+### MCP — `POST /mcp`
+
+Hors `/api/*` : ni session ni CSRF. `Authorization: Bearer <PFLUX_MCP_TOKEN>` sinon 401 ; non configuré → 404 ; `Origin` étranger → 403 ; `GET`/`DELETE` → 405. JSON-RPC 2.0 (message seul ou lot), réponses `application/json` uniquement, notifications → 202. Méthodes : `initialize` (versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05), `ping`, `tools/list`, `tools/call`. Outils (`src/mcp/tools.ts`) : `list_feeds`, `get_feed {id}`, `test_feed_url {url}`, `create_feed {FeedInput sans ntfyServer/ntfyTopic ; model/budgetUsd par défaut = config}`, `update_feed {id, …feedPatch}`, `set_feed_enabled {id, enabled}`, `run_feed {id}`. Résultat : JSON en `content[0].text` ; `AppError` → `isError:true`, texte `code` ou `code: {fields}`.
 
 ## 14. WebSocket
 

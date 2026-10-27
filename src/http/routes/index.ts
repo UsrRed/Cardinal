@@ -3,6 +3,7 @@ import type { AppDeps } from '../../deps.js';
 import { registerDigestRoutes } from './digests.js';
 import { feedsRoutes } from './feeds.js';
 import { healthRoutes } from './health.js';
+import { mcpRoutes } from './mcp.js';
 import { registerItemRoutes } from './items.js';
 import { registerRunRoutes } from './runs.js';
 import { registerStatsRoutes } from './stats.js';
@@ -20,4 +21,5 @@ export async function registerRoutes(app: FastifyInstance, deps: AppDeps): Promi
   await registerAuthRoutes(app, deps);
   await registerSettingsRoutes(app, deps);
   await wsRoutes(app, deps);
+  await mcpRoutes(app, deps);
 }

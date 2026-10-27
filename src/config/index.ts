@@ -25,6 +25,7 @@ export interface Config {
   anthropicApiKey: string | null;
   nvdApiKey: string | null;
   ntfyToken: string | null;
+  mcpToken: string | null;
   claudeBin: string;
   claudeRunner: 'cli' | 'fake';
   logLevel: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
@@ -124,6 +125,11 @@ export function loadConfig(env: NodeJS.ProcessEnv, opts?: { inContainer?: boolea
     }
   }
 
+  const mcpToken = str('PFLUX_MCP_TOKEN') ?? null;
+  if (mcpToken !== null && mcpToken.length < 32) {
+    issues.push('PFLUX_MCP_TOKEN doit faire au moins 32 caractères');
+  }
+
   const ssrfAllowlist: AllowEntry[] = [];
   for (const part of (str('PFLUX_SSRF_ALLOWLIST') ?? '').split(',')) {
     const raw = part.trim();
@@ -180,6 +186,7 @@ export function loadConfig(env: NodeJS.ProcessEnv, opts?: { inContainer?: boolea
     anthropicApiKey: str('PFLUX_ANTHROPIC_API_KEY') ?? null,
     nvdApiKey: str('PFLUX_NVD_API_KEY') ?? null,
     ntfyToken: str('PFLUX_NTFY_TOKEN') ?? null,
+    mcpToken,
     claudeBin:
       str('PFLUX_CLAUDE_BIN') ??
       fileURLToPath(new URL('../../node_modules/.bin/claude', import.meta.url)),

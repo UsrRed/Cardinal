@@ -5,6 +5,7 @@ import { resolveTarget } from '../../notify/ntfy.js';
 import { feedInputSchema, feedPatchSchema, zodFields } from '../../shared/schemas.js';
 import { AppError } from '../../shared/errors.js';
 import type { FeedInput } from '../../shared/schemas.js';
+import type { Feed } from '../../shared/types.js';
 import { testFeedUrl } from '../../sources/rss.js';
 
 const testUrlSchema = z.object({
@@ -22,10 +23,18 @@ const testUrlSchema = z.object({
 
 const importBodySchema = z.object({ feeds: z.array(z.unknown(), { error: 'Liste de flux requise.' }).max(500, { error: 'Trop de flux.' }) });
 
-function parse<T>(schema: z.ZodType<T, unknown>, body: unknown): T {
+export function parse<T>(schema: z.ZodType<T, unknown>, body: unknown): T {
   const r = schema.safeParse(body ?? {});
   if (!r.success) throw new AppError('validation_error', 400, zodFields(r.error));
   return r.data;
+}
+
+/** Parses a partial update and re-validates the merged feed so it cannot produce invalid state. */
+export function validFeedPatch(feed: Feed, body: unknown): Partial<FeedInput> {
+  const patch = parse(feedPatchSchema, body);
+  const full = feedInputSchema.safeParse({ ...feed, ...patch });
+  if (!full.success) throw new AppError('validation_error', 400, zodFields(full.error));
+  return patch as Partial<FeedInput>;
 }
 
 export async function feedsRoutes(app: FastifyInstance, deps: AppDeps): Promise<void> {
@@ -65,13 +74,8 @@ export async function feedsRoutes(app: FastifyInstance, deps: AppDeps): Promise<
 
   app.get<{ Params: { id: string } }>('/api/feeds/:id', async (req) => need(feeds.get(req.params.id)));
   app.put<{ Params: { id: string } }>('/api/feeds/:id', async (req) => {
-    need(feeds.get(req.params.id));
-    const patch = parse(feedPatchSchema, req.body);
-    // Re-validate the merged feed so partial updates cannot produce invalid state.
-    const merged = { ...feeds.get(req.params.id)!, ...patch };
-    const full = feedInputSchema.safeParse(merged);
-    if (!full.success) throw new AppError('validation_error', 400, zodFields(full.error));
-    return need(feeds.update(req.params.id, patch as Partial<FeedInput>, now()));
+    const patch = validFeedPatch(need(feeds.get(req.params.id)), req.body);
+    return need(feeds.update(req.params.id, patch, now()));
   });
   app.delete<{ Params: { id: string } }>('/api/feeds/:id', async (req, reply) => {
     if (!feeds.delete(req.params.id)) throw new AppError('not_found', 404);
