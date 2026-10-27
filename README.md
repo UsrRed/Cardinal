@@ -63,6 +63,20 @@ Exemples : RSS `https://hnrss.org/frontpage` ; OSV `lodash` / `npm` ; NVD `opens
 - **ntfy sur le réseau local** : les adresses privées sont bloquées par défaut (protection SSRF). Autorisez explicitement l'hôte, par exemple `PFLUX_SSRF_ALLOWLIST=192.168.1.20:8080`, puis indiquez le serveur `http://192.168.1.20:8080`.
 - `PFLUX_PUBLIC_URL` ajoute un lien de retour vers le digest dans la notification.
 
+## Ajouter des flux par MCP
+
+Cardinal expose un serveur MCP (HTTP « streamable », sans état) sur `/mcp`, pour qu'un assistant comme Claude Code gère les flux sans passer par l'interface. Il est **désactivé** tant que `PFLUX_MCP_TOKEN` n'est pas défini.
+
+1. Générez un jeton (`openssl rand -hex 32`) et placez-le dans `PFLUX_MCP_TOKEN`, puis redémarrez.
+2. Côté client :
+
+   ```sh
+   claude mcp add --transport http cardinal https://<votre-instance>/mcp \
+     --header "Authorization: Bearer <jeton>"
+   ```
+
+Outils : `list_feeds`, `get_feed`, `test_feed_url`, `create_feed`, `update_feed`, `set_feed_enabled`, `run_feed`. Pas de suppression (à faire dans l'interface), pas de lecture des digests. Le jeton est indépendant du mot de passe et de la session : seul l'en-tête `Authorization` est accepté, et une requête portant un `Origin` étranger est refusée. Les notifications d'un flux créé par MCP utilisent le serveur et le sujet des *Réglages*.
+
 ## Tests
 
 ```bash
@@ -132,6 +146,7 @@ L'interface est alors sur <http://127.0.0.1:8787>. Les données vivent dans le v
 | `PFLUX_ANTHROPIC_API_KEY` | — | Clé API Anthropic (secret) |
 | `PFLUX_NVD_API_KEY` | — | Clé API NVD (secret) |
 | `PFLUX_NTFY_TOKEN` | — | Jeton d'accès ntfy (secret) |
+| `PFLUX_MCP_TOKEN` | — | Active le serveur MCP `/mcp` ; jeton Bearer des clients (≥ 32 car., secret) |
 | `PFLUX_CLAUDE_BIN` | `node_modules/.bin/claude` | Binaire Claude Code |
 | `PFLUX_CLAUDE_RUNNER` | `cli` | `cli` ou `fake` (tests) |
 | `PFLUX_LOG_LEVEL` | `info` | Niveau de logs |

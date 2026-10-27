@@ -112,6 +112,8 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   │   ├── rateLimit.ts                  # LoginRateLimiter (5/15 min/IP, délai progressif)
 │   │   ├── csrf.ts                       # csrfToken(sessionId), checkOrigin, csrf hook
 │   │   └── plugin.ts                     # plugin Fastify: auth gate + CSRF + en-têtes de sécurité
+│   ├── mcp/
+│   │   └── tools.ts                      # outils MCP (flux) : list/get/test-url/create/update/set-enabled/run
 │   ├── console/
 │   │   └── loginConsole.ts               # LoginConsole: pty unique `claude /login`, inactivité 10 min
 │   └── http/
@@ -126,7 +128,8 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │           ├── items.ts                  # fil, marquer lu
 │           ├── settings.ts               # réglages, secrets, statut Claude, test ntfy
 │           ├── stats.ts                  # usage cumulée
-│           └── ws.ts                     # /api/ws/runs, /api/ws/console
+│           ├── ws.ts                     # /api/ws/runs, /api/ws/console
+│           └── mcp.ts                    # /mcp : JSON-RPC MCP sans état, Bearer PFLUX_MCP_TOKEN
 ├── web/
 │   ├── index.html                        # aucune ressource externe
 │   └── src/
@@ -235,7 +238,7 @@ Tables (migration 001) : `feeds`, `runs`, `run_logs`, `digests`, `items`, `seen_
 ## 7. Sécurité — points d'implémentation
 
 - Écoute : `127.0.0.1` par défaut ; `PFLUX_HOST` pris en compte seulement si `PFLUX_EXPOSE=1` (défaut alors `0.0.0.0`). Dans Docker : `PFLUX_EXPOSE` reste 0 mais le compose fixe `PFLUX_HOST=0.0.0.0` **et** `PFLUX_LISTEN_IN_CONTAINER` n'existe pas : la config accepte `PFLUX_HOST=0.0.0.0` sans exposition uniquement si `/.dockerenv` est présent ? **Non** — décision : le compose définit `PFLUX_EXPOSE=0` et `PFLUX_HOST=0.0.0.0`, et la config autorise ce cas via la variable interne au conteneur documentée `PFLUX_HOST` + publication hôte `127.0.0.1:8787:8787` ; la règle « PFLUX_HOST ignoré sauf EXPOSE » est implémentée par `resolveListenHost(config, {inContainer})` où `inContainer` = présence de `/.dockerenv` ou `PFLUX_IN_CONTAINER=1` (posée dans le Dockerfile). Hors conteneur, la règle de la SPEC s'applique strictement.
-- Garde d'accès (exposé) : routes publiques `/login`, `/api/auth/login`, `/healthz`, et les assets statiques nécessaires à la page de login (`/assets/*`). Le reste : 401 JSON pour `/api/*` et upgrade WS, 302 `/login` pour les pages.
+- Garde d'accès (exposé) : routes publiques `/login`, `/api/auth/login`, `/healthz`, `/mcp` (jamais par session : Bearer `PFLUX_MCP_TOKEN` comparé en temps constant, 404 si non défini, Origin étranger → 403), et les assets statiques nécessaires à la page de login (`/assets/*`). Le reste : 401 JSON pour `/api/*` et upgrade WS, 302 `/login` pour les pages.
 - CSRF : mutations → refus si `Sec-Fetch-Site: cross-site` ou `Origin` ∉ {origine de la requête, origine de `PFLUX_PUBLIC_URL`} ; `X-CSRF-Token` = `HMAC(sessionSecret, "csrf:"+sessionId)`. En local, `GET /api/csrf` crée une session anonyme (cookie) et renvoie le jeton. `POST /api/auth/login` exige Origin valide (pas de jeton : pas encore de session) — il émet le jeton en réponse.
 - En-têtes : CSP de la SPEC, `nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Cache-Control: no-store` sur `/api/*`.
 - Logs : `redact` pino sur `*.authorization, *.apiKey, *.password, *.token, *.cookie, req.headers.cookie, req.headers.authorization, req.headers["x-csrf-token"]` ; logs de run passent par `sanitizeLogMessage` (retire secrets connus, tronque, jamais `err.message` brut d'une lib → code d'erreur générique).

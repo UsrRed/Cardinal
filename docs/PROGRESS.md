@@ -56,3 +56,4 @@
 - 2026-10-22T09:21:37.849Z — vérification finale OK — prêt à déployer
 - 2026-10-22T10:52:56.835Z — T32 terminé (Bouton « Coller » dans la console de connexion Claude)
 - 2026-10-22T10:53:32.013Z — vérification finale OK — prêt à déployer
+- 2026-10-27 — Serveur MCP `/mcp` (Bearer `PFLUX_MCP_TOKEN`) pour gérer les flux depuis un assistant ; `Config.mcpToken` et route ajoutés (INTERFACES § 3 et § 13), garde d'accès : `/mcp` public côté session. `validFeedPatch`/`parse` exportés de `http/routes/feeds.ts` et partagés avec `src/mcp/tools.ts`.

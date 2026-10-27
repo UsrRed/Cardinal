@@ -13,8 +13,9 @@ const CSP =
   "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'";
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
+/** `/mcp` has its own Bearer auth (see http/routes/mcp.ts), never the session. */
 function isPublic(path: string): boolean {
-  return path === '/login' || path === '/api/auth/login' || path === '/healthz' || path.startsWith('/assets/');
+  return path === '/mcp' || path === '/login' || path === '/api/auth/login' || path === '/healthz' || path.startsWith('/assets/');
 }
 
 /** Registered directly on the root instance (not encapsulated) so hooks cover every route. */
