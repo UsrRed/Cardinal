@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import type { Item, Page } from '../../../src/shared/types.js';
+import type { FeedSummary, Item, Page } from '../../../src/shared/types.js';
 import { get, post } from '../api/client.js';
-import { ItemFilters, ItemWire, itemsQuery, type PrioFilter, type ReadFilter } from '../components/ItemWire.js';
+import {
+  ItemFilters, ItemWire, itemsQuery, loadWireView, saveWireView, type PrioFilter, type ReadFilter, type WireView,
+} from '../components/ItemWire.js';
 import { Masthead } from '../components/Masthead.js';
 import { useAsync } from '../hooks/useAsync.js';
 
@@ -9,6 +11,9 @@ export function StreamPage() {
   const [priority, setPriority] = useState<PrioFilter>('all');
   const [read, setRead] = useState<ReadFilter>('all');
   const [page, setPage] = useState(1);
+  const [view, setView] = useState<WireView>(loadWireView);
+  const feeds = useAsync(() => get<FeedSummary[]>('/api/feeds'), []);
+  const feedNames = Object.fromEntries((feeds.data ?? []).map((f) => [f.id, f.name]));
   const { data, error, loading, reload } = useAsync(
     () => get<Page<Item>>(`/api/items?${itemsQuery({ priority, read, page })}`), [priority, read, page]);
   const [busy, setBusy] = useState(false);
@@ -17,9 +22,11 @@ export function StreamPage() {
     <>
       <Masthead title="Fil global" />
       <ItemFilters priority={priority} read={read} busy={busy}
+        view={view} onView={(v) => { setView(v); saveWireView(v); }}
         onPriority={(v) => { setPriority(v); setPage(1); }} onRead={(v) => { setRead(v); setPage(1); }}
         onMarkAll={() => void act(() => post('/api/items/read-all', priority === 'all' ? {} : { priority }))} />
       <ItemWire loading={loading} error={error} items={data} onRetry={reload} onPage={setPage}
+        view={view} feedNames={feedNames}
         onToggleRead={(i) => void act(() => post(`/api/items/${i.id}/read`, { read: !i.read }))} />
     </>
   );

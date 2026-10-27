@@ -16,6 +16,7 @@ export function Sidebar({ feedCount, unreadTotal, activeRuns, feeds = [], footer
       <nav className="nav" aria-label="Navigation principale">
         <NavLink to="/" end className={link}>Flux {feedCount !== undefined && <span className="count mute">{feedCount}</span>}</NavLink>
         <NavLink to="/stream" className={link}>Fil {!!unreadTotal && <span className="count">{unreadTotal}</span>}</NavLink>
+        <NavLink to="/daily" className={link}>Résumé</NavLink>
         <NavLink to="/runs" className={link}>Runs {!!activeRuns && <span className="count mute">{activeRuns}</span>}</NavLink>
         <NavLink to="/settings" className={link}>Réglages</NavLink>
       </nav>

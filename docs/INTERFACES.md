@@ -94,6 +94,14 @@ export interface Settings {
 export type ClaudeAuthState = 'connected' | 'api_key' | 'not_connected' | 'unknown';
 export interface ClaudeStatus { state: ClaudeAuthState; checkedAt: string | null; cliVersion: string | null }
 export interface GlobalStats { totals: Usage; runs: number; byFeed: Array<{ feedId: string; name: string; usage: Usage; runs: number }> }
+
+// Résumé journalier (jour local = fuseau settings.timezone, "AAAA-MM-JJ")
+export type DailyStatus = 'running' | 'succeeded' | 'failed';
+export interface DailyItemRef { id: string; feedId: string; feedName: string; digestId: string; title: string; url: string | null; priority: Priority }
+export interface DailyCategory { name: string; body: string; items: DailyItemRef[] }
+export interface DailyTier { priority: Priority; categories: DailyCategory[] }   // ordre high → medium → low
+export interface DailySummary { day: string; status: DailyStatus; title: string; overview: string; tiers: DailyTier[]; itemCount: number; usage: Usage; errorCode: string | null; startedAt: string; finishedAt: string | null }
+export interface DailyView { day: string; today: string; itemCount: number; highCount: number; summary: DailySummary | null; recent: Array<{ day: string; status: DailyStatus; itemCount: number }> }
 ```
 
 ## 2. Schémas zod partagés — `src/shared/schemas.ts`
@@ -194,6 +202,10 @@ interface SeenRepo {
   markSeen(feedId: string, keys: string[], now: number): void; // INSERT OR IGNORE
 }
 interface SettingsRepo { getAll(): Partial<Settings>; set(patch: Partial<Settings>): void }
+interface DailyRepo {   // table daily_summaries (migration 002), clé = jour local ; catégories stockées par id d'item, résolues à la lecture
+  get(day): DailySummary | null; begin(day, now): void; finish(day, {status, title?, overview?, tiers?, itemCount, usage, errorCode?}, now): void;
+  failRunning(now): number; recent(limit); itemsBetween(start, end, limit): DayItem[]; countBetween(start, end): {total, high};
+}
 export function purge(db: Db, olderThan: number): { runs: number; digests: number; items: number }; // ne touche jamais seen_items
 ```
 
@@ -348,6 +360,17 @@ export class Scheduler {
 }
 export function deferDelayMs(deferMinutes: number, deferCount: number): number; // min(deferMinutes·2^n, 360) min
 ```
+```ts
+// src/daily/index.ts — résumé journalier global (un appel Claude sans outil, 1 retry, items ≤ 150 triés par priorité)
+export class DailyService {
+  constructor(o: { daily: DailyRepo; runner: ClaudeRunner; clock: Clock; logger: Logger; timezone: () => string; model: string; budgetUsd: number });
+  today(): string; counts(day: string): { total: number; high: number };
+  start(day: string): void;   // asynchrone ; AppError('daily_running', 409) | AppError('no_items', 409)
+  tick(): void;               // après 06:00 locale, génère la veille si absente (index.ts, toutes les 10 min)
+}
+// src/claude : buildDailyPrompt({day, items}), validateDailyOutput(json, refs) — refs connues, citées une fois, un niveau par priorité
+// src/shared/day.ts : localDay, localHour, dayBounds, shiftDay, isValidDay, safeTz
+```
 Codes d'erreur de run (`Run.errorCode`) : `fetch_failed`, `claude_invalid_output`, `claude_failed`, `claude_usage_limit`, `claude_unauthenticated`, `claude_overloaded`, `budget_exceeded`, `cancelled`, `internal_error`.
 
 ## 10. Notifications — `src/notify/ntfy.ts`
@@ -426,6 +449,8 @@ Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Erreurs :
 | GET | `/api/items` | `?feedId&priority&read=true\|false&page&pageSize` | `Page<Item>` |
 | POST | `/api/items/:id/read` | `{read?:boolean}` (défaut true) | `{ok:true}` |
 | POST | `/api/items/read-all` | `{feedId?, priority?}` | `{updated}` |
+| GET | `/api/daily` | `?day=AAAA-MM-JJ` (défaut aujourd'hui) | `DailyView` |
+| POST | `/api/daily/:day/generate` | — | 202 `DailyView` ; 409 `daily_running` \| `no_items` ; 400 jour invalide ou futur |
 | GET | `/api/settings` | — | `Settings` |
 | PATCH | `/api/settings` | `settingsPatch` | `Settings` |
 | PUT/DELETE | `/api/settings/secrets/:name` | PUT: `{value}` | `SecretState` (jamais la valeur) |

@@ -123,6 +123,47 @@ export interface Item {
   createdAt: string;
 }
 
+export type DailyStatus = 'running' | 'succeeded' | 'failed';
+export interface DailyItemRef {
+  id: string;
+  feedId: string;
+  feedName: string;
+  digestId: string;
+  title: string;
+  url: string | null;
+  priority: Priority;
+}
+export interface DailyCategory {
+  name: string;
+  body: string;
+  items: DailyItemRef[];
+}
+export interface DailyTier {
+  priority: Priority;
+  categories: DailyCategory[];
+}
+export interface DailySummary {
+  day: string;
+  status: DailyStatus;
+  title: string;
+  overview: string;
+  tiers: DailyTier[];
+  itemCount: number;
+  usage: Usage;
+  errorCode: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+}
+/** GET /api/daily: one local day (settings timezone) and its summary, if any. */
+export interface DailyView {
+  day: string;
+  today: string;
+  itemCount: number;
+  highCount: number;
+  summary: DailySummary | null;
+  recent: Array<{ day: string; status: DailyStatus; itemCount: number }>;
+}
+
 export interface Page<T> {
   items: T[];
   total: number;

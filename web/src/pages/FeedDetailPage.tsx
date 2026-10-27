@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { DigestSummary, FeedSummary, Item, Page, Run } from '../../../src/shared/types.js';
 import { get, post } from '../api/client.js';
-import { ItemFilters, ItemWire, itemsQuery, type PrioFilter, type ReadFilter } from '../components/ItemWire.js';
+import {
+  ItemFilters, ItemWire, itemsQuery, loadWireView, saveWireView, type PrioFilter, type ReadFilter, type WireView,
+} from '../components/ItemWire.js';
 import { Masthead } from '../components/Masthead.js';
 import { Pagination } from '../components/Pagination.js';
 import { RunList } from '../components/RunList.js';
@@ -58,6 +60,7 @@ export function FeedDetailPage() {
   const [read, setRead] = useState<ReadFilter>('all');
   const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
+  const [view, setView] = useState<WireView>(loadWireView);
   const feed = useAsync(() => get<FeedSummary>(`/api/feeds/${id}`), [id]);
   const items = useAsync(() => tab === 'stream'
     ? get<Page<Item>>(`/api/items?${itemsQuery({ feedId: id, priority, read, page })}`) : Promise.resolve(null),
@@ -86,9 +89,10 @@ export function FeedDetailPage() {
       {tab === 'stream' && (
         <>
           <ItemFilters priority={priority} read={read} busy={busy}
+            view={view} onView={(v) => { setView(v); saveWireView(v); }}
             onPriority={(v) => { setPriority(v); setPage(1); }} onRead={(v) => { setRead(v); setPage(1); }}
             onMarkAll={() => void act(() => post(`/api/feeds/${id}/items/read-all`))} />
-          <ItemWire loading={items.loading} error={items.error} items={items.data} onRetry={items.reload} onPage={setPage}
+          <ItemWire loading={items.loading} error={items.error} items={items.data} onRetry={items.reload} onPage={setPage} view={view}
             onToggleRead={(i) => void act(() => post(`/api/items/${i.id}/read`, { read: !i.read }))} />
         </>
       )}

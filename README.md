@@ -57,6 +57,11 @@ La pastille « Claude » de la barre latérale indique l'état (connecté, clé 
 
 Exemples : RSS `https://hnrss.org/frontpage` ; OSV `lodash` / `npm` ; NVD `openssl`.
 
+## Fil et résumé du jour
+
+- **Fil** : tous les éléments retenus, filtrables par priorité et lecture. Le sélecteur *Vue* bascule entre la *Liste* compacte et la vue *Détaillée* en cartes (priorité, titre, résumé, lien vers l'article) ; le choix est mémorisé dans le navigateur.
+- **Résumé du jour** : une synthèse globale de tous les flux pour un jour (fuseau des Réglages) — une passe d'ensemble, puis les éléments *À retenir*, *À surveiller* et *En bref*, regroupés par Claude en catégories, avec un lien vers chaque article cité. Celui de la veille est généré automatiquement chaque matin après 6 h ; *Générer* / *Régénérer* le lance à la demande (un appel Claude, budget `PFLUX_DEFAULT_BUDGET_USD`, modèle `PFLUX_DEFAULT_MODEL`). Seuls les titres, URL, noms de flux, priorités et résumés déjà produits sont envoyés.
+
 ## Notifications ntfy
 
 - **ntfy.sh** : dans *Réglages*, serveur `https://ntfy.sh`, choisissez un sujet difficile à deviner, puis activez *Notifier* sur le flux avec un seuil de priorité. Pour un serveur protégé, ajoutez `PFLUX_NTFY_TOKEN`.

@@ -11,6 +11,8 @@ const MESSAGES: Record<string, string> = {
   forbidden_origin: 'Origine refusée.',
   not_found: 'Élément introuvable.',
   run_already_active: 'Un run est déjà en cours pour ce flux.',
+  daily_running: 'Le résumé de ce jour est déjà en cours de génération.',
+  no_items: 'Aucun élément retenu ce jour-là.',
   rate_limited: 'Trop de tentatives, réessayez plus tard.',
   destination_blocked: 'Destination non autorisée.',
 };

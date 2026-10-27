@@ -9,6 +9,7 @@ import { createDigestsRepo } from '../../src/db/repos/digests.js';
 import { createItemsRepo } from '../../src/db/repos/items.js';
 import { createSeenRepo } from '../../src/db/repos/seen.js';
 import { createSettingsRepo } from '../../src/db/repos/settings.js';
+import { createDailyRepo } from '../../src/db/repos/daily.js';
 import { executeRun, type PipelineDeps } from '../../src/pipeline/index.js';
 import { RunEventBus, type RunEvent } from '../../src/pipeline/runEvents.js';
 import { FakeClaudeRunner, type FakeStep } from '../../src/claude/fakeRunner.js';
@@ -50,6 +51,7 @@ function setup(script?: FakeStep[], opts: { notify?: boolean; notifier?: Partial
   const repos = {
     feeds: createFeedsRepo(db), runs: createRunsRepo(db), digests: createDigestsRepo(db),
     items: createItemsRepo(db), seen: createSeenRepo(db), settings: createSettingsRepo(db),
+    daily: createDailyRepo(db),
   };
   const feed = repos.feeds.create({
     name: 'F', instructions: 'x', sourceType: 'rss', sourceParams: { urls: opts.urls ?? [`${base}/rss`] },

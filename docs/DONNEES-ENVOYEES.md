@@ -5,6 +5,7 @@ Cardinal n'envoie **aucune télémétrie** et ne charge aucune ressource externe
 | Destinataire | Quand | Données envoyées |
 |---|---|---|
 | **Anthropic** (via la CLI Claude Code ou l'API) | À chaque run, étape de tri/synthèse | Vos instructions de flux, et pour chaque élément nouveau : titre, URL, date, extrait de texte (≤ 8000 caractères). Le compte ou la clé API est celui que vous avez configuré. Soumis à la politique d'Anthropic. |
+| **Anthropic** | Résumé du jour (automatique chaque matin pour la veille, ou bouton *Générer*) | Pour les éléments déjà retenus ce jour-là (150 au plus) : titre, URL, nom du flux, priorité et résumé produit par Claude (≤ 600 caractères). |
 | **OSV** (`api.osv.dev`) | Flux de type OSV | Noms de paquets et écosystèmes configurés, identifiants de vulnérabilités. |
 | **NVD** (`services.nvd.nist.gov`) | Flux de type NVD | Mots-clés, sévérité minimale, fenêtre de dates ; la clé `PFLUX_NVD_API_KEY` en en-tête si définie. |
 | **Serveurs RSS/Atom** | Flux de type RSS | Requête HTTP GET vers les URLs que vous avez saisies (votre IP et un User-Agent y sont visibles). |

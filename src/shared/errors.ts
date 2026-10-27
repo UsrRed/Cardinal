@@ -16,6 +16,8 @@ export type PublicErrorCode =
   | 'forbidden_origin'
   | 'not_found'
   | 'run_already_active'
+  | 'daily_running'
+  | 'no_items'
   | 'rate_limited'
   | 'destination_blocked'
   | 'internal_error';
