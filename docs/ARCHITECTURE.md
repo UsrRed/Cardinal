@@ -147,6 +147,7 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │       ├── styles/app.css                # shell, mast, btn, seg, stamp, prio, feeds, tape, stats, log, runs, article
 │       ├── components/
 │       │   ├── Shell.tsx Sidebar.tsx Masthead.tsx
+│       │   ├── Logo.tsx                  # tête de cardinal SVG (même dessin que web/favicon.svg)
 │       │   ├── StatusStamp.tsx PriorityBadge.tsx SourceStamp.tsx
 │       │   ├── FeedCard.tsx MiniTape.tsx PipelineTape.tsx StatsBar.tsx LogView.tsx RunList.tsx
 │       │   ├── States.tsx                # <Loading/> <Empty/> <ErrorState/> (obligatoires sur chaque vue)
