@@ -1,4 +1,4 @@
-# personnal-flux
+# cardinal
 
 Projet généré automatiquement par pj-gen.
 

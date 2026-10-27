@@ -1,6 +1,6 @@
 # Données envoyées à l'extérieur
 
-Personnal Flux n'envoie **aucune télémétrie** et ne charge aucune ressource externe dans l'interface (polices, scripts, images). Seuls les échanges ci-dessous ont lieu, déclenchés par vos flux.
+Cardinal n'envoie **aucune télémétrie** et ne charge aucune ressource externe dans l'interface (polices, scripts, images). Seuls les échanges ci-dessous ont lieu, déclenchés par vos flux.
 
 | Destinataire | Quand | Données envoyées |
 |---|---|---|

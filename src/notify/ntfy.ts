@@ -50,7 +50,7 @@ export class NtfyNotifier {
   async sendTest(t: NtfyTarget): Promise<{ ok: true } | { ok: false; error: 'destination_blocked' | 'send_failed' | 'not_configured' }> {
     if (!t.topic) return { ok: false, error: 'not_configured' };
     try {
-      await this.send(t, { title: '[Personnal Flux] Test', body: 'Notification de test.', priority: 3 });
+      await this.send(t, { title: '[Cardinal] Test', body: 'Notification de test.', priority: 3 });
       return { ok: true };
     } catch (e) {
       return { ok: false, error: (e as Error).message === BLOCKED_MSG ? 'destination_blocked' : 'send_failed' };
@@ -71,7 +71,7 @@ export class NtfyNotifier {
       .sort((a, b) => RANK[b.priority] - RANK[a.priority]);
     const click = o.publicUrl ? `${o.publicUrl.replace(/\/+$/, '')}/digests/${digestId}` : undefined;
     const msgs: NtfyMessage[] = eligible.slice(0, MAX_INDIVIDUAL).map((i) => ({
-      title: `[Personnal Flux] ${feed.name} — ${i.title}`,
+      title: `[Cardinal] ${feed.name} — ${i.title}`,
       body: (i.summary || i.justification).slice(0, 300),
       priority: PRIORITY_MAP[i.priority],
       click,
@@ -79,7 +79,7 @@ export class NtfyNotifier {
     const rest = eligible.length - MAX_INDIVIDUAL;
     if (rest > 0) {
       msgs.push({
-        title: `[Personnal Flux] ${feed.name} — ${rest} autres éléments`,
+        title: `[Cardinal] ${feed.name} — ${rest} autres éléments`,
         body: `${rest} autres éléments à consulter dans le digest.`,
         priority: 3,
         click,

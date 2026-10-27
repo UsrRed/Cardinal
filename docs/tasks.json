@@ -402,7 +402,7 @@
       "taskKey": "T13",
       "position": 12,
       "title": "Stockage des secrets et notifier ntfy",
-      "description": "ENTRÉES: SafeFetch (T05), Config (T02), SettingsRepo (T03). SORTIES: src/secrets/index.ts SecretsStore(dataDir, env): get(name), status(name) → {configured, source:'env'|'ui'}, set, clear; /data/secrets.json mode 600, écriture atomique (mkdtemp privé dans dataDir puis rename), env prioritaire. src/notify/ntfy.ts NtfyNotifier({safeFetch, secrets, settings, publicUrl}): send(msg), sendTest(feed?), notifyRun({feed, digestId, items}) → items ≥ seuil, max 5 + notification récapitulative; en-têtes Title '[Personnal Flux] <flux> — <titre>', Priority high→4/medium→3/low→2, Click '<publicUrl>/digests/:id' (absent si pas d'URL publique), Authorization Bearer si jeton; corps résumé ≤300; SsrfError → erreur générique 'destination refusée par la politique réseau'; surcharge serveur/sujet par flux.",
+      "description": "ENTRÉES: SafeFetch (T05), Config (T02), SettingsRepo (T03). SORTIES: src/secrets/index.ts SecretsStore(dataDir, env): get(name), status(name) → {configured, source:'env'|'ui'}, set, clear; /data/secrets.json mode 600, écriture atomique (mkdtemp privé dans dataDir puis rename), env prioritaire. src/notify/ntfy.ts NtfyNotifier({safeFetch, secrets, settings, publicUrl}): send(msg), sendTest(feed?), notifyRun({feed, digestId, items}) → items ≥ seuil, max 5 + notification récapitulative; en-têtes Title '[Cardinal] <flux> — <titre>', Priority high→4/medium→3/low→2, Click '<publicUrl>/digests/:id' (absent si pas d'URL publique), Authorization Bearer si jeton; corps résumé ≤300; SsrfError → erreur générique 'destination refusée par la politique réseau'; surcharge serveur/sujet par flux.",
       "filesHint": [
         "src/net/safeFetch.ts",
         "src/config/index.ts"
@@ -782,7 +782,7 @@
       "acceptance": [
         "Test (renderToStaticMarkup): SafeText avec '<script>alert(1)</script>' produit du texte échappé, aucun élément script",
         "Test: client API ajoute X-CSRF-Token sur les mutations",
-        "Observable: à l'écran, la barre latérale 232px avec marque PF rouge, wordmark « Personnal Flux » et double filet reproduit la maquette docs/design",
+        "Observable: à l'écran, la barre latérale 232px avec marque C rouge, wordmark « Cardinal » et double filet reproduit la maquette docs/design",
         "Observable: la bascule clair/sombre change immédiatement l'apparence et reste après rechargement",
         "Observable: aucune requête réseau vers un domaine externe (polices système)"
       ],

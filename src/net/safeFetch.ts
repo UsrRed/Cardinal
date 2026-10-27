@@ -79,7 +79,7 @@ export function createSafeFetch(opts: SafeFetchOptions): SafeFetch {
         u,
         {
           method,
-          headers: { 'user-agent': opts.userAgent ?? 'personnal-flux', ...(req.headers ?? {}) },
+          headers: { 'user-agent': opts.userAgent ?? 'cardinal', ...(req.headers ?? {}) },
           signal,
           // Pinned lookup: connect on the already validated IP; Host/SNI/cert keep the hostname.
           lookup: ((_h: string, o: { all?: boolean }, cb: (...a: unknown[]) => void) =>

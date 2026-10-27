@@ -1,6 +1,6 @@
-# Déploiement — Personnal Flux
+# Déploiement — Cardinal
 
-Ce document décrit comment déployer Personnal Flux. La cible concrète documentée est la **machine locale via Docker Compose** (image `personnal-flux:local`, publiée sur `127.0.0.1:8787`). Les variantes (accès réseau, Node natif) sont décrites ensuite.
+Ce document décrit comment déployer Cardinal. La cible concrète documentée est la **machine locale via Docker Compose** (image `cardinal:local`, publiée sur `127.0.0.1:8787`). Les variantes (accès réseau, Node natif) sont décrites ensuite.
 
 Les valeurs des secrets ne figurent jamais dans ce document : elles se saisissent dans le fichier `.env` local (ignoré par git).
 
@@ -17,7 +17,7 @@ Le conteneur n'est pas exposé en HTTP clair : ne publiez jamais le port 8787 di
 ## 2. Prérequis
 
 - Docker Engine avec le plugin **Docker Compose v2** (`docker compose version`).
-- Un dépôt cloné (`git clone <url-du-dépôt> personnal-flux`).
+- Un dépôt cloné (`git clone <url-du-dépôt> cardinal`).
 - Un accès Claude, **au choix** :
   - compte Claude (abonnement) : connexion via la console intégrée, aucune variable requise ;
   - ou clé API Anthropic : variable `PFLUX_ANTHROPIC_API_KEY`.
@@ -39,7 +39,7 @@ Le conteneur n'est pas exposé en HTTP clair : ne publiez jamais le port 8787 di
 ### 3.1 Préparer la configuration
 
 ```bash
-cd personnal-flux
+cd cardinal
 cp .env.example .env
 chmod 600 .env
 ```
@@ -138,18 +138,18 @@ Hors conteneur, `PFLUX_HOST` n'est pris en compte que si `PFLUX_EXPOSE=1`.
 
 Le volume `pflux-data` contient la base SQLite, `session.key`, les secrets saisis dans l'interface et les identifiants Claude **non chiffrés**. Protégez ses sauvegardes en conséquence.
 
-Le nom du volume dépend du nom du dossier du projet (`personnal-flux_pflux-data` dans le dépôt cloné sous ce nom) : vérifiez avec `docker volume ls`.
+Le nom du volume dépend du nom du dossier du projet (`cardinal_pflux-data` dans le dépôt cloné sous ce nom) : vérifiez avec `docker volume ls`.
 
 ```bash
 # sauvegarde (arrêt court pour un instantané cohérent)
 docker compose stop
-docker run --rm -v personnal-flux_pflux-data:/data -v "$PWD":/backup debian:bookworm-slim \
+docker run --rm -v cardinal_pflux-data:/data -v "$PWD":/backup debian:bookworm-slim \
   tar czf /backup/pflux-backup.tgz -C /data .
 docker compose start
 
 # restauration
 docker compose stop
-docker run --rm -v personnal-flux_pflux-data:/data -v "$PWD":/backup debian:bookworm-slim \
+docker run --rm -v cardinal_pflux-data:/data -v "$PWD":/backup debian:bookworm-slim \
   sh -c 'tar xzf /backup/pflux-backup.tgz -C /data && chown -R 10001:10001 /data'
 docker compose start
 ```

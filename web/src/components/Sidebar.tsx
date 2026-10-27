@@ -12,7 +12,7 @@ const link = ({ isActive }: { isActive: boolean }) => (isActive ? 'on' : undefin
 export function Sidebar({ feedCount, unreadTotal, activeRuns, feeds = [], footer }: SidebarProps) {
   return (
     <aside className="side">
-      <div className="brand"><span className="mark">PF</span><span className="wordmark">Personnal <i>Flux</i></span></div>
+      <div className="brand"><span className="mark">C</span><span className="wordmark">Cardinal</span></div>
       <nav className="nav" aria-label="Navigation principale">
         <NavLink to="/" end className={link}>Flux {feedCount !== undefined && <span className="count mute">{feedCount}</span>}</NavLink>
         <NavLink to="/stream" className={link}>Fil {!!unreadTotal && <span className="count">{unreadTotal}</span>}</NavLink>

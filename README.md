@@ -1,6 +1,6 @@
-# Personnal Flux
+# Cardinal
 
-Veille personnelle automatisée. Vous décrivez un sujet en langage naturel ; Personnal Flux récupère les sources (RSS/Atom, OSV, NVD), supprime les doublons, fait trier et résumer le tout par Claude, puis publie un digest lisible et, au choix, envoie une notification [ntfy](https://ntfy.sh).
+Veille personnelle automatisée. Vous décrivez un sujet en langage naturel ; Cardinal récupère les sources (RSS/Atom, OSV, NVD), supprime les doublons, fait trier et résumer le tout par Claude, puis publie un digest lisible et, au choix, envoie une notification [ntfy](https://ntfy.sh).
 
 - Application **mono-utilisateur** : une interface web, une base SQLite, aucun service externe obligatoire hors Claude.
 - Par défaut, l'interface n'écoute que sur la boucle locale (`127.0.0.1`).
@@ -19,7 +19,7 @@ Pour un déploiement Docker, seuls Docker et Docker Compose sont requis. Voir [`
 ## Installation
 
 ```bash
-git clone <url-du-dépôt> personnal-flux && cd personnal-flux
+git clone <url-du-dépôt> cardinal && cd cardinal
 npm ci && npx playwright install chromium
 ```
 

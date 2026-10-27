@@ -11,7 +11,7 @@ export function LoginView({ error, busy, onSubmit }: { error: string | null; bus
   return (
     <div className="login">
       <form className="login-box" onSubmit={(e) => { e.preventDefault(); onSubmit(password); }}>
-        <h2>Personnal Flux</h2>
+        <h2>Cardinal</h2>
         <div className="field">
           <label htmlFor="login-pw">Mot de passe</label>
           <input id="login-pw" className="input" type="password" autoComplete="current-password" autoFocus

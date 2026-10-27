@@ -6,7 +6,7 @@ async function main(): Promise<void> {
     config = loadConfig(process.env);
   } catch (e) {
     if (e instanceof ConfigError) {
-      console.error('Personnal Flux: configuration invalide: ' + e.issues.join('; '));
+      console.error('Cardinal: configuration invalide: ' + e.issues.join('; '));
       process.exit(1);
     }
     throw e;
