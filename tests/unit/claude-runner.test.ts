@@ -25,7 +25,7 @@ afterAll(() => rmSync(dir, { recursive: true, force: true }));
 function runner(key: string | null = null) {
   return new CliClaudeRunner({ bin, home: dir, getApiKey: () => key, logger: createLogger('fatal') });
 }
-const req = (prompt: string, signal = new AbortController().signal) => ({ prompt, model: 'sonnet', budgetUsd: 0.5, signal });
+const req = (prompt: string, signal = new AbortController().signal) => ({ prompt, model: 'sonnet', signal });
 
 describe('CliClaudeRunner', () => {
   it('rebuilds env, passes argv, prompt on stdin, private cwd removed', async () => {
@@ -36,7 +36,6 @@ describe('CliClaudeRunner', () => {
     delete process.env.AWS_SECRET;
     delete process.env.GITHUB_TOKEN;
     expect(r.json).toEqual({ items: [], ok: true });
-    expect(r.usage).toEqual({ inputTokens: 321, outputTokens: 45, costUsd: 0.0123 });
     const d = JSON.parse(readFileSync(dump, 'utf8'));
     expect(d.env.AWS_SECRET).toBeUndefined();
     expect(d.env.GITHUB_TOKEN).toBeUndefined();
@@ -80,9 +79,9 @@ describe('CliClaudeRunner', () => {
 });
 
 describe('parse / classify', () => {
-  it('extracts usage from the result event', () => {
-    const out = JSON.stringify({ type: 'result', is_error: false, result: 'hi', total_cost_usd: 0.5, usage: { input_tokens: 1, output_tokens: 2 } });
-    expect(parseStreamJson(`garbage\n${out}\n`)).toMatchObject({ text: 'hi', usage: { inputTokens: 1, outputTokens: 2, costUsd: 0.5 } });
+  it('extracts the text from the result event', () => {
+    const out = JSON.stringify({ type: 'result', is_error: false, result: 'hi' });
+    expect(parseStreamJson(`garbage\n${out}\n`)).toMatchObject({ text: 'hi', isError: false });
   });
   it('classifies', () => {
     const c = (stderr: string) => classifyError({ stdout: '', stderr, code: 1 });

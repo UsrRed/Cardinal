@@ -7,7 +7,6 @@ const MAP: Record<RunStatus | 'paused', [string, string]> = {
   failed: ['s-fail', 'Échec'],
   deferred: ['s-def', 'Reporté'],
   cancelled: ['s-cancel', 'Annulé'],
-  budget_exceeded: ['s-budget', 'Budget dépassé'],
   paused: ['s-pause', 'En pause'],
 };
 

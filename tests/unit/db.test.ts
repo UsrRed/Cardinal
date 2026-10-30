@@ -26,7 +26,7 @@ describe('db', () => {
     const db = setup();
     migrate(db, MIG);
     const ids = db.prepare('SELECT id FROM schema_migrations').all();
-    expect(ids).toEqual([{ id: '001' }, { id: '002' }]);
+    expect(ids).toEqual([{ id: '001' }, { id: '002' }, { id: '003' }]);
     expect(db.pragma('foreign_keys', { simple: true })).toBe(1);
   });
 

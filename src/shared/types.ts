@@ -1,6 +1,6 @@
 export type SourceType = 'rss' | 'osv' | 'nvd';
 export type Priority = 'high' | 'medium' | 'low';
-export type RunStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'deferred' | 'cancelled' | 'budget_exceeded';
+export type RunStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'deferred' | 'cancelled';
 export type RunStep = 'fetch' | 'dedup' | 'triage' | 'digest' | 'notify';
 export type StepState = 'todo' | 'running' | 'done' | 'error' | 'skipped';
 export type LogLevel = 'info' | 'warn' | 'error';
@@ -26,7 +26,6 @@ export interface Feed {
   ntfyServer: string | null;
   ntfyTopic: string | null;
   model: string;
-  budgetUsd: number;
   createdAt: string;
   updatedAt: string;
   lastRunAt: string | null;
@@ -36,12 +35,6 @@ export interface FeedSummary extends Feed {
   unreadCount: number;
   lastRunStatus: RunStatus | null;
   activeRunId: string | null;
-}
-
-export interface Usage {
-  inputTokens: number;
-  outputTokens: number;
-  costUsd: number;
 }
 
 export interface RunStepInfo {
@@ -56,7 +49,6 @@ export interface Run {
   status: RunStatus;
   trigger: 'schedule' | 'manual' | 'catchup';
   steps: RunStepInfo[];
-  usage: Usage;
   fetchedCount: number;
   newCount: number;
   keptCount: number;
@@ -90,7 +82,6 @@ export interface Digest {
   title: string;
   lede: string;
   sections: DigestSection[];
-  partial: boolean;
   createdAt: string;
   items: Item[];
 }
@@ -102,7 +93,6 @@ export interface DigestSummary {
   lede: string;
   itemCount: number;
   highCount: number;
-  partial: boolean;
   createdAt: string;
 }
 
@@ -149,7 +139,6 @@ export interface DailySummary {
   overview: string;
   tiers: DailyTier[];
   itemCount: number;
-  usage: Usage;
   errorCode: string | null;
   startedAt: string;
   finishedAt: string | null;
@@ -190,9 +179,4 @@ export interface ClaudeStatus {
   state: ClaudeAuthState;
   checkedAt: string | null;
   cliVersion: string | null;
-}
-export interface GlobalStats {
-  totals: Usage;
-  runs: number;
-  byFeed: Array<{ feedId: string; name: string; usage: Usage; runs: number }>;
 }

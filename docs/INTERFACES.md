@@ -7,7 +7,7 @@
 ```ts
 export type SourceType = 'rss' | 'osv' | 'nvd';
 export type Priority = 'high' | 'medium' | 'low';
-export type RunStatus = 'queued'|'running'|'succeeded'|'failed'|'deferred'|'cancelled'|'budget_exceeded';
+export type RunStatus = 'queued'|'running'|'succeeded'|'failed'|'deferred'|'cancelled';
 export type RunStep = 'fetch'|'dedup'|'triage'|'digest'|'notify';
 export type StepState = 'todo'|'running'|'done'|'error'|'skipped';
 export type LogLevel = 'info'|'warn'|'error';
@@ -33,7 +33,6 @@ export interface Feed {
   ntfyServer: string | null;        // http(s) URL
   ntfyTopic: string | null;         // ^[A-Za-z0-9_-]{1,64}$
   model: string;                    // défaut config.defaultModel ('sonnet'), ^[a-z0-9.\-]{1,64}$
-  budgetUsd: number;                // 0.01..50, défaut 0.50
   createdAt: string; updatedAt: string;
   lastRunAt: string | null; nextRunAt: string | null;
 }
@@ -43,15 +42,12 @@ export interface FeedSummary extends Feed {
   activeRunId: string | null;       // run queued|running
 }
 
-export interface Usage { inputTokens: number; outputTokens: number; costUsd: number }
-
 export interface RunStepInfo { step: RunStep; state: StepState; detail: string | null } // detail ≤ 200
 export interface Run {
   id: string; feedId: string; feedName: string;
   status: RunStatus;
   trigger: 'schedule' | 'manual' | 'catchup';
   steps: RunStepInfo[];             // toujours 5 entrées dans l'ordre RunStep
-  usage: Usage;
   fetchedCount: number; newCount: number; keptCount: number; notifiedCount: number;
   noNews: boolean;
   digestId: string | null;
@@ -64,11 +60,10 @@ export interface DigestSection { heading: string; itemRefs: string[]; body: stri
 export interface Digest {
   id: string; feedId: string; feedName: string; runId: string;
   title: string; lede: string; sections: DigestSection[];
-  partial: boolean;                 // true si budget_exceeded
   createdAt: string;
   items: Item[];                    // éléments retenus du digest
 }
-export interface DigestSummary { id: string; feedId: string; feedName: string; title: string; lede: string; itemCount: number; highCount: number; partial: boolean; createdAt: string }
+export interface DigestSummary { id: string; feedId: string; feedName: string; title: string; lede: string; itemCount: number; highCount: number; createdAt: string }
 
 export interface Item {
   id: string; feedId: string; digestId: string; runId: string;
@@ -93,14 +88,13 @@ export interface Settings {
 }
 export type ClaudeAuthState = 'connected' | 'api_key' | 'not_connected' | 'unknown';
 export interface ClaudeStatus { state: ClaudeAuthState; checkedAt: string | null; cliVersion: string | null }
-export interface GlobalStats { totals: Usage; runs: number; byFeed: Array<{ feedId: string; name: string; usage: Usage; runs: number }> }
 
 // Résumé journalier (jour local = fuseau settings.timezone, "AAAA-MM-JJ")
 export type DailyStatus = 'running' | 'succeeded' | 'failed';
 export interface DailyItemRef { id: string; feedId: string; feedName: string; digestId: string; title: string; url: string | null; priority: Priority }
 export interface DailyCategory { name: string; body: string; items: DailyItemRef[] }
 export interface DailyTier { priority: Priority; categories: DailyCategory[] }   // ordre high → medium → low
-export interface DailySummary { day: string; status: DailyStatus; title: string; overview: string; tiers: DailyTier[]; itemCount: number; usage: Usage; errorCode: string | null; startedAt: string; finishedAt: string | null }
+export interface DailySummary { day: string; status: DailyStatus; title: string; overview: string; tiers: DailyTier[]; itemCount: number; errorCode: string | null; startedAt: string; finishedAt: string | null }
 export interface DailyView { day: string; today: string; itemCount: number; highCount: number; summary: DailySummary | null; recent: Array<{ day: string; status: DailyStatus; itemCount: number }> }
 ```
 
@@ -108,7 +102,7 @@ export interface DailyView { day: string; today: string; itemCount: number; high
 
 ```ts
 export const feedInputSchema: z.ZodType<FeedInput>;   // discriminatedUnion('sourceType', rss|osv|nvd) + champs communs
-export type FeedInput = Omit<Feed,'id'|'createdAt'|'updatedAt'|'lastRunAt'|'nextRunAt'>; // model/budgetUsd/notify… optionnels avec défauts
+export type FeedInput = Omit<Feed,'id'|'createdAt'|'updatedAt'|'lastRunAt'|'nextRunAt'>; // model/notify… optionnels avec défauts
 export const feedPatchSchema;          // partial(feedInput) ; si sourceType présent, sourceParams requis
 export const feedExportSchema;         // { version: 1, exportedAt, feeds: FeedInput[] } (sans id, sans secrets)
 export const settingsPatchSchema;      // partial(Settings sans overriddenByEnv/secrets) ; timezone validé via Intl.supportedValuesOf('timeZone')
@@ -139,7 +133,6 @@ export interface Config {
   retentionDays: number;        // défaut 0
   tz: string;                   // PFLUX_TZ, défaut 'UTC'
   defaultModel: string;         // défaut 'sonnet'
-  defaultBudgetUsd: number;     // défaut 1
   anthropicApiKey: string | null; nvdApiKey: string | null; ntfyToken: string | null;
   mcpToken: string | null;      // PFLUX_MCP_TOKEN (≥32 car.) ; null → /mcp absent (404)
   claudeBin: string;            // PFLUX_CLAUDE_BIN, défaut <root>/node_modules/.bin/claude
@@ -181,15 +174,13 @@ interface RunsRepo {
   markRunning(id: string, now: number): boolean;          // queued→running (atomique)
   setStep(id: string, step: RunStep, state: StepState, detail?: string): void;
   setCounts(id: string, c: Partial<Pick<Run,'fetchedCount'|'newCount'|'keptCount'|'notifiedCount'|'noNews'>>): void;
-  addUsage(id: string, u: Usage): void;
   finish(id: string, status: Exclude<RunStatus,'queued'|'running'>, now: number, extra?: { errorCode?: string; digestId?: string }): void;
   requeueRunning(): number;                               // au démarrage
   appendLog(id: string, level: LogLevel, step: RunStep | null, message: string, now: number): RunLog;
   logs(id: string, afterId?: number): RunLog[];
-  usageByFeed(): GlobalStats;
 }
 interface DigestsRepo {
-  create(d: { feedId: string; runId: string; title: string; lede: string; sections: DigestSection[]; partial: boolean }, now: number): string;
+  create(d: { feedId: string; runId: string; title: string; lede: string; sections: DigestSection[] }, now: number): string;
   get(id: string): Digest | null; listByFeed(feedId: string | null, page: number, pageSize: number): Page<DigestSummary>;
 }
 interface ItemsRepo {
@@ -203,7 +194,7 @@ interface SeenRepo {
 }
 interface SettingsRepo { getAll(): Partial<Settings>; set(patch: Partial<Settings>): void }
 interface DailyRepo {   // table daily_summaries (migration 002), clé = jour local ; catégories stockées par id d'item, résolues à la lecture
-  get(day): DailySummary | null; begin(day, now): void; finish(day, {status, title?, overview?, tiers?, itemCount, usage, errorCode?}, now): void;
+  get(day): DailySummary | null; begin(day, now): void; finish(day, {status, title?, overview?, tiers?, itemCount, errorCode?}, now): void;
   failRunning(now): number; recent(limit); itemsBetween(start, end, limit): DayItem[]; countBetween(start, end): {total, high};
 }
 export function purge(db: Db, olderThan: number): { runs: number; digests: number; items: number }; // ne touche jamais seen_items
@@ -266,11 +257,11 @@ export function filterUnseen(items: RawItem[], seenRepo: Pick<SeenRepo,"filterUn
 ## 8. Claude — `src/claude`
 
 ```ts
-export interface RunRequest { prompt: string; model: string; budgetUsd: number; signal: AbortSignal }
-export interface RunResult { json: unknown; usage: Usage }     // json = JSON.parse du texte final (ou lève ClaudeError 'invalid_output')
+export interface RunRequest { prompt: string; model: string; signal: AbortSignal }
+export interface RunResult { json: unknown }     // json = JSON.parse du texte final (ou lève ClaudeError 'invalid_output')
 export interface ClaudeRunner { run(req: RunRequest): Promise<RunResult> }
 export type ClaudeErrorKind = 'usage_limit'|'unauthenticated'|'overloaded'|'invalid_output'|'cancelled'|'spawn_failed'|'unknown';
-export class ClaudeError extends Error { kind: ClaudeErrorKind; usage?: Usage }
+export class ClaudeError extends Error { kind: ClaudeErrorKind }
 export const DEFERRABLE: ReadonlySet<ClaudeErrorKind>;          // usage_limit, unauthenticated, overloaded
 
 export function buildClaudeEnv(o: { home: string; apiKey: string | null; lang?: string }): Record<string,string>;
@@ -286,12 +277,12 @@ export class FakeClaudeRunner implements ClaudeRunner {
   constructor(script?: FakeStep[]);
   calls: RunRequest[];
 }
-export type FakeStep = { kind: 'valid'; costUsd?: number } | { kind: 'raw'; text: string; costUsd?: number }
+export type FakeStep = { kind: 'valid' } | { kind: 'raw'; text: string }
   | { kind: 'invalid_json' } | { kind: 'invented_url' } | { kind: 'unknown_ref' } | { kind: 'error'; error: ClaudeErrorKind } | { kind: 'delay'; ms: number };
 // sans script : génère depuis le prompt une sortie valide (keep=true, premier item 'high', sources = URL d'entrée) — utilisé par l'e2e.
 
-export function parseStreamJson(stdout: string): { text: string | null; usage: Usage; isError: boolean; errorText: string | null };
-// usage depuis l'événement {type:'result', total_cost_usd, usage:{input_tokens, output_tokens}}
+export function parseStreamJson(stdout: string): { text: string | null; isError: boolean; errorText: string | null };
+// texte et erreur depuis l'événement {type:'result', result, is_error, subtype}
 export function classifyError(o: { stdout: string; stderr: string; code: number | null }): ClaudeErrorKind;
 
 export const SYSTEM_HEADER: string;      // consigne fixe anti-injection + format JSON strict
@@ -311,15 +302,13 @@ export function validateOutput<T>(kind: 'triage'|'digest', json: unknown, ctx: {
 // rejette: schéma, ref inconnue/dupliquée, URL citée ∉ allowedUrls, itemRefs de section inconnus ou non keep.
 
 export interface EngineResult {
-  status: 'ok' | 'budget_exceeded';
   triaged: TriageItem[];            // items effectivement traités
   processedRefs: string[];          // à marquer vus
   digest: DigestOutput['digest'] | null;
-  usage: Usage;
 }
-export function runTriageAndDigest(o: { runner: ClaudeRunner; feed: Pick<Feed,'name'|'instructions'|'model'|'budgetUsd'>; items: PromptItem[]; signal: AbortSignal; batchSize?: number /*40*/; onLog(level: LogLevel, msg: string): void; onUsage(u: Usage): void }): Promise<EngineResult>;
+export function runTriageAndDigest(o: { runner: ClaudeRunner; feed: Pick<Feed,'name'|'instructions'|'model'>; items: PromptItem[]; signal: AbortSignal; batchSize?: number /*40*/; onLog(level: LogLevel, msg: string): void }): Promise<EngineResult>;
 // lève ClaudeError (kind déférable, 'invalid_output' après 1 retry, 'cancelled', …)
-export function checkClaudeStatus(runner: ClaudeRunner, hasApiKey: boolean): Promise<ClaudeStatus>; // prompt minimal, budget 0.05
+export function checkClaudeStatus(runner: ClaudeRunner, hasApiKey: boolean): Promise<ClaudeStatus>; // prompt minimal, modèle haiku
 ```
 
 ## 9. Pipeline, file, ordonnanceur
@@ -329,8 +318,7 @@ export function checkClaudeStatus(runner: ClaudeRunner, hasApiKey: boolean): Pro
 export type RunEvent =
   | { type: 'run.status'; runId: string; feedId: string; status: RunStatus; errorCode: string | null }
   | { type: 'run.step'; runId: string; step: RunStep; state: StepState; detail: string | null }
-  | { type: 'run.log'; runId: string; log: RunLog }
-  | { type: 'run.usage'; runId: string; usage: Usage };
+  | { type: 'run.log'; runId: string; log: RunLog };
 export class RunEventBus { emit(e: RunEvent): void; on(fn: (e: RunEvent) => void): () => void }
 
 // src/pipeline/index.ts
@@ -363,7 +351,7 @@ export function deferDelayMs(deferMinutes: number, deferCount: number): number; 
 ```ts
 // src/daily/index.ts — résumé journalier global (un appel Claude sans outil, 1 retry, items ≤ 150 triés par priorité)
 export class DailyService {
-  constructor(o: { daily: DailyRepo; runner: ClaudeRunner; clock: Clock; logger: Logger; timezone: () => string; model: string; budgetUsd: number });
+  constructor(o: { daily: DailyRepo; runner: ClaudeRunner; clock: Clock; logger: Logger; timezone: () => string; model: string });
   today(): string; counts(day: string): { total: number; high: number };
   start(day: string): void;   // asynchrone ; AppError('daily_running', 409) | AppError('no_items', 409)
   tick(): void;               // après 06:00 locale, génère la veille si absente (index.ts, toutes les 10 min)
@@ -371,7 +359,7 @@ export class DailyService {
 // src/claude : buildDailyPrompt({day, items}), validateDailyOutput(json, refs) — refs connues, citées une fois, un niveau par priorité
 // src/shared/day.ts : localDay, localHour, dayBounds, shiftDay, isValidDay, safeTz
 ```
-Codes d'erreur de run (`Run.errorCode`) : `fetch_failed`, `claude_invalid_output`, `claude_failed`, `claude_usage_limit`, `claude_unauthenticated`, `claude_overloaded`, `budget_exceeded`, `cancelled`, `internal_error`.
+Codes d'erreur de run (`Run.errorCode`) : `fetch_failed`, `claude_invalid_output`, `claude_failed`, `claude_usage_limit`, `claude_unauthenticated`, `claude_overloaded`, `cancelled`, `internal_error`.
 
 ## 10. Notifications — `src/notify/ntfy.ts`
 
@@ -457,13 +445,12 @@ Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Erreurs :
 | POST | `/api/settings/test-notify` | — | `{ok:true}` \| `{ok:false,error}` |
 | GET | `/api/claude/status` | — | `ClaudeStatus` |
 | POST | `/api/claude/check` | — | `ClaudeStatus` |
-| GET | `/api/stats` | — | `GlobalStats` |
 
 Pagination : `page` ≥ 1 (défaut 1), `pageSize` 1..100 (défaut 20).
 
 ### MCP — `POST /mcp`
 
-Hors `/api/*` : ni session ni CSRF. `Authorization: Bearer <PFLUX_MCP_TOKEN>` sinon 401 ; non configuré → 404 ; `Origin` étranger → 403 ; `GET`/`DELETE` → 405. JSON-RPC 2.0 (message seul ou lot), réponses `application/json` uniquement, notifications → 202. Méthodes : `initialize` (versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05), `ping`, `tools/list`, `tools/call`. Outils (`src/mcp/tools.ts`) : `list_feeds`, `get_feed {id}`, `test_feed_url {url}`, `create_feed {FeedInput sans ntfyServer/ntfyTopic ; model/budgetUsd par défaut = config}`, `update_feed {id, …feedPatch}`, `set_feed_enabled {id, enabled}`, `run_feed {id}`. Résultat : JSON en `content[0].text` ; `AppError` → `isError:true`, texte `code` ou `code: {fields}`.
+Hors `/api/*` : ni session ni CSRF. `Authorization: Bearer <PFLUX_MCP_TOKEN>` sinon 401 ; non configuré → 404 ; `Origin` étranger → 403 ; `GET`/`DELETE` → 405. JSON-RPC 2.0 (message seul ou lot), réponses `application/json` uniquement, notifications → 202. Méthodes : `initialize` (versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05), `ping`, `tools/list`, `tools/call`. Outils (`src/mcp/tools.ts`) : `list_feeds`, `get_feed {id}`, `test_feed_url {url}`, `create_feed {FeedInput sans ntfyServer/ntfyTopic ; model par défaut = config}`, `update_feed {id, …feedPatch}`, `set_feed_enabled {id, enabled}`, `run_feed {id}`. Résultat : JSON en `content[0].text` ; `AppError` → `isError:true`, texte `code` ou `code: {fields}`.
 
 ## 14. WebSocket
 

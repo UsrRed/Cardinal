@@ -60,7 +60,7 @@ Exemples : RSS `https://hnrss.org/frontpage` ; OSV `lodash` / `npm` ; NVD `opens
 ## Fil et résumé du jour
 
 - **Fil** : tous les éléments retenus, filtrables par priorité et lecture. Le sélecteur *Vue* bascule entre la *Liste* compacte et la vue *Détaillée* en cartes (priorité, titre, résumé, lien vers l'article) ; le choix est mémorisé dans le navigateur.
-- **Résumé du jour** : une synthèse globale de tous les flux pour un jour (fuseau des Réglages) — une passe d'ensemble, puis les éléments *À retenir*, *À surveiller* et *En bref*, regroupés par Claude en catégories, avec un lien vers chaque article cité. Celui de la veille est généré automatiquement chaque matin après 6 h ; *Générer* / *Régénérer* le lance à la demande (un appel Claude, budget `PFLUX_DEFAULT_BUDGET_USD`, modèle `PFLUX_DEFAULT_MODEL`). Seuls les titres, URL, noms de flux, priorités et résumés déjà produits sont envoyés.
+- **Résumé du jour** : une synthèse globale de tous les flux pour un jour (fuseau des Réglages) — une passe d'ensemble, puis les éléments *À retenir*, *À surveiller* et *En bref*, regroupés par Claude en catégories, avec un lien vers chaque article cité. Celui de la veille est généré automatiquement chaque matin après 6 h ; *Générer* / *Régénérer* le lance à la demande (un appel Claude, modèle `PFLUX_DEFAULT_MODEL`). Seuls les titres, URL, noms de flux, priorités et résumés déjà produits sont envoyés.
 
 ## Notifications ntfy
 
@@ -147,7 +147,6 @@ L'interface est alors sur <http://127.0.0.1:8787>. Les données vivent dans le v
 | `PFLUX_RETENTION_DAYS` | `0` | Purge des anciens digests (0 = conserver) |
 | `PFLUX_TZ` | `UTC` | Fuseau horaire IANA |
 | `PFLUX_DEFAULT_MODEL` | `sonnet` | Modèle par défaut des nouveaux flux |
-| `PFLUX_DEFAULT_BUDGET_USD` | `1` | Budget par run par défaut |
 | `PFLUX_ANTHROPIC_API_KEY` | — | Clé API Anthropic (secret) |
 | `PFLUX_NVD_API_KEY` | — | Clé API NVD (secret) |
 | `PFLUX_NTFY_TOKEN` | — | Jeton d'accès ntfy (secret) |
@@ -165,4 +164,4 @@ Une variable d'environnement prime sur le réglage équivalent de l'interface (s
 - **Par défaut** : écoute sur la boucle locale uniquement. En mode exposé, mot de passe obligatoire, cookies de session signés, protection CSRF, limitation des tentatives de connexion.
 - **SSRF** : les requêtes sortantes (flux, ntfy) refusent les adresses privées, loopback et métadonnées cloud, avec vérification de l'IP de connexion (anti-rebinding), sauf entrées explicites de `PFLUX_SSRF_ALLOWLIST`.
 - **Contenu non fiable** : les articles sont traités comme des données ; le XML est analysé sans entités ni DTD ; la sortie de Claude est validée par schéma ; l'interface n'affiche que du texte échappé.
-- **Limites** : les résumés de Claude peuvent être inexacts, vérifiez les sources avant d'agir ; une injection de prompt dans un article peut fausser un résumé ou une priorité (sans accès à des outils ni à vos secrets) ; les identifiants Claude et les secrets résident dans le répertoire de données **non chiffré** : protégez le volume et ses sauvegardes ; pas de TLS intégré ; le coût dépend de votre usage (budget par run plafonné).
+- **Limites** : les résumés de Claude peuvent être inexacts, vérifiez les sources avant d'agir ; une injection de prompt dans un article peut fausser un résumé ou une priorité (sans accès à des outils ni à vos secrets) ; les identifiants Claude et les secrets résident dans le répertoire de données **non chiffré** : protégez le volume et ses sauvegardes ; pas de TLS intégré.

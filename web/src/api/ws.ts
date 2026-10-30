@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { Run, RunLog, RunStatus, RunStep, StepState, Usage } from '../../../src/shared/types.js';
+import type { Run, RunLog, RunStatus, RunStep, StepState } from '../../../src/shared/types.js';
 
 export type RunEvent =
   | { type: 'run.snapshot'; run: Run; logs: RunLog[] }
   | { type: 'run.status'; runId: string; feedId: string; status: RunStatus; errorCode: string | null }
   | { type: 'run.step'; runId: string; step: RunStep; state: StepState; detail: string | null }
-  | { type: 'run.log'; runId: string; log: RunLog }
-  | { type: 'run.usage'; runId: string; usage: Usage };
+  | { type: 'run.log'; runId: string; log: RunLog };
 
 export function wsUrl(runId?: string): string {
   const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';

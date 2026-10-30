@@ -1,4 +1,4 @@
-import type { DailyItemRef, DailyStatus, DailySummary, Priority, Usage } from '../../shared/types.js';
+import type { DailyItemRef, DailyStatus, DailySummary, Priority } from '../../shared/types.js';
 import type { Db } from '../index.js';
 
 /** Tiers as stored: categories reference item ids, resolved at read time (items may have been purged). */
@@ -17,7 +17,7 @@ export interface DailyRepo {
   begin(day: string, now: number): void;
   finish(day: string, r: {
     status: Exclude<DailyStatus, 'running'>; title?: string; overview?: string; tiers?: StoredTier[];
-    itemCount: number; usage: Usage; errorCode?: string | null;
+    itemCount: number; errorCode?: string | null;
   }, now: number): void;
   /** Marks rows left running by a previous process as failed. */
   failRunning(now: number): number;
@@ -29,7 +29,7 @@ export interface DailyRepo {
 
 interface Row {
   day: string; status: DailyStatus; title: string; overview: string; tiers: string; item_count: number;
-  input_tokens: number; output_tokens: number; cost_usd: number; error_code: string | null;
+  error_code: string | null;
   started_at: number; finished_at: number | null;
 }
 interface ItemRow {
@@ -72,7 +72,6 @@ export function createDailyRepo(db: Db): DailyRepo {
             items: c.itemIds.map((id) => refs.get(id)).filter((x): x is DailyItemRef => !!x),
           })),
         })),
-        usage: { inputTokens: r.input_tokens, outputTokens: r.output_tokens, costUsd: r.cost_usd },
         errorCode: r.error_code,
         startedAt: new Date(r.started_at).toISOString(),
         finishedAt: r.finished_at === null ? null : new Date(r.finished_at).toISOString(),
@@ -87,10 +86,10 @@ export function createDailyRepo(db: Db): DailyRepo {
     finish(day, f, now) {
       const keep = f.status === 'failed';
       db.prepare(
-        `UPDATE daily_summaries SET status = ?, error_code = ?, item_count = ?, input_tokens = ?, output_tokens = ?, cost_usd = ?,
+        `UPDATE daily_summaries SET status = ?, error_code = ?, item_count = ?,
            finished_at = ?${keep ? '' : ', title = ?, overview = ?, tiers = ?'} WHERE day = ?`,
       ).run(
-        f.status, f.errorCode ?? null, f.itemCount, f.usage.inputTokens, f.usage.outputTokens, f.usage.costUsd, now,
+        f.status, f.errorCode ?? null, f.itemCount, now,
         ...(keep ? [] : [f.title ?? '', f.overview ?? '', JSON.stringify(f.tiers ?? [])]),
         day,
       );

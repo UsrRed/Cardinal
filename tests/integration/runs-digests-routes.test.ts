@@ -31,7 +31,7 @@ describe('runs/digests/items/stats routes', () => {
   it('exports digest as md and json with attachment, <script> inert', async () => {
     const { call, r, feed, row } = await make();
     const run = r.runs.create(feed.id, 'manual', 2);
-    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 'T<script>alert(1)</script>', lede: 'l', sections: [{ heading: 'H', itemRefs: ['i1'], body: '<script>x</script>' }], partial: false }, 3);
+    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 'T<script>alert(1)</script>', lede: 'l', sections: [{ heading: 'H', itemRefs: ['i1'], body: '<script>x</script>' }] }, 3);
     r.items.insertMany([row(d, run.id, 'i1', 'high')], 4);
     const md = await call('GET', `/api/digests/${d}/export.md`);
     expect(md.headers['content-disposition']).toMatch(/^attachment/);
@@ -49,7 +49,7 @@ describe('runs/digests/items/stats routes', () => {
   it('filters items, markRead and read-all change unreadCount', async () => {
     const { call, r, feed, row } = await make();
     const run = r.runs.create(feed.id, 'manual', 2);
-    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [], partial: false }, 3);
+    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [] }, 3);
     const items = r.items.insertMany([row(d, run.id, 'i1', 'high'), row(d, run.id, 'i2', 'low'), row(d, run.id, 'i3', 'high')], 4);
     const unread = async () => (r.feeds.list().find((f) => f.id === feed.id)!.unreadCount);
     const f = JSON.parse((await call('GET', '/api/items?priority=high&read=false')).body);
@@ -69,7 +69,7 @@ describe('runs/digests/items/stats routes', () => {
   it('POST /api/items/read-all marks all unread, optionally by priority', async () => {
     const { call, r, feed, row } = await make();
     const run = r.runs.create(feed.id, 'manual', 2);
-    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [], partial: false }, 3);
+    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [] }, 3);
     r.items.insertMany([row(d, run.id, 'i1', 'high'), row(d, run.id, 'i2', 'low'), row(d, run.id, 'i3', 'high')], 4);
     expect(JSON.parse((await call('POST', '/api/items/read-all', { priority: 'high' })).body).updated).toBe(2);
     expect(JSON.parse((await call('POST', '/api/items/read-all', {})).body).updated).toBe(1);
@@ -81,7 +81,7 @@ describe('runs/digests/items/stats routes', () => {
     const { call, r, feed } = await make();
     for (let i = 0; i < 3; i++) {
       const run = r.runs.create(feed.id, 'manual', 10 + i);
-      r.digests.create({ feedId: feed.id, runId: run.id, title: `d${i}`, lede: 'l', sections: [], partial: false }, 20 + i);
+      r.digests.create({ feedId: feed.id, runId: run.id, title: `d${i}`, lede: 'l', sections: [] }, 20 + i);
     }
     const p = JSON.parse((await call('GET', `/api/feeds/${feed.id}/digests?page=2&pageSize=2`)).body);
     expect(p).toMatchObject({ total: 3, page: 2, pageSize: 2 });
@@ -100,18 +100,5 @@ describe('runs/digests/items/stats routes', () => {
     expect(JSON.parse(c.body).status).toBe('cancelled');
     expect((await call('POST', `/api/runs/${run.id}/cancel`)).statusCode).toBe(404);
     expect((await call('GET', '/api/runs/nope')).statusCode).toBe(404);
-  });
-
-  it('stats equal sum of runs', async () => {
-    const { call, r, feed } = await make();
-    const a = r.runs.create(feed.id, 'manual', 5), b = r.runs.create(feed.id, 'manual', 6);
-    r.runs.addUsage(a.id, { inputTokens: 10, outputTokens: 2, costUsd: 0.1 });
-    r.runs.addUsage(b.id, { inputTokens: 5, outputTokens: 3, costUsd: 0.2 });
-    const s = JSON.parse((await call('GET', '/api/stats')).body);
-    expect(s.runs).toBe(2);
-    expect(s.totals.inputTokens).toBe(15);
-    expect(s.totals.costUsd).toBeCloseTo(0.3);
-    expect(s.byFeed.find((x: { feedId: string }) => x.feedId === feed.id).usage.outputTokens).toBe(5);
-    expect(s.nav.feeds).toBeGreaterThanOrEqual(1);
   });
 });

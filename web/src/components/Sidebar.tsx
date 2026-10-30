@@ -5,7 +5,7 @@ export interface SidebarFeed { id: string; name: string; unread: number; enabled
 export interface SidebarProps {
   feedCount?: number; unreadTotal?: number; activeRuns?: number;
   feeds?: SidebarFeed[];
-  footer?: { claude: string; queue: string; cumul: string };
+  footer?: { claude: string; queue: string };
 }
 
 const link = ({ isActive }: { isActive: boolean }) => (isActive ? 'on' : undefined);
@@ -36,8 +36,7 @@ export function Sidebar({ feedCount, unreadTotal, activeRuns, feeds = [], footer
       {footer && (
         <div className="side-foot">
           Claude : <b>{footer.claude}</b><br />
-          File : <b>{footer.queue}</b><br />
-          Cumul : <b>{footer.cumul}</b>
+          File : <b>{footer.queue}</b>
         </div>
       )}
     </aside>

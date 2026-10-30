@@ -3,7 +3,6 @@ import type { Logger } from '../log/logger.js';
 import type { Clock } from '../shared/clock.js';
 import { dayBounds, localDay, localHour, shiftDay } from '../shared/day.js';
 import { AppError } from '../shared/errors.js';
-import type { Usage } from '../shared/types.js';
 import { ClaudeError, type ClaudeRunner } from '../claude/types.js';
 import { validateDailyOutput, type DailyOutput } from '../claude/outputSchema.js';
 import { buildCorrectionPrompt, buildDailyPrompt, type DailyPromptItem } from '../claude/prompt.js';
@@ -26,7 +25,6 @@ export class DailyService {
       logger: Logger;
       timezone: () => string;
       model: string;
-      budgetUsd: number;
     },
   ) {}
 
@@ -65,7 +63,6 @@ export class DailyService {
 
   private async generate(day: string, items: ReturnType<DailyRepo['itemsBetween']>): Promise<void> {
     const { daily, runner, clock, logger } = this.o;
-    const usage: Usage = { inputTokens: 0, outputTokens: 0, costUsd: 0 };
     const promptItems: DailyPromptItem[] = items.map((it, i) => ({
       ref: `i${i + 1}`, title: it.title, url: it.url, feedName: it.feedName, priority: it.priority,
       summary: it.summary.length > SUMMARY_MAX ? `${it.summary.slice(0, SUMMARY_MAX)}…` : it.summary,
@@ -78,17 +75,12 @@ export class DailyService {
       for (let attempt = 0; attempt < 2 && !out; attempt++) {
         let problems: string[];
         try {
-          const res = await runner.run({
-            prompt: current, model: this.o.model,
-            budgetUsd: Math.max(this.o.budgetUsd - usage.costUsd, 0.01), signal: new AbortController().signal,
-          });
-          addUsage(usage, res.usage);
+          const res = await runner.run({ prompt: current, model: this.o.model, signal: new AbortController().signal });
           const v = validateDailyOutput(res.json, new Set(idByRef.keys()));
           if (v.ok) { out = v.value; break; }
           problems = v.problems;
         } catch (e) {
           if (!(e instanceof ClaudeError) || e.kind !== 'invalid_output') throw e;
-          addUsage(usage, e.usage);
           problems = ['la sortie n\'est pas un JSON valide'];
         }
         current = buildCorrectionPrompt(prompt, problems);
@@ -100,19 +92,11 @@ export class DailyService {
           priority: t.priority,
           categories: t.categories.map((c) => ({ name: c.name, body: c.body, itemIds: c.itemRefs.map((r) => idByRef.get(r)!) })),
         }));
-      daily.finish(day, { status: 'succeeded', title: out.title, overview: out.overview, tiers, itemCount: items.length, usage }, clock.now());
+      daily.finish(day, { status: 'succeeded', title: out.title, overview: out.overview, tiers, itemCount: items.length }, clock.now());
     } catch (e) {
       const code = e instanceof ClaudeError ? e.kind : 'unknown';
-      if (e instanceof ClaudeError) addUsage(usage, e.usage);
       logger.warn({ day, code }, 'daily summary failed');
-      daily.finish(day, { status: 'failed', errorCode: code, itemCount: items.length, usage }, clock.now());
+      daily.finish(day, { status: 'failed', errorCode: code, itemCount: items.length }, clock.now());
     }
   }
-}
-
-function addUsage(acc: Usage, u?: Usage): void {
-  if (!u) return;
-  acc.inputTokens += u.inputTokens;
-  acc.outputTokens += u.outputTokens;
-  acc.costUsd += u.costUsd;
 }

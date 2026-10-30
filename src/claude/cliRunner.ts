@@ -71,13 +71,13 @@ export class CliClaudeRunner implements ClaudeRunner {
           const p = parseStreamJson(stdout);
           if (code !== 0 || p.isError) {
             const kind = classifyError({ stdout: p.errorText ? `${p.errorText}\n${stdout}` : stdout, stderr, code });
-            return reject(new ClaudeError(kind, p.usage));
+            return reject(new ClaudeError(kind));
           }
-          if (p.text === null) return reject(new ClaudeError('invalid_output', p.usage));
+          if (p.text === null) return reject(new ClaudeError('invalid_output'));
           try {
-            resolve({ json: parseJsonText(p.text), usage: p.usage });
+            resolve({ json: parseJsonText(p.text) });
           } catch {
-            reject(new ClaudeError('invalid_output', p.usage));
+            reject(new ClaudeError('invalid_output'));
           }
         });
       });

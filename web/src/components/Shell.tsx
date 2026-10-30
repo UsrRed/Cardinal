@@ -5,7 +5,7 @@ import { useTheme } from '../theme/theme.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useRunEvents } from '../api/ws.js';
 import { get } from '../api/client.js';
-import type { ClaudeStatus, FeedSummary, GlobalStats } from '../../../src/shared/types.js';
+import type { ClaudeStatus, FeedSummary } from '../../../src/shared/types.js';
 
 const CLAUDE_LABEL: Record<string, string> = {
   connected: 'connecté', api_key: 'clé API', not_connected: 'non connecté', unknown: 'inconnu',
@@ -14,10 +14,9 @@ const CLAUDE_LABEL: Record<string, string> = {
 function useSidebarData(): SidebarProps {
   const { pathname } = useLocation();
   const feeds = useAsync(() => get<FeedSummary[]>('/api/feeds'), [pathname]);
-  const stats = useAsync(() => get<GlobalStats>('/api/stats'), [pathname]);
   const claude = useAsync(() => get<ClaudeStatus>('/api/claude/status'), []);
   useRunEvents(undefined, (e) => {
-    if (e.type === 'run.status') { feeds.reload(); stats.reload(); }
+    if (e.type === 'run.status') feeds.reload();
   });
   const list = feeds.data ?? [];
   const active = list.filter((f) => f.activeRunId).length;
@@ -31,7 +30,6 @@ function useSidebarData(): SidebarProps {
     footer: {
       claude: claude.data ? (CLAUDE_LABEL[claude.data.state] ?? 'inconnu') : '…',
       queue: active ? `${active} en cours` : 'vide',
-      cumul: stats.data ? `$${stats.data.totals.costUsd.toFixed(2)}` : '…',
     },
   };
 }

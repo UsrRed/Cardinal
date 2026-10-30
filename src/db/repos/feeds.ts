@@ -20,7 +20,7 @@ export interface FeedsRepo {
 interface Row {
   id: string; name: string; instructions: string; source_type: Feed['sourceType']; source_params: string;
   frequency_hours: number; freshness_days: number; enabled: number; notify: number; notify_threshold: Feed['notifyThreshold'];
-  ntfy_server: string | null; ntfy_topic: string | null; model: string; budget_usd: number;
+  ntfy_server: string | null; ntfy_topic: string | null; model: string;
   created_at: number; updated_at: number; last_run_at: number | null; next_run_at: number | null;
 }
 
@@ -31,7 +31,7 @@ function toFeed(r: Row): Feed {
     id: r.id, name: r.name, instructions: r.instructions, sourceType: r.source_type,
     sourceParams: JSON.parse(r.source_params), frequencyHours: r.frequency_hours, freshnessDays: r.freshness_days,
     enabled: !!r.enabled, notify: !!r.notify, notifyThreshold: r.notify_threshold,
-    ntfyServer: r.ntfy_server, ntfyTopic: r.ntfy_topic, model: r.model, budgetUsd: r.budget_usd,
+    ntfyServer: r.ntfy_server, ntfyTopic: r.ntfy_topic, model: r.model,
     createdAt: iso(r.created_at)!, updatedAt: iso(r.updated_at)!, lastRunAt: iso(r.last_run_at), nextRunAt: iso(r.next_run_at),
   };
 }
@@ -43,7 +43,7 @@ const DUE_AT = 'COALESCE(next_run_at, last_run_at + frequency_hours * 3600000, 0
 const COLS: Record<keyof FeedInput, string> = {
   name: 'name', instructions: 'instructions', sourceType: 'source_type', sourceParams: 'source_params',
   frequencyHours: 'frequency_hours', freshnessDays: 'freshness_days', enabled: 'enabled', notify: 'notify',
-  notifyThreshold: 'notify_threshold', ntfyServer: 'ntfy_server', ntfyTopic: 'ntfy_topic', model: 'model', budgetUsd: 'budget_usd',
+  notifyThreshold: 'notify_threshold', ntfyServer: 'ntfy_server', ntfyTopic: 'ntfy_topic', model: 'model',
 };
 
 function dbValue(k: keyof FeedInput, v: unknown): unknown {
@@ -96,9 +96,9 @@ export function createFeedsRepo(db: Db): FeedsRepo {
     duplicate(id, now) {
       const f = get(id);
       if (!f) return null;
-      const { name, instructions, sourceType, sourceParams, frequencyHours, freshnessDays, notify, notifyThreshold, ntfyServer, ntfyTopic, model, budgetUsd } = f;
+      const { name, instructions, sourceType, sourceParams, frequencyHours, freshnessDays, notify, notifyThreshold, ntfyServer, ntfyTopic, model } = f;
       return create(
-        { name: `Copie de ${name}`.slice(0, 120), instructions, sourceType, sourceParams, frequencyHours, freshnessDays, enabled: false, notify, notifyThreshold, ntfyServer, ntfyTopic, model, budgetUsd } as FeedInput,
+        { name: `Copie de ${name}`.slice(0, 120), instructions, sourceType, sourceParams, frequencyHours, freshnessDays, enabled: false, notify, notifyThreshold, ntfyServer, ntfyTopic, model } as FeedInput,
         now,
       );
     },

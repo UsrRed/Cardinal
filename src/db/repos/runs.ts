@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { GlobalStats, LogLevel, Page, Run, RunLog, RunStatus, RunStep, StepState, Usage } from '../../shared/types.js';
+import type { LogLevel, Page, Run, RunLog, RunStatus, RunStep, StepState } from '../../shared/types.js';
 import type { Db } from '../index.js';
 
 export interface RunsRepo {
@@ -12,7 +12,6 @@ export interface RunsRepo {
   markRunning(id: string, now: number): boolean;
   setStep(id: string, step: RunStep, state: StepState, detail?: string): void;
   setCounts(id: string, c: Partial<Pick<Run, 'fetchedCount' | 'newCount' | 'keptCount' | 'notifiedCount' | 'noNews'>>): void;
-  addUsage(id: string, u: Usage): void;
   finish(
     id: string,
     status: Exclude<RunStatus, 'queued' | 'running'>,
@@ -22,7 +21,6 @@ export interface RunsRepo {
   requeueRunning(): number;
   appendLog(id: string, level: LogLevel, step: RunStep | null, message: string, now: number): RunLog;
   logs(id: string, afterId?: number): RunLog[];
-  usageByFeed(): GlobalStats;
 }
 
 const STEPS: RunStep[] = ['fetch', 'dedup', 'triage', 'digest', 'notify'];
@@ -32,7 +30,6 @@ export function createRunsRepo(db: Db): RunsRepo {
   const SEL = 'SELECT r.*, f.name AS feed_name FROM runs r JOIN feeds f ON f.id = r.feed_id';
   const toRun = (r: any): Run => ({
     id: r.id, feedId: r.feed_id, feedName: r.feed_name, status: r.status, trigger: r.trigger, steps: JSON.parse(r.steps),
-    usage: { inputTokens: r.input_tokens, outputTokens: r.output_tokens, costUsd: r.cost_usd },
     fetchedCount: r.fetched_count, newCount: r.new_count, keptCount: r.kept_count, notifiedCount: r.notified_count,
     noNews: !!r.no_news, digestId: r.digest_id, errorCode: r.error_code,
     queuedAt: iso(r.queued_at)!, startedAt: iso(r.started_at), finishedAt: iso(r.finished_at),
@@ -89,10 +86,6 @@ export function createRunsRepo(db: Db): RunsRepo {
       db.prepare(`UPDATE runs SET ${keys.map((k) => `${map[k]} = ?`).join(', ')} WHERE id = ?`)
         .run(...keys.map((k) => (typeof c[k] === 'boolean' ? (c[k] ? 1 : 0) : c[k])), id);
     },
-    addUsage(id, u) {
-      db.prepare('UPDATE runs SET input_tokens = input_tokens + ?, output_tokens = output_tokens + ?, cost_usd = cost_usd + ? WHERE id = ?')
-        .run(u.inputTokens, u.outputTokens, u.costUsd, id);
-    },
     finish(id, status, now, extra) {
       db.prepare('UPDATE runs SET status = ?, finished_at = ?, error_code = ?, digest_id = COALESCE(?, digest_id) WHERE id = ?')
         .run(status, now, extra?.errorCode ?? null, extra?.digestId ?? null, id);
@@ -108,19 +101,6 @@ export function createRunsRepo(db: Db): RunsRepo {
       return (db.prepare('SELECT * FROM run_logs WHERE run_id = ? AND id > ? ORDER BY id').all(id, afterId) as any[]).map((r) => ({
         id: r.id, runId: r.run_id, ts: iso(r.ts)!, level: r.level, step: r.step, message: r.message,
       }));
-    },
-    usageByFeed() {
-      const rows = db.prepare(
-        `SELECT f.id AS feed_id, f.name, COUNT(r.id) AS runs, COALESCE(SUM(r.input_tokens),0) AS i,
-           COALESCE(SUM(r.output_tokens),0) AS o, COALESCE(SUM(r.cost_usd),0) AS c
-         FROM feeds f JOIN runs r ON r.feed_id = f.id GROUP BY f.id ORDER BY f.created_at, f.rowid`,
-      ).all() as any[];
-      const byFeed = rows.map((r) => ({ feedId: r.feed_id, name: r.name, runs: r.runs, usage: { inputTokens: r.i, outputTokens: r.o, costUsd: r.c } }));
-      const totals = byFeed.reduce<Usage>(
-        (t, f) => ({ inputTokens: t.inputTokens + f.usage.inputTokens, outputTokens: t.outputTokens + f.usage.outputTokens, costUsd: t.costUsd + f.usage.costUsd }),
-        { inputTokens: 0, outputTokens: 0, costUsd: 0 },
-      );
-      return { totals, runs: byFeed.reduce((n, f) => n + f.runs, 0), byFeed };
     },
   };
 }

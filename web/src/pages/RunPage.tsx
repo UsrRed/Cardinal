@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import type { Feed, Run, RunLog, StepState } from '../../../src/shared/types.js';
+import type { Run, RunLog, StepState } from '../../../src/shared/types.js';
 import { errorMessage, get, post } from '../api/client.js';
 import { useRunEvents, type RunEvent } from '../api/ws.js';
 import { LogView } from '../components/LogView.js';
@@ -23,14 +23,13 @@ export function applyRunEvent(cur: RunData | null, e: RunEvent): RunData | null 
     case 'run.step':
       return { run: { ...run, steps: run.steps.map((s) => (s.step === e.step ? { ...s, state: e.state as StepState, detail: e.detail } : s)) }, logs };
     case 'run.log': return logs.some((l) => l.id === e.log.id) ? cur : { run, logs: [...logs, e.log] };
-    case 'run.usage': return { run: { ...run, usage: e.usage }, logs };
   }
 }
 
 const isActive = (r: Run) => r.status === 'queued' || r.status === 'running';
 
-export function RunView({ run, logs, budgetUsd, onCancel, cancelling, msg }: {
-  run: Run; logs: RunLog[]; budgetUsd?: number | null; onCancel: () => void; cancelling?: boolean; msg?: string | null;
+export function RunView({ run, logs, onCancel, cancelling, msg }: {
+  run: Run; logs: RunLog[]; onCancel: () => void; cancelling?: boolean; msg?: string | null;
 }) {
   const active = isActive(run);
   return (
@@ -46,10 +45,9 @@ export function RunView({ run, logs, budgetUsd, onCancel, cancelling, msg }: {
         <p className="note" role="status">Ce run est reporté : une autre exécution était en cours ou la limite de concurrence était atteinte. Il sera relancé automatiquement.</p>
       )}
       {run.status === 'failed' && <div className="err-box" role="alert"><b>Échec</b>{run.errorCode ?? 'internal_error'}</div>}
-      {run.status === 'budget_exceeded' && <p className="note" role="status">Budget du flux dépassé : le digest est partiel.</p>}
       {run.noNews && <p className="note">Aucune nouveauté pour ce run.</p>}
       <PipelineTape steps={run.steps} />
-      <StatsBar run={run} budgetUsd={budgetUsd} />
+      <StatsBar run={run} />
       <h3>Journal</h3>
       <LogView logs={logs} live={active} />
     </>
@@ -63,7 +61,6 @@ export function RunPage() {
   const [cancelling, setCancelling] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const cur = live && live.run.id === id ? live : data;
-  const feed = useAsync(() => (data ? get<Feed>(`/api/feeds/${data.run.feedId}`).catch(() => null) : Promise.resolve(null)), [data?.run.feedId]);
   useRunEvents(id, (e) => setLive((p) => applyRunEvent(p && p.run.id === id ? p : data, e)));
 
   const cancel = async () => {
@@ -77,7 +74,7 @@ export function RunPage() {
       {error ? <ErrorState error={error} onRetry={reload} />
         : loading && !cur ? <Loading />
         : !cur ? <Empty title="Run introuvable" />
-        : <RunView run={cur.run} logs={cur.logs} budgetUsd={feed.data?.budgetUsd} onCancel={() => void cancel()} cancelling={cancelling} msg={msg} />}
+        : <RunView run={cur.run} logs={cur.logs} onCancel={() => void cancel()} cancelling={cancelling} msg={msg} />}
     </>
   );
 }

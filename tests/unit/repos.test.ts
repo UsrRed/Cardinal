@@ -22,7 +22,7 @@ function setup() {
     feeds.create({
       name, instructions: 'x', sourceType: 'rss', sourceParams: { urls: ['https://a.example/f'] }, frequencyHours: 1,
       freshnessDays: 7, enabled: false, notify: false, notifyThreshold: 'high', ntfyServer: null, ntfyTopic: null,
-      model: 'sonnet', budgetUsd: 0.5,
+      model: 'sonnet',
     }, 1);
   return { db, feeds, mk, runs: createRunsRepo(db), digests: createDigestsRepo(db), items: createItemsRepo(db), seen: createSeenRepo(db) };
 }
@@ -60,7 +60,7 @@ describe('repos', () => {
     const fresh = runs.create(f.id, 'manual', 1000);
     runs.finish(old.id, 'succeeded', 11);
     runs.finish(fresh.id, 'succeeded', 1001);
-    const d = digests.create({ feedId: f.id, runId: old.id, title: 't', lede: 'l', sections: [], partial: false }, 12);
+    const d = digests.create({ feedId: f.id, runId: old.id, title: 't', lede: 'l', sections: [] }, 12);
     items.insertMany([itemRow(f.id, d, old.id, 'i1', 'high')], 12);
     seen.markSeen(f.id, ['k'], 12);
     expect(purge(db, 500)).toEqual({ runs: 1, digests: 1, items: 1 });
@@ -69,25 +69,11 @@ describe('repos', () => {
     expect(seen.filterUnseen(f.id, ['k']).size).toBe(0);
   });
 
-  it('usage per feed and global', () => {
-    const { mk, runs } = setup();
-    const a = mk('a'), b = mk('b');
-    const r1 = runs.create(a.id, 'manual', 1), r2 = runs.create(a.id, 'manual', 2), r3 = runs.create(b.id, 'manual', 3);
-    runs.addUsage(r1.id, { inputTokens: 10, outputTokens: 5, costUsd: 0.1 });
-    runs.addUsage(r2.id, { inputTokens: 20, outputTokens: 5, costUsd: 0.2 });
-    runs.addUsage(r3.id, { inputTokens: 1, outputTokens: 1, costUsd: 0.05 });
-    const s = runs.usageByFeed();
-    expect(s.runs).toBe(3);
-    expect(s.byFeed.find((x) => x.feedId === a.id)).toMatchObject({ runs: 2, usage: { inputTokens: 30, outputTokens: 10 } });
-    expect(s.totals.inputTokens).toBe(31);
-    expect(s.totals.costUsd).toBeCloseTo(0.35);
-  });
-
   it('items stream filters and orders newest first; logs and digest', () => {
     const { mk, runs, digests, items } = setup();
     const f = mk('a');
     const r = runs.create(f.id, 'manual', 1);
-    const d = digests.create({ feedId: f.id, runId: r.id, title: 't', lede: 'l', sections: [{ heading: 'h', itemRefs: ['i1'], body: 'b' }], partial: false }, 5);
+    const d = digests.create({ feedId: f.id, runId: r.id, title: 't', lede: 'l', sections: [{ heading: 'h', itemRefs: ['i1'], body: 'b' }] }, 5);
     const i1 = items.insertMany([itemRow(f.id, d, r.id, 'i1', 'high')], 10)[0]!;
     items.insertMany([itemRow(f.id, d, r.id, 'i2', 'low')], 20);
     items.insertMany([itemRow(f.id, d, r.id, 'i3', 'high')], 30);

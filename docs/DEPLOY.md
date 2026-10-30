@@ -161,7 +161,6 @@ Les flux se transfèrent sans secrets via *Exporter / Importer* dans l'interface
 - **Conteneur** : utilisateur 10001, système de fichiers en lecture seule, `tmpfs` sur `/tmp`, `cap_drop: ALL`, `no-new-privileges`, seul `/data` est inscriptible.
 - **Modules natifs** : `better-sqlite3` et `node-pty` sont compilés dans l'étape de build de l'image.
 - **Sortie Claude** : le CLI est épinglé (`@anthropic-ai/claude-code` 2.1.307) ; une mise à jour du CLI doit passer par `npm test`.
-- **Coût** : le budget par run est plafonné (`PFLUX_DEFAULT_BUDGET_USD`) ; surveillez la page *Runs* pour les coûts cumulés.
 
 ## 8. Questions ouvertes
 

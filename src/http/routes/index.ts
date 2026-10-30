@@ -7,7 +7,6 @@ import { healthRoutes } from './health.js';
 import { mcpRoutes } from './mcp.js';
 import { registerItemRoutes } from './items.js';
 import { registerRunRoutes } from './runs.js';
-import { registerStatsRoutes } from './stats.js';
 import { registerAuthRoutes } from './auth.js';
 import { registerSettingsRoutes } from './settings.js';
 import { wsRoutes } from './ws.js';
@@ -19,7 +18,6 @@ export async function registerRoutes(app: FastifyInstance, deps: AppDeps): Promi
   await registerDigestRoutes(app, deps);
   await registerItemRoutes(app, deps);
   await registerDailyRoutes(app, deps);
-  await registerStatsRoutes(app, deps);
   await registerAuthRoutes(app, deps);
   await registerSettingsRoutes(app, deps);
   await wsRoutes(app, deps);
