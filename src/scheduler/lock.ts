@@ -1,6 +1,9 @@
 import { closeSync, openSync, readFileSync, unlinkSync, writeSync, constants } from 'node:fs';
 import { join } from 'node:path';
 
+// Lock files this process currently holds.
+const held = new Set<string>();
+
 export interface SchedulerLock {
   release(): void;
 }
@@ -23,10 +26,12 @@ export function acquireLock(dataDir: string, o: { isAlive?(pid: number): boolean
       writeSync(fd, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
       closeSync(fd);
       let released = false;
+      held.add(file);
       return {
         release() {
           if (released) return;
           released = true;
+          held.delete(file);
           try {
             unlinkSync(file);
           } catch {
@@ -42,7 +47,10 @@ export function acquireLock(dataDir: string, o: { isAlive?(pid: number): boolean
       } catch {
         /* unreadable: treat as stale */
       }
-      if (Number.isInteger(pid) && isAlive(pid)) return null;
+      // Our own PID on a lock we do not hold means a previous instance died without
+      // releasing: in a container the app is always PID 1, so a killed run leaves exactly that.
+      const stale = pid === process.pid && !held.has(file);
+      if (Number.isInteger(pid) && !stale && isAlive(pid)) return null;
       try {
         unlinkSync(file);
       } catch {

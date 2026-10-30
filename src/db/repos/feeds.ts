@@ -36,6 +36,10 @@ function toFeed(r: Row): Feed {
   };
 }
 
+// A feed never scheduled (created or enabled without a run) has no next_run_at:
+// it is due one period after its last run, or right away if it never ran.
+const DUE_AT = 'COALESCE(next_run_at, last_run_at + frequency_hours * 3600000, 0)';
+
 const COLS: Record<keyof FeedInput, string> = {
   name: 'name', instructions: 'instructions', sourceType: 'source_type', sourceParams: 'source_params',
   frequencyHours: 'frequency_hours', freshnessDays: 'freshness_days', enabled: 'enabled', notify: 'notify',
@@ -103,7 +107,7 @@ export function createFeedsRepo(db: Db): FeedsRepo {
       return get(id);
     },
     due(now) {
-      const rows = db.prepare('SELECT * FROM feeds WHERE enabled = 1 AND next_run_at IS NOT NULL AND next_run_at <= ? ORDER BY next_run_at').all(now) as Row[];
+      const rows = db.prepare(`SELECT * FROM feeds WHERE enabled = 1 AND ${DUE_AT} <= ? ORDER BY ${DUE_AT}`).all(now) as Row[];
       return rows.map(toFeed);
     },
     setSchedule(id, s) {

@@ -25,7 +25,7 @@ export class Scheduler {
     for (const feed of feeds.due(now)) {
       if (runs.activeForFeed(feed.id)) continue;
       const freq = feed.frequencyHours * 3_600_000;
-      const due = feed.nextRunAt ? Date.parse(feed.nextRunAt) : now;
+      const due = feed.nextRunAt ? Date.parse(feed.nextRunAt) : feed.lastRunAt ? Date.parse(feed.lastRunAt) + freq : now;
       const trigger = now - due >= freq ? 'catchup' : 'schedule';
       try {
         queue.enqueue(feed.id, trigger);

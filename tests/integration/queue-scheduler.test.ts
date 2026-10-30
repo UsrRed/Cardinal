@@ -125,6 +125,17 @@ describe('Scheduler', () => {
     g.open();
   });
 
+  it('schedules a feed that was never scheduled', () => {
+    const g = gate();
+    const s = setup(1, () => g.p as never);
+    const f = s.mk();
+    const sch = new Scheduler({ feeds: s.feeds, runs: s.runs, queue: s.queue, clock: s.clock, tickMs: 1000, logger });
+    sch.tick();
+    expect(s.runs.list({ feedId: f.id, page: 1, pageSize: 10 }).total).toBe(1);
+    expect(s.feeds.get(f.id)!.nextRunAt).toBe(new Date(NOW + 3_600_000).toISOString());
+    g.open();
+  });
+
   it('start/stop drives ticks via the clock', () => {
     const s = setup();
     let n = 0;
@@ -156,5 +167,12 @@ describe('acquireLock', () => {
     mkdirSync(t.dir, { recursive: true });
     writeFileSync(join(t.dir, 'scheduler.lock'), JSON.stringify({ pid: 999999, startedAt: 'x' }));
     expect(acquireLock(t.dir, { isAlive: () => false })).not.toBeNull();
+  });
+  it('takes over a stale lock carrying its own PID (container restart)', () => {
+    const t = tmpDataDir();
+    cleanups.push(t.cleanup);
+    mkdirSync(t.dir, { recursive: true });
+    writeFileSync(join(t.dir, 'scheduler.lock'), JSON.stringify({ pid: process.pid, startedAt: 'x' }));
+    expect(acquireLock(t.dir, { isAlive: () => true })).not.toBeNull();
   });
 });
