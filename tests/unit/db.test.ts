@@ -53,6 +53,11 @@ describe('db', () => {
     repo.setSchedule(src.id, { nextRunAt: 5000 });
     expect(repo.due(4999)).toHaveLength(0);
     expect(repo.due(5000).map((f) => f.id)).toEqual([src.id]);
+    repo.setSchedule(src.id, { nextRunAt: null });
+    expect(repo.due(2000).map((f) => f.id)).toEqual([src.id]);
+    repo.setSchedule(src.id, { nextRunAt: null, lastRunAt: 10_000 });
+    expect(repo.due(10_000 + src.frequencyHours * 3_600_000 - 1)).toHaveLength(0);
+    expect(repo.due(10_000 + src.frequencyHours * 3_600_000).map((f) => f.id)).toEqual([src.id]);
     expect(repo.exportAll()[0]).not.toHaveProperty('id');
     db.prepare('INSERT INTO seen_items (feed_id, dedup_key, seen_at) VALUES (?, ?, ?)').run(src.id, 'k', 1);
     expect(repo.delete(src.id)).toBe(true);
