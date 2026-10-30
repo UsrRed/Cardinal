@@ -21,7 +21,6 @@ export interface Config {
   retentionDays: number;
   tz: string;
   defaultModel: string;
-  defaultBudgetUsd: number;
   anthropicApiKey: string | null;
   nvdApiKey: string | null;
   ntfyToken: string | null;
@@ -72,16 +71,6 @@ export function loadConfig(env: NodeJS.ProcessEnv, opts?: { inContainer?: boolea
     const n = Number(v);
     if (!/^-?\d+$/.test(v) || n < min || n > max) {
       issues.push(`${name} doit être un entier entre ${min} et ${max}`);
-      return def;
-    }
-    return n;
-  };
-  const num = (name: string, def: number, min: number, max: number): number => {
-    const v = str(name);
-    if (v === undefined) return def;
-    const n = Number(v);
-    if (!Number.isFinite(n) || n < min || n > max) {
-      issues.push(`${name} doit être un nombre entre ${min} et ${max}`);
       return def;
     }
     return n;
@@ -182,7 +171,6 @@ export function loadConfig(env: NodeJS.ProcessEnv, opts?: { inContainer?: boolea
     retentionDays: int('PFLUX_RETENTION_DAYS', 0, 0, 36500),
     tz,
     defaultModel,
-    defaultBudgetUsd: num('PFLUX_DEFAULT_BUDGET_USD', 1, 0.01, 50),
     anthropicApiKey: str('PFLUX_ANTHROPIC_API_KEY') ?? null,
     nvdApiKey: str('PFLUX_NVD_API_KEY') ?? null,
     ntfyToken: str('PFLUX_NTFY_TOKEN') ?? null,

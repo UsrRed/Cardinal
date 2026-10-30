@@ -12,7 +12,7 @@ const steps = (states: string[]) =>
   ['fetch', 'dedup', 'triage', 'digest', 'notify'].map((step, i) => ({ step, state: states[i], detail: null })) as Run['steps'];
 const run = (o: Partial<Run> = {}): Run => ({
   id: 'r1', feedId: 'f', feedName: 'Veille', status: 'running', trigger: 'manual', steps: steps(['done', 'done', 'running', 'todo', 'todo']),
-  usage: { inputTokens: 1200, outputTokens: 300, costUsd: 0.1 }, fetchedCount: 5, newCount: 3, keptCount: 1, notifiedCount: 0, noNews: false,
+  fetchedCount: 5, newCount: 3, keptCount: 1, notifiedCount: 0, noNews: false,
   digestId: null, errorCode: null, queuedAt: '2026-01-01T10:00:00Z', startedAt: null, finishedAt: null, ...o,
 });
 const html = (el: React.ReactElement) => renderToStaticMarkup(createElement(MemoryRouter, null, el));
@@ -30,16 +30,15 @@ describe('PipelineTape', () => {
 });
 
 describe('RunsView', () => {
-  it('renders loading, empty, error and totals', () => {
+  it('renders loading, empty, error and the list', () => {
     expect(rv({ loading: true })).toContain('Chargement');
     expect(rv({ runs: { items: [], total: 0, page: 1, pageSize: 20 } })).toContain('Aucun run');
     expect(rv({ error: new ApiError(500, 'internal_error') })).toContain('Une erreur est survenue');
     const out = rv({
       runs: { items: [run()], total: 1, page: 1, pageSize: 20 },
-      stats: { totals: { inputTokens: 1200, outputTokens: 300, costUsd: 0.1 }, runs: 1, byFeed: [{ feedId: 'f', name: 'Veille', usage: { inputTokens: 1200, outputTokens: 300, costUsd: 0.1 }, runs: 1 }] },
     });
-    expect(out).toContain('Coût cumulé');
-    expect(out).toContain('$0.1000');
+    expect(out).toContain('Veille');
+    expect(out).not.toContain('Coût');
   });
 });
 

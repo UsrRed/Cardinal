@@ -9,7 +9,7 @@ export function seedIfEmpty(db: Db, cfg: Config, clock: Clock): void {
   if (n > 0) return;
   const base = {
     enabled: false, notify: false, notifyThreshold: 'high', ntfyServer: null, ntfyTopic: null,
-    model: cfg.defaultModel, budgetUsd: cfg.defaultBudgetUsd, frequencyHours: 24, freshnessDays: 7,
+    model: cfg.defaultModel, frequencyHours: 24, freshnessDays: 7,
   } as const;
   const feeds: FeedInput[] = [
     { ...base, name: 'Exemple — Actualités tech (RSS)', instructions: 'Résume les articles marquants sur le développement logiciel et l’IA ; priorise les annonces majeures.', sourceType: 'rss', sourceParams: { urls: ['https://hnrss.org/frontpage'] } },

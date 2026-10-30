@@ -1,11 +1,11 @@
 import type { Repos } from '../db/repos/index.js';
 import { ClaudeError, DEFERRABLE, type ClaudeRunner } from '../claude/types.js';
-import { runTriageAndDigest, type EngineResult } from '../claude/engine.js';
+import { runTriageAndDigest } from '../claude/engine.js';
 import type { PromptItem } from '../claude/prompt.js';
 import type { SafeFetch } from '../net/safeFetch.js';
 import { NtfyNotifier, resolveTarget } from '../notify/ntfy.js';
 import type { SecretsStore } from '../secrets/index.js';
-import type { Settings, RunStatus, RunStep, StepState, LogLevel, Usage, Feed, DigestSection } from '../shared/types.js';
+import type { Settings, RunStatus, RunStep, StepState, LogLevel, Feed } from '../shared/types.js';
 import type { Clock } from '../shared/clock.js';
 import type { Config } from '../config/index.js';
 import { sanitizeLogMessage, type Logger } from '../log/logger.js';
@@ -84,7 +84,6 @@ export async function executeRun(runId: string, deps: PipelineDeps, signal: Abor
   };
 
   let current: RunStep = 'fetch';
-  let lastUsage: Usage = { inputTokens: 0, outputTokens: 0, costUsd: 0 };
   try {
     if (signal.aborted) throw new StepFailure('cancelled', 'cancelled');
 
@@ -139,30 +138,13 @@ export async function executeRun(runId: string, deps: PipelineDeps, signal: Abor
       sources: [...new Set([...(f.item.url ? [f.item.url] : []), ...referencesOf(f.item.meta)])],
     }));
     const byRef = new Map(prompts.map((p, i) => [p.ref, fresh[i]!]));
-    let result: EngineResult;
-    try {
-      result = await runTriageAndDigest({
-        runner: deps.runner,
-        feed,
-        items: prompts,
-        signal,
-        onLog: (l, m) => log(l, 'triage', m),
-        onUsage: (u) => {
-          db.runs.addUsage(runId, {
-            inputTokens: u.inputTokens - lastUsage.inputTokens,
-            outputTokens: u.outputTokens - lastUsage.outputTokens,
-            costUsd: u.costUsd - lastUsage.costUsd,
-          });
-          lastUsage = u;
-          bus.emit({ type: 'run.usage', runId, usage: u });
-        },
-      });
-    } catch (e) {
-      if (e instanceof ClaudeError && e.usage && lastUsage.costUsd === 0 && e.usage.costUsd > 0) {
-        db.runs.addUsage(runId, e.usage);
-      }
-      throw e;
-    }
+    const result = await runTriageAndDigest({
+      runner: deps.runner,
+      feed,
+      items: prompts,
+      signal,
+      onLog: (l, m) => log(l, 'triage', m),
+    });
 
     const processedKeys = result.processedRefs.map((r) => byRef.get(r)?.key).filter((k): k is string => !!k);
     db.seen.markSeen(feedId, processedKeys, clock.now());
@@ -170,19 +152,14 @@ export async function executeRun(runId: string, deps: PipelineDeps, signal: Abor
     db.runs.setCounts(runId, { keptCount: kept.length });
     step('triage', 'done', `${result.triaged.length} évalués, ${kept.length} retenus`);
 
-    const partial = result.status === 'budget_exceeded';
     let digestId: string | undefined;
     let items: ReturnType<Repos['items']['insertMany']> = [];
-    if (kept.length) {
+    const d = result.digest;
+    if (kept.length && d) {
       current = 'digest';
       step('digest', 'running');
-      const d: { title: string; lede: string; sections: DigestSection[] } = result.digest ?? {
-        title: `Digest partiel — ${feed.name}`,
-        lede: 'Budget dépassé : seuls les éléments déjà évalués sont présentés.',
-        sections: [{ heading: 'Éléments retenus', itemRefs: kept.map((k) => k.ref), body: '' }],
-      };
       digestId = db.digests.create(
-        { feedId, runId, title: d.title, lede: d.lede, sections: d.sections, partial },
+        { feedId, runId, title: d.title, lede: d.lede, sections: d.sections },
         clock.now(),
       );
       items = db.items.insertMany(
@@ -204,7 +181,7 @@ export async function executeRun(runId: string, deps: PipelineDeps, signal: Abor
         }),
         clock.now(),
       );
-      step('digest', 'done', partial ? 'partiel' : undefined);
+      step('digest', 'done');
     } else {
       step('digest', 'skipped');
     }
@@ -236,10 +213,6 @@ export async function executeRun(runId: string, deps: PipelineDeps, signal: Abor
     }
 
     setLastRun(undefined, 0);
-    if (partial) {
-      log('warn', null, 'Budget dépassé');
-      return finish('budget_exceeded', 'budget_exceeded', digestId);
-    }
     return finish('succeeded', undefined, digestId);
   } catch (e) {
     return handleError(e);

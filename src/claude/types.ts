@@ -1,14 +1,10 @@
-import type { Usage } from '../shared/types.js';
-
 export interface RunRequest {
   prompt: string;
   model: string;
-  budgetUsd: number;
   signal: AbortSignal;
 }
 export interface RunResult {
   json: unknown;
-  usage: Usage;
 }
 export interface ClaudeRunner {
   run(req: RunRequest): Promise<RunResult>;
@@ -23,10 +19,7 @@ export type ClaudeErrorKind =
   | 'unknown';
 
 export class ClaudeError extends Error {
-  constructor(
-    public kind: ClaudeErrorKind,
-    public usage?: Usage,
-  ) {
+  constructor(public kind: ClaudeErrorKind) {
     super(kind);
     this.name = 'ClaudeError';
   }

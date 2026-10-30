@@ -37,7 +37,6 @@ const feedFields = {
   notify: { type: 'boolean', description: 'Notification ntfy après un run (défaut false ; serveur et sujet des Réglages).' },
   notifyThreshold: { type: 'string', enum: ['high', 'medium', 'low'], description: 'Priorité minimale notifiée (défaut high).' },
   model: { type: 'string', description: 'Modèle Claude (défaut : celui de l’instance, ex. sonnet).' },
-  budgetUsd: { type: 'number', minimum: 0.01, maximum: 50, description: 'Plafond de coût par run, en dollars.' },
 };
 
 /** Keeps list_feeds readable for a model: no timestamps it does not need. */
@@ -84,7 +83,7 @@ export function createMcpTools(deps: AppDeps): McpTool[] {
     },
     {
       name: 'create_feed',
-      description: 'Crée un flux de veille. Activé par défaut : il sera exécuté (et facturé, dans la limite de budgetUsd) à chaque période.',
+      description: 'Crée un flux de veille. Activé par défaut : il sera exécuté à chaque période.',
       inputSchema: {
         type: 'object',
         properties: feedFields,
@@ -93,7 +92,6 @@ export function createMcpTools(deps: AppDeps): McpTool[] {
       run: async (a) => {
         const input = parse(feedInputSchema, {
           model: deps.config.defaultModel,
-          budgetUsd: deps.config.defaultBudgetUsd,
           ...a,
           // Per-feed ntfy targets stay a UI decision: the MCP side only uses the global settings.
           ntfyServer: null,

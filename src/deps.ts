@@ -114,7 +114,7 @@ export function createDeps(config: Config, overrides: Partial<AppDeps> = {}): Ap
     overrides.daily ??
     new DailyService({
       daily: repos.daily, runner, clock, logger, timezone: () => settings().timezone,
-      model: config.defaultModel, budgetUsd: config.defaultBudgetUsd,
+      model: config.defaultModel,
     });
   const sessionSecret = overrides.sessionSecret ?? loadSessionSecret(config);
   return {

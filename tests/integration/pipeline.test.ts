@@ -56,7 +56,7 @@ function setup(script?: FakeStep[], opts: { notify?: boolean; notifier?: Partial
   const feed = repos.feeds.create({
     name: 'F', instructions: 'x', sourceType: 'rss', sourceParams: { urls: opts.urls ?? [`${base}/rss`] },
     frequencyHours: 1, freshnessDays: 30, enabled: true, notify: opts.notify ?? false, notifyThreshold: 'low',
-    ntfyServer: 'http://127.0.0.1:1', ntfyTopic: 'topic', model: 'sonnet', budgetUsd: 0.5,
+    ntfyServer: 'http://127.0.0.1:1', ntfyTopic: 'topic', model: 'sonnet',
   }, NOW);
   const runner = new FakeClaudeRunner(script);
   const fetch = createSafeFetch({ allowlist: [{ kind: 'cidr', cidr: '127.0.0.1/32' }], maxBytes: 1e6, timeoutMs: 3000 });
@@ -97,8 +97,6 @@ describe('executeRun', () => {
     expect(s.runner.calls.length).toBe(calls);
     expect(sent).toBe(1);
     expect(s.repos.feeds.get(s.feed.id)!.lastRunAt).toBeTruthy();
-    expect(s.events.some((e) => e.type === 'run.usage')).toBe(true);
-    expect(r1.run.usage.costUsd).toBeGreaterThan(0);
   });
 
   it('a discarded item stays seen and is not resubmitted', async () => {
@@ -133,15 +131,13 @@ describe('executeRun', () => {
     expect(Date.parse(f().nextRunAt!)).toBe(NOW + 360 * 60_000);
   });
 
-  it('budget exceeded yields a partial digest', async () => {
+  it('large fetch is triaged in batches then digested', async () => {
     bigCount = 50;
-    const s = setup([{ kind: 'valid', costUsd: 1 }]);
+    const s = setup([]);
     const r = await s.go();
-    expect(r.status).toBe('budget_exceeded');
-    expect(r.run.errorCode).toBe('budget_exceeded');
-    const d = s.repos.digests.get(r.run.digestId!)!;
-    expect(d.partial).toBe(true);
-    expect(d.items.length).toBe(40);
+    expect(r.status).toBe('succeeded');
+    expect(s.runner.calls.length).toBe(3);
+    expect(s.repos.digests.get(r.run.digestId!)).not.toBeNull();
   });
 
   it('ntfy failure does not fail the run', async () => {

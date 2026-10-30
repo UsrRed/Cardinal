@@ -5,7 +5,7 @@ import { toItem } from './items.js';
 
 export interface DigestsRepo {
   create(
-    d: { feedId: string; runId: string; title: string; lede: string; sections: DigestSection[]; partial: boolean },
+    d: { feedId: string; runId: string; title: string; lede: string; sections: DigestSection[] },
     now: number,
   ): string;
   get(id: string): Digest | null;
@@ -17,8 +17,8 @@ export function createDigestsRepo(db: Db): DigestsRepo {
   return {
     create(d, now) {
       const id = randomUUID();
-      db.prepare('INSERT INTO digests (id, feed_id, run_id, title, lede, sections, partial, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-        .run(id, d.feedId, d.runId, d.title, d.lede, JSON.stringify(d.sections), d.partial ? 1 : 0, now);
+      db.prepare('INSERT INTO digests (id, feed_id, run_id, title, lede, sections, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .run(id, d.feedId, d.runId, d.title, d.lede, JSON.stringify(d.sections), now);
       return id;
     },
     get(id) {
@@ -29,7 +29,7 @@ export function createDigestsRepo(db: Db): DigestsRepo {
       const items = (db.prepare('SELECT * FROM items WHERE digest_id = ? ORDER BY rowid').all(id) as Parameters<typeof toItem>[0][]).map(toItem);
       return {
         id: r.id, feedId: r.feed_id, feedName: r.feed_name, runId: r.run_id, title: r.title, lede: r.lede,
-        sections: JSON.parse(r.sections), partial: !!r.partial, createdAt: iso(r.created_at), items,
+        sections: JSON.parse(r.sections), createdAt: iso(r.created_at), items,
       };
     },
     listByFeed(feedId, page, pageSize) {
@@ -48,7 +48,7 @@ export function createDigestsRepo(db: Db): DigestsRepo {
       return {
         items: rows.map((r) => ({
           id: r.id, feedId: r.feed_id, feedName: r.feed_name, title: r.title, lede: r.lede, itemCount: r.item_count,
-          highCount: r.high_count, partial: !!r.partial, createdAt: iso(r.created_at),
+          highCount: r.high_count, createdAt: iso(r.created_at),
         })),
         total, page, pageSize,
       };

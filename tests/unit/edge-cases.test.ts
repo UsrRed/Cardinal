@@ -66,12 +66,10 @@ describe('feed schema edges', () => {
     expect(ok({ sourceParams: { urls: ['javascript:alert(1)'] } })).toBe(false);
     expect(ok({ sourceParams: { urls: ['file:///etc/passwd'] } })).toBe(false);
   });
-  it('rejects empty/oversize name, bad budget, bad topic, unknown sourceType', () => {
+  it('rejects empty/oversize name, bad topic, unknown sourceType', () => {
     expect(ok({ name: '' })).toBe(false);
     expect(ok({ name: 'x'.repeat(121) })).toBe(false);
     expect(ok({ instructions: 'x'.repeat(4001) })).toBe(false);
-    expect(ok({ budgetUsd: 0 })).toBe(false);
-    expect(ok({ budgetUsd: 51 })).toBe(false);
     expect(ok({ ntfyTopic: 'bad topic!' })).toBe(false);
     expect(ok({ sourceType: 'github' })).toBe(false);
   });

@@ -1,10 +1,9 @@
-import type { Usage } from '../shared/types.js';
 import { DAILY_MARKER } from './prompt.js';
 import { ClaudeError, type ClaudeErrorKind, type ClaudeRunner, type RunRequest, type RunResult } from './types.js';
 
 export type FakeStep =
-  | { kind: 'valid'; costUsd?: number }
-  | { kind: 'raw'; text: string; costUsd?: number }
+  | { kind: 'valid' }
+  | { kind: 'raw'; text: string }
   | { kind: 'invalid_json' }
   | { kind: 'invented_url' }
   | { kind: 'unknown_ref' }
@@ -13,10 +12,6 @@ export type FakeStep =
 
 const DATA_RE = /<<<DATA id=([^>\s]+)>>>\n([\s\S]*?)\n?<<<END DATA>>>/g;
 const URL_RE = /https?:\/\/[^\s<>"')\]]+/g;
-
-function usageOf(costUsd = 0.001): Usage {
-  return { inputTokens: 100, outputTokens: 50, costUsd };
-}
 
 function sleep(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -83,21 +78,21 @@ export class FakeClaudeRunner implements ClaudeRunner {
       await sleep(step.ms, req.signal);
       step = this.script.shift();
     }
-    if (!step) return { json: autoOutput(req.prompt), usage: usageOf() };
+    if (!step) return { json: autoOutput(req.prompt) };
     switch (step.kind) {
       case 'valid':
-        return { json: autoOutput(req.prompt), usage: usageOf(step.costUsd) };
+        return { json: autoOutput(req.prompt) };
       case 'raw':
         try {
-          return { json: JSON.parse(step.text), usage: usageOf(step.costUsd) };
+          return { json: JSON.parse(step.text) };
         } catch {
-          throw new ClaudeError('invalid_output', usageOf(step.costUsd));
+          throw new ClaudeError('invalid_output');
         }
       case 'invalid_json':
-        throw new ClaudeError('invalid_output', usageOf());
+        throw new ClaudeError('invalid_output');
       case 'invented_url':
       case 'unknown_ref':
-        return { json: autoOutput(req.prompt, step.kind), usage: usageOf() };
+        return { json: autoOutput(req.prompt, step.kind) };
       case 'error':
         throw new ClaudeError(step.error);
     }

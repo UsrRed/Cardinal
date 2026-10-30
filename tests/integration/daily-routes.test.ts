@@ -39,7 +39,7 @@ describe('daily summary routes', () => {
     const { call, r, feed, deps } = await make();
     const now = Date.now();
     const run = r.runs.create(feed.id, 'manual', now);
-    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [], partial: false }, now);
+    const d = r.digests.create({ feedId: feed.id, runId: run.id, title: 't', lede: 'l', sections: [] }, now);
     r.items.insertMany(['i1', 'i2'].map((ref, i) => ({
       feedId: feed.id, digestId: d, runId: run.id, ref, title: `Titre ${ref}`, url: `https://src.example/${ref}`,
       priority: i === 0 ? 'high' as const : 'low' as const, justification: 'j', summary: 's', sources: [], publishedAt: null,

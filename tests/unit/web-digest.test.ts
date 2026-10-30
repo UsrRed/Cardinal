@@ -16,7 +16,7 @@ const item = (o: Partial<Item> = {}): Item => ({
 });
 const digest: Digest = {
   id: 'd', feedId: 'f', feedName: 'Veille', runId: 'r', title: X, lede: X,
-  sections: [{ heading: X, itemRefs: ['i1'], body: X }], partial: false, createdAt: '2026-01-01T10:00:00Z', items: [item()],
+  sections: [{ heading: X, itemRefs: ['i1'], body: X }], createdAt: '2026-01-01T10:00:00Z', items: [item()],
 };
 const html = (el: React.ReactElement) => renderToStaticMarkup(createElement(MemoryRouter, null, el));
 const dv = (p: Partial<Parameters<typeof DigestView>[0]>) =>

@@ -9,7 +9,6 @@ export async function checkClaudeStatus(runner: ClaudeRunner, hasApiKey: boolean
     await runner.run({
       prompt: 'Réponds uniquement par {"ok":true}',
       model: 'haiku',
-      budgetUsd: 0.05,
       signal: AbortSignal.timeout(30_000),
     });
     return mk(hasApiKey ? 'api_key' : 'connected');

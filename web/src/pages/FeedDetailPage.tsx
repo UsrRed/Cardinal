@@ -33,7 +33,7 @@ export function DigestList({ loading, error, digests, onRetry, onPage }: {
             <span className="m">{formatDateTime(d.createdAt)}</span>
             <div>
               <Link className="t" to={`/digests/${d.id}`}>{d.title}</Link>
-              <div className="m">{d.itemCount} élément(s) · {d.highCount} haute(s){d.partial ? ' · partiel' : ''}</div>
+              <div className="m">{d.itemCount} élément(s) · {d.highCount} haute(s)</div>
             </div>
             <span />
           </li>

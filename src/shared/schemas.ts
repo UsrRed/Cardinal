@@ -87,11 +87,6 @@ const common = {
     .string()
     .regex(/^[a-z0-9.-]{1,64}$/, { error: 'Modèle invalide.' })
     .default('sonnet'),
-  budgetUsd: z
-    .number({ error: 'Nombre requis.' })
-    .min(0.01, { error: 'Au moins 0,01 $.' })
-    .max(50, { error: '50 $ au maximum.' })
-    .default(1),
 };
 
 export const feedInputSchema = z.discriminatedUnion(

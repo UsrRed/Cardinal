@@ -13,13 +13,13 @@ interface FormState {
   keywords: string; minSeverity: NvdSeverity | '';
   frequencyHours: string; freshnessDays: string; enabled: boolean;
   notify: boolean; notifyThreshold: Priority; ntfyServer: string; ntfyTopic: string;
-  model: string; budgetUsd: string;
+  model: string;
 }
 
 const EMPTY: FormState = {
   name: '', instructions: '', sourceType: 'rss', urls: '', packages: [{ name: '', ecosystem: 'PyPI' }],
   keywords: '', minSeverity: '', frequencyHours: '24', freshnessDays: '7', enabled: true,
-  notify: false, notifyThreshold: 'high', ntfyServer: '', ntfyTopic: '', model: 'sonnet', budgetUsd: '1',
+  notify: false, notifyThreshold: 'high', ntfyServer: '', ntfyTopic: '', model: 'sonnet',
 };
 
 const lines = (s: string) => s.split(/[\n,]/).map((x) => x.trim()).filter(Boolean);
@@ -29,7 +29,7 @@ function fromFeed(f: Feed): FormState {
     ...EMPTY, name: f.name, instructions: f.instructions, sourceType: f.sourceType,
     frequencyHours: String(f.frequencyHours), freshnessDays: String(f.freshnessDays), enabled: f.enabled,
     notify: f.notify, notifyThreshold: f.notifyThreshold, ntfyServer: f.ntfyServer ?? '', ntfyTopic: f.ntfyTopic ?? '',
-    model: f.model, budgetUsd: String(f.budgetUsd),
+    model: f.model,
   };
   const p = f.sourceParams;
   if ('urls' in p) base.urls = p.urls.join('\n');
@@ -48,7 +48,7 @@ export function toPayload(s: FormState): unknown {
     freshnessDays: s.freshnessDays.trim() === '' ? NaN : Number(s.freshnessDays),
     enabled: s.enabled, notify: s.notify, notifyThreshold: s.notifyThreshold,
     ntfyServer: s.ntfyServer.trim() || null, ntfyTopic: s.ntfyTopic.trim() || null,
-    model: s.model, budgetUsd: s.budgetUsd.trim() === '' ? NaN : Number(s.budgetUsd),
+    model: s.model,
   };
 }
 
@@ -207,11 +207,6 @@ export function FeedFormPage() {
               <label htmlFor="f-fresh">Fraîcheur (jours)</label>
               <input id="f-fresh" className={cls('freshnessDays')} inputMode="numeric" value={form.freshnessDays} onChange={(e) => set('freshnessDays', e.target.value)} />
               {fieldErr(['freshnessDays'])}
-            </div>
-            <div className="field">
-              <label htmlFor="f-budget">Budget par run ($)</label>
-              <input id="f-budget" className={cls('budgetUsd')} inputMode="decimal" value={form.budgetUsd} onChange={(e) => set('budgetUsd', e.target.value)} />
-              {fieldErr(['budgetUsd'])}
             </div>
           </div>
           <div className="field">

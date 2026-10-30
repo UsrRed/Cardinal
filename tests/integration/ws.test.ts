@@ -78,7 +78,7 @@ describe('ws runs', () => {
     const { port, deps } = await start();
     const c = open(`ws://127.0.0.1:${port}/api/ws/runs?runId=r1`);
     await c.opened;
-    deps.bus.emit({ type: 'run.usage', runId: 'r2', usage: { inputTokens: 1, outputTokens: 1, costUsd: 0 } });
+    deps.bus.emit({ type: 'run.step', runId: 'r2', step: 'fetch', state: 'running', detail: null });
     deps.bus.emit({ type: 'run.status', runId: 'r1', feedId: 'f', status: 'running', errorCode: null });
     await until(() => c.msgs.length >= 1);
     expect(c.msgs).toEqual([{ type: 'run.status', runId: 'r1', feedId: 'f', status: 'running', errorCode: null }]);

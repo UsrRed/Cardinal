@@ -71,7 +71,7 @@ export function DigestView({ loading, error, digest, onRetry, onToggleRead }: {
         <a className="btn sm" href={`/api/digests/${digest.id}/export.json`} download>Exporter JSON</a>
       </div>
       <div className="article">
-        <div className="kicker">{digest.feedName}{digest.partial ? ' · partiel (budget dépassé)' : ''}</div>
+        <div className="kicker">{digest.feedName}</div>
         <h1>{digest.title}</h1>
         <div className="byline"><b>{formatLongDate(digest.createdAt)}</b> · {getTimezone()} · {digest.items.length} élément(s)</div>
         <SafeText className="lede" text={digest.lede} />

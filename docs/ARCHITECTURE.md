@@ -43,7 +43,8 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   └── design/                           # maquette de référence (ne pas modifier)
 ├── migrations/
 │   ├── 001_init.sql                      # 00N_*.sql appliquées au démarrage, dans l'ordre
-│   └── 002_daily.sql                     # daily_summaries
+│   ├── 002_daily.sql                     # daily_summaries
+│   └── 003_drop_cost.sql                 # retrait budget / tokens / coût
 ├── src/
 │   ├── index.ts                          # point d'entrée: loadConfig → openDb → migrate → seed → buildApp → lock+scheduler → listen
 │   ├── healthcheck.ts                    # → dist/healthcheck.js (GET /healthz sur 127.0.0.1:PORT, exit 0/1)
@@ -63,7 +64,7 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   │   ├── seed.ts                       # 3 flux d'exemple désactivés si table feeds vide
 │   │   └── repos/
 │   │       ├── feeds.ts                  # FeedsRepo
-│   │       ├── runs.ts                   # RunsRepo (+ run_logs, usage cumulée)
+│   │       ├── runs.ts                   # RunsRepo (+ run_logs)
 │   │       ├── digests.ts                # DigestsRepo
 │   │       ├── items.ts                  # ItemsRepo (éléments retenus, lu/non lu)
 │   │       ├── seen.ts                   # SeenRepo (seen_items)
@@ -90,11 +91,11 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │   │   ├── args.ts                       # buildClaudeArgs(model, mcpConfigPath)
 │   │   ├── cliRunner.ts                  # CliClaudeRunner (spawn, stdin, stream-json, AbortSignal)
 │   │   ├── fakeRunner.ts                 # FakeClaudeRunner scriptable (+ mode auto pour e2e)
-│   │   ├── streamJson.ts                 # parseStreamJson(lines) → {text, usage, isError}
+│   │   ├── streamJson.ts                 # parseStreamJson(lines) → {text, isError}
 │   │   ├── classify.ts                   # classifyError(stdout, stderr, code) → ClaudeErrorKind
 │   │   ├── prompt.ts                     # SYSTEM_HEADER, escapeDelimiters, buildTriagePrompt, buildDigestPrompt
 │   │   ├── outputSchema.ts               # zod TriageOutput, DigestOutput, validateOutput (anti-invention)
-│   │   ├── engine.ts                     # runTriageAndDigest(): lots de 40, 1 retry, budget
+│   │   ├── engine.ts                     # runTriageAndDigest(): lots de 40, 1 retry
 │   │   └── status.ts                     # checkClaudeStatus() (appel minimal sans outil)
 │   ├── pipeline/
 │   │   ├── index.ts                      # executeRun(runId, ctx) : fetch→dedup→triage→digest→notify
@@ -132,7 +133,6 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │           ├── items.ts                  # fil, marquer lu
 │           ├── daily.ts                  # résumé journalier : lecture, génération
 │           ├── settings.ts               # réglages, secrets, statut Claude, test ntfy
-│           ├── stats.ts                  # usage cumulée
 │           ├── ws.ts                     # /api/ws/runs, /api/ws/console
 │           └── mcp.ts                    # /mcp : JSON-RPC MCP sans état, Bearer PFLUX_MCP_TOKEN
 ├── web/
@@ -163,7 +163,7 @@ Aucune autre dépendance. Pas de helmet (en-têtes posés par un hook de 20 lign
 │           ├── DigestPage.tsx            # "/digests/:id" article
 │           ├── StreamPage.tsx            # "/stream" fil global filtrable (vue liste ou détaillée en cartes)
 │           ├── DailyPage.tsx             # "/daily" résumé journalier par niveaux et catégories
-│           ├── RunsPage.tsx              # "/runs" historique + coûts cumulés
+│           ├── RunsPage.tsx              # "/runs" historique
 │           ├── SettingsPage.tsx          # "/settings"
 │           └── LoginPage.tsx             # "/login" (mode exposé)
 └── tests/
@@ -186,7 +186,7 @@ Règle de dépendance (sens unique) : `http`/`console` → `pipeline`/`queue`/`s
 - **net** : unique client HTTP sortant (RSS, OSV, NVD, ntfy). Résolution DNS injectable, validation de chaque IP, connexion sur l'IP validée (option `lookup` figée), SNI/Host conservés, redirections manuelles ≤ 5 revalidées, bornes taille/durée.
 - **sources** : connecteurs purs `fetch(params, ctx)` ; parsing testable à partir de chaînes (`parseRss(text)`, `parseOsv(json)`, `parseNvd(json)`). Erreurs par URL/paquet reportées via `ctx.onSourceError` sans interrompre les autres.
 - **dedup** : normalisation + SHA-256 ; filtre avant Claude.
-- **claude** : runner (réel/faux), construction de l'env et des arguments, prompt durci, validation stricte, moteur de lots + budget, classification des erreurs.
+- **claude** : runner (réel/faux), construction de l'env et des arguments, prompt durci, validation stricte, moteur de lots, classification des erreurs.
 - **pipeline** : orchestre un run, écrit étapes/logs (assainis) en DB et sur `RunEventBus`, marque `seen_items`, crée digest + items, notifie.
 - **queue** : file persistée (`runs.status`), concurrence `maxConcurrentRuns`, `AbortController` par run, annulation `queued`/`running`, recovery au démarrage (`running`→`queued`).
 - **scheduler** : n'est démarré que si `acquireLock` réussit ; tick toutes les `schedulerTickS` ; enfile les flux dus sans doublon ; rattrapage = 1 seul run ; calcule `nextRunAt` ; backoff de report.
@@ -207,11 +207,10 @@ RunQueue (≤ N concurrents) ──► executeRun(runId, signal)
   2 dedup   : dedupKey(item) ; SeenRepo.filterUnseen(feedId, keys) ; 0 nouveau → status succeeded, noNews=1, pas de Claude/notif
   3 triage  : ≤40 items → 1 appel DigestOutput ; >40 → lots de 40 TriageOutput puis 1 appel DigestOutput sur items keep
               chaque appel: prompt durci → runner.run → validateOutput (schéma, refs connues, URL ⊂ entrées) → 1 retry max
-              coût cumulé > budgetUsd → lots restants non lancés → budget_exceeded (+ digest partiel si items traités)
               après chaque lot validé : SeenRepo.markSeen(lot entier, keep ou non)
   4 digest  : DigestsRepo.create + ItemsRepo.insertMany (keep=true) si ≥1 retenu
   5 notify  : NtfyNotifier.notifyRun (items ≥ seuil, 5 max + récap) ; échec → log étape, run non échoué
-  fin       : RunsRepo.finish(status, usage) ; FeedsRepo.setLastRun ; events WS
+  fin       : RunsRepo.finish(status) ; FeedsRepo.setLastRun ; events WS
 ClaudeError kind usage_limit|unauthenticated|overloaded → status deferred, feed.nextRunAt = now + min(defer·2^n, 360 min)
 ```
 
@@ -219,7 +218,7 @@ ClaudeError kind usage_limit|unauthenticated|overloaded → status deferred, fee
 `onRequest` (en-têtes sécurité, requestId) → garde d'accès (mode exposé) → CSRF (mutations) → validation zod → repo/service → DTO JSON. Toute exception non `AppError` → log serveur `{requestId, err}` → `500 {error:"internal_error", requestId}`.
 
 ### Temps réel
-`RunEventBus` (process) → `/api/ws/runs` → front (`useRunEvents`) : statut, étapes, logs, usage.
+`RunEventBus` (process) → `/api/ws/runs` → front (`useRunEvents`) : statut, étapes, logs.
 
 ## 5. Stockage (`PFLUX_DATA_DIR`, défaut `/data`, `./data` en dev)
 
@@ -235,9 +234,9 @@ Tables (migration 001) : `feeds`, `runs`, `run_logs`, `digests`, `items`, `seen_
 ## 6. Front — mise en œuvre de la maquette
 
 - `styles/tokens.css` reprend **à l'identique** les variables `:root` / `.dark` de `docs/design/` (papier, encre, rouge, ocre, graphite, vert, bleu ; piles de polices système serif/sans/mono, **aucune police distante**).
-- `Shell` = grille `232px 1fr` : `Sidebar` (marque `C` rouge + wordmark « Cardinal », double filet, nav Flux / Fil / Runs / Réglages avec compteurs `.count`, liste des flux avec `.dot` actif/pause/reporté, pied avec coût cumulé et statut Claude) + `main`.
+- `Shell` = grille `232px 1fr` : `Sidebar` (marque `C` rouge + wordmark « Cardinal », double filet, nav Flux / Fil / Runs / Réglages avec compteurs `.count`, liste des flux avec `.dot` actif/pause/reporté, pied avec statut Claude et file) + `main`.
 - `Masthead` : dateline mono majuscule, titre serif 34px, `mast-meta`, zone `.actions`.
-- Composants ↔ classes : `StatusStamp` (`.stamp .s-ok/.s-run/.s-queue/.s-def/.s-fail/.s-cancel/.s-budget/.s-pause`), `PriorityBadge` (`.prio .p-high/.p-med/.p-low` + barres), `FeedCard` (`.feed`, hachures `.paused`, gros compteur non-lus, `.meta` dl, `MiniTape` 5 étapes), `PipelineTape` (`.tape` perforé, `.done/.now/.todo/.err`, animation `crawl`), `StatsBar` (`.stats` + `.gauge` budget), `LogView` (`.log`, niveaux `.lv.i/.w/.e`, curseur), `RunList` (`.runs`), `SegFilter` (`.seg`), boutons `.btn primary/danger/ghost/sm`.
+- Composants ↔ classes : `StatusStamp` (`.stamp .s-ok/.s-run/.s-queue/.s-def/.s-fail/.s-cancel/.s-pause`), `PriorityBadge` (`.prio .p-high/.p-med/.p-low` + barres), `FeedCard` (`.feed`, hachures `.paused`, gros compteur non-lus, `.meta` dl, `MiniTape` 5 étapes), `PipelineTape` (`.tape` perforé, `.done/.now/.todo/.err`, animation `crawl`), `StatsBar` (`.stats` : récupérés / nouveaux / retenus / notifiés), `LogView` (`.log`, niveaux `.lv.i/.w/.e`, curseur), `RunList` (`.runs`), `SegFilter` (`.seg`), boutons `.btn primary/danger/ghost/sm`.
 - `DigestPage` : page article (serif, chapeau, sections, éléments avec badge, justification, résumé, liens `target="_blank" rel="noopener noreferrer"`), boutons export MD/JSON.
 - Thème : classe `.dark` sur `<html>`, défaut `prefers-color-scheme`, bascule mémorisée `localStorage["pflux-theme"]`.
 - Chaque page utilise `States.tsx` pour chargement / vide / erreur. Dates formatées avec `Intl.DateTimeFormat` dans le fuseau `settings.timezone`.
@@ -269,7 +268,7 @@ Tables (migration 001) : `feeds`, `runs`, `run_logs`, `digests`, `items`, `seen_
 
 - DNS injecté (`resolve: (host) => Promise<string[]>`) et serveurs `http.createServer` sur `127.0.0.1:0` avec allowlist `127.0.0.1:<port>`.
 - `FakeClock` pour scheduler, limiteur NVD, rate-limit login, rétention.
-- `FakeClaudeRunner` scriptable : file de réponses (`valid`, `invalid_json`, `bad_schema`, `unknown_ref`, `invented_url`, `usage_limit`, `unauthenticated`, `overloaded`, `cost:<usd>`) ; en mode `PFLUX_CLAUDE_RUNNER=fake` sans script, il génère une sortie valide déterministe (tous les items `keep`, priorité `high` pour le premier) — utilisé par l'e2e.
+- `FakeClaudeRunner` scriptable : file de réponses (`valid`, `invalid_json`, `bad_schema`, `unknown_ref`, `invented_url`, `usage_limit`, `unauthenticated`, `overloaded`) ; en mode `PFLUX_CLAUDE_RUNNER=fake` sans script, il génère une sortie valide déterministe (tous les items `keep`, priorité `high` pour le premier) — utilisé par l'e2e.
 - Les tests de `cliRunner` utilisent un faux binaire (`PFLUX_CLAUDE_BIN` → script node de `tests/fixtures/claude/fake-claude.mjs`) qui renvoie son `argv`, son `env` et un stream-json simulé.
 - `buildTestApp({env})` construit l'app via `fastify.inject` avec data dir `mkdtemp`.
 - Démarrage exposé sans mot de passe : `spawn(node, ["dist/index.js"])` ou `tsx` → code ≠ 0 (le test unitaire couvre `loadConfig`, l'intégration couvre `process.exit`).
@@ -291,7 +290,7 @@ Tables (migration 001) : `feeds`, `runs`, `run_logs`, `digests`, `items`, `seen_
 
 ## Risques
 - node-pty et better-sqlite3 sont des modules natifs : compilation (python3, make, g++) nécessaire dans l'étape build du Dockerfile et sur les PC sans binaires précompilés ; copier node_modules compilés vers l'image finale slim.
-- Flags du CLI claude (--tools "", --disallowedTools, --strict-mcp-config, format stream-json, champs total_cost_usd/usage) susceptibles d'évoluer : version épinglée exacte, arguments centralisés dans claude/args.ts et testés via un faux binaire.
+- Flags du CLI claude (--tools "", --disallowedTools, --strict-mcp-config, format stream-json) susceptibles d'évoluer : version épinglée exacte, arguments centralisés dans claude/args.ts et testés via un faux binaire.
 - Classification usage_limit/unauthenticated/overloaded repose sur des motifs textuels de sortie non contractuels : motifs regroupés dans classify.ts avec fixtures, repli prudent sur 'failed'.
 - Connexion sur IP résolue avec TLS : il faut conserver SNI/Host et la validation du certificat sur le hostname d'origine (option lookup figée plutôt que remplacer l'hôte par l'IP).
 - Règle « PFLUX_HOST ignoré sauf PFLUX_EXPOSE=1 » en tension avec le conteneur qui doit écouter sur 0.0.0.0 sans mot de passe : résolu par PFLUX_IN_CONTAINER=1 posé dans le Dockerfile et publication hôte 127.0.0.1 uniquement — à documenter clairement dans le README.

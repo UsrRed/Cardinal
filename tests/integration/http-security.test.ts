@@ -45,7 +45,7 @@ const MUTATIONS: Array<['POST' | 'PUT' | 'PATCH' | 'DELETE', string, object?]> =
 describe('exposed mode without session', () => {
   it('rejects API, export, page and WS', async () => {
     const { app, deps } = await make(EXPOSED);
-    const gets = ['/api/feeds', '/api/feeds/export', '/api/runs', '/api/runs/x/logs', '/api/digests/1', '/api/digests/1/export.md', '/api/digests/1/export.json', '/api/items', '/api/stats', '/api/settings', '/api/claude/status'];
+    const gets = ['/api/feeds', '/api/feeds/export', '/api/runs', '/api/runs/x/logs', '/api/digests/1', '/api/digests/1/export.md', '/api/digests/1/export.json', '/api/items', '/api/settings', '/api/claude/status'];
     for (const url of gets) {
       const r = await app.inject({ method: 'GET', url });
       expect([401, 302], url).toContain(r.statusCode);

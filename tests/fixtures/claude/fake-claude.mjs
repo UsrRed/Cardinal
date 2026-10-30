@@ -20,7 +20,7 @@ if (dump) {
 }
 const out = (o) => process.stdout.write(JSON.stringify(o) + '\n');
 const fail = (msg, stderr) => {
-  out({ type: 'result', subtype: 'error', is_error: true, result: msg, total_cost_usd: 0, usage: { input_tokens: 0, output_tokens: 0 } });
+  out({ type: 'result', subtype: 'error', is_error: true, result: msg });
   if (stderr) process.stderr.write(stderr + '\n');
   process.exit(1);
 };
@@ -33,5 +33,5 @@ else if (mode === 'other') fail('something odd', 'boom');
 else {
   const text = mode === 'bad_json' ? 'not json' : '```json\n{"items":[],"ok":true}\n```';
   out({ type: 'assistant', message: { content: [{ type: 'text', text }] } });
-  out({ type: 'result', subtype: 'success', is_error: false, result: text, total_cost_usd: 0.0123, usage: { input_tokens: 321, output_tokens: 45 } });
+  out({ type: 'result', subtype: 'success', is_error: false, result: text });
 }

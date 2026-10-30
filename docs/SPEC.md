@@ -20,7 +20,6 @@ Le projet part de zéro. La stack (TypeScript/Node, Fastify, SQLite, Vite/React)
    - HOME/config dédiés dans `/data/claude-home`, environnement reconstruit explicitement (aucune variable héritée de l'hôte), télémétrie désactivée ;
    - connexion depuis l'UI (console WebSocket `claude /login`, ou clé API) ;
    - détection de « limite d'usage », « non authentifié » et « surcharge », avec **report automatique** du run au lieu d'un échec ;
-   - budget en $ par run avec arrêt propre, tokens et coût affichés par run et cumulés.
 4. **Ordonnanceur intégré et file d'exécution** :
    - un seul ordonnanceur, sans doublon, avec au plus 1 run de rattrapage par flux après un arrêt ;
    - « Lancer maintenant » ;
@@ -55,7 +54,7 @@ Un flux comporte :
 - `id`, `name`, `instructions` (consigne en langage naturel), `sourceType` (`rss|osv|nvd`), `sourceParams` (JSON validé par type) ;
 - `frequencyHours` (1–720), `freshnessDays` (fenêtre de fraîcheur, 1–90), `enabled` ;
 - `notify` (bool), `notifyThreshold` (`high|medium|low`), `ntfyServer?`/`ntfyTopic?` (surcharge par flux) ;
-- `model` (défaut `sonnet`), `budgetUsd` (défaut 0,50) ;
+- `model` (défaut `sonnet`) ;
 - `createdAt`, `updatedAt`, `lastRunAt`, `nextRunAt`.
 
 Paramètres par type de source :
@@ -112,7 +111,7 @@ Critères d'acceptation :
 
 ### F5 — Moteur Claude (runner headless sécurisé)
 
-Interface `ClaudeRunner.run({prompt, model, budgetUsd, signal}) → {json, usage:{inputTokens, outputTokens, costUsd}}`, avec une implémentation réelle (CLI) et un **faux runner** pour les tests, sélectionné par `PFLUX_CLAUDE_RUNNER=fake`.
+Interface `ClaudeRunner.run({prompt, model, signal}) → {json}`, avec une implémentation réelle (CLI) et un **faux runner** pour les tests, sélectionné par `PFLUX_CLAUDE_RUNNER=fake`.
 
 Critères d'acceptation :
 - [ ] Commande lancée par `spawn` (sans shell) : `claude -p --output-format stream-json --verbose --model <m> --strict-mcp-config --mcp-config <fichier vide privé> --disallowedTools "*"` (ou l'équivalent qui garantit **zéro outil**), avec le prompt passé sur stdin.
@@ -124,9 +123,7 @@ Critères d'acceptation :
   - `digest: {title, lede, sections[{heading, itemRefs[], body}]}`.
 - [ ] Validation : la sortie est rejetée si le JSON est invalide, si le schéma n'est pas respecté, si un `ref` est inconnu ou si une URL citée ne figure pas parmi les URL fournies en entrée (anti-invention). En cas de rejet, 1 nouvelle tentative au plus, avec un message de correction ; au-delà, le run échoue avec un message générique. **Jamais d'affichage brut.**
 - [ ] Les gros lots sont découpés : au-delà de 40 items, triage par paquets puis rédaction du digest sur les items retenus.
-- [ ] Budget : le coût cumulé (issu des événements `result` du stream-json) est comparé à `budgetUsd`. En cas de dépassement, les paquets restants ne sont pas lancés, le run se termine avec le statut `budget_exceeded` et produit un digest partiel s'il existe des items traités.
 - [ ] Les erreurs sont classées à partir de la sortie et du code retour : `usage_limit`, `unauthenticated` ou `overloaded` → run `deferred`, reprogrammé (`PFLUX_DEFER_MINUTES`, défaut 60, puis backoff jusqu'à 6 h), **pas** `failed`. Les autres erreurs donnent `failed`. Testé avec des sorties simulées.
-- [ ] Tokens et coût sont enregistrés par run et affichés par run, cumulés par flux et cumulés globalement.
 
 ### F6 — Ordonnanceur et file d'exécution
 
@@ -138,7 +135,7 @@ Critères d'acceptation :
 - [ ] « Lancer maintenant » met le flux en file, même s'il est en pause. Il répond 409 si un run est déjà actif pour ce flux.
 - [ ] Les étapes du run (`fetch`, `dedup`, `triage`, `digest`, `notify`) et les logs horodatés sont visibles **en direct** dans l'UI via WebSocket (ou SSE). Les logs sont assainis : aucun secret, aucun contenu brut d'exception.
 - [ ] L'annulation est possible en file comme en cours. Elle tue le processus `claude` (par son PID, via AbortSignal) et le run passe en `cancelled`.
-- [ ] Statuts : `queued`, `running`, `succeeded`, `failed`, `deferred`, `cancelled`, `budget_exceeded`.
+- [ ] Statuts : `queued`, `running`, `succeeded`, `failed`, `deferred`, `cancelled`.
 
 ### F7 — Digests, fil et exports
 
@@ -247,10 +244,10 @@ Critères d'acceptation :
   - `auth` (session, CSRF, rate-limit) ;
   - `http` (routes) ;
   - `web` (front).
-- **Configuration exclusivement par variables d'environnement** : `PFLUX_PORT`, `PFLUX_HOST`, `PFLUX_EXPOSE`, `PFLUX_PASSWORD`, `PFLUX_SESSION_SECRET`, `PFLUX_TRUST_PROXY`, `PFLUX_PUBLIC_URL`, `PFLUX_DATA_DIR` (défaut `/data` ; `./data` en dev), `PFLUX_SSRF_ALLOWLIST`, `PFLUX_FETCH_MAX_BYTES`, `PFLUX_FETCH_TIMEOUT_MS`, `PFLUX_MAX_CONCURRENT_RUNS`, `PFLUX_SCHEDULER_TICK_S`, `PFLUX_DEFER_MINUTES`, `PFLUX_RETENTION_DAYS`, `PFLUX_TZ`, `PFLUX_DEFAULT_MODEL`, `PFLUX_DEFAULT_BUDGET_USD`, `PFLUX_ANTHROPIC_API_KEY`, `PFLUX_NVD_API_KEY`, `PFLUX_NTFY_TOKEN`, `PFLUX_CLAUDE_BIN`, `PFLUX_CLAUDE_RUNNER` (`cli|fake`), `PFLUX_LOG_LEVEL`. Toute valeur invalide fait échouer le démarrage avec un message clair.
+- **Configuration exclusivement par variables d'environnement** : `PFLUX_PORT`, `PFLUX_HOST`, `PFLUX_EXPOSE`, `PFLUX_PASSWORD`, `PFLUX_SESSION_SECRET`, `PFLUX_TRUST_PROXY`, `PFLUX_PUBLIC_URL`, `PFLUX_DATA_DIR` (défaut `/data` ; `./data` en dev), `PFLUX_SSRF_ALLOWLIST`, `PFLUX_FETCH_MAX_BYTES`, `PFLUX_FETCH_TIMEOUT_MS`, `PFLUX_MAX_CONCURRENT_RUNS`, `PFLUX_SCHEDULER_TICK_S`, `PFLUX_DEFER_MINUTES`, `PFLUX_RETENTION_DAYS`, `PFLUX_TZ`, `PFLUX_DEFAULT_MODEL`, `PFLUX_ANTHROPIC_API_KEY`, `PFLUX_NVD_API_KEY`, `PFLUX_NTFY_TOKEN`, `PFLUX_CLAUDE_BIN`, `PFLUX_CLAUDE_RUNNER` (`cli|fake`), `PFLUX_LOG_LEVEL`. Toute valeur invalide fait échouer le démarrage avec un message clair.
 - **Aucun service payant requis** hors abonnement Claude de l'utilisateur. OSV, NVD et ntfy.sh sont gratuits.
 - **Docker n'est pas requis pour tester** : `npm ci && npm test` suffit en local.
-- **Aucun test ne dépend du réseau** ni d'un vrai compte Claude : fixtures locales, serveurs HTTP locaux, résolveur DNS injecté, faux runner Claude scriptable (sorties valides, invalides, `usage_limit`, dépassement de budget).
+- **Aucun test ne dépend du réseau** ni d'un vrai compte Claude : fixtures locales, serveurs HTTP locaux, résolveur DNS injecté, faux runner Claude scriptable (sorties valides, invalides, `usage_limit`).
 - **Test e2e** (Playwright, branché sur `npm test`) : il démarre l'appli sur un port dédié avec `PFLUX_CLAUDE_RUNNER=fake` et un répertoire de données temporaire. Il sert une fixture RSS en local (IP en liste blanche), crée un flux rss, clique « Lancer maintenant », attend le statut `succeeded`, ouvre le digest, vérifie les liens sources, puis marque un élément comme lu. Le processus est arrêté par son PID.
 - **Fichiers temporaires** : uniquement via `fs.mkdtemp` (répertoires privés en 700). Aucun chemin prévisible.
 - **Journalisation** par pino sur stdout, avec masquage des clés sensibles (`authorization`, `apiKey`, `password`, `token`, `cookie`).

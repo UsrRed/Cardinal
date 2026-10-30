@@ -47,7 +47,7 @@ describe('feed form payload', () => {
     const p = toPayload({
       name: 'n', instructions: 'i', sourceType: 'rss', urls: 'https://e.org/f', packages: [], keywords: '', minSeverity: '',
       frequencyHours: '0', freshnessDays: '7', enabled: true, notify: false, notifyThreshold: 'high',
-      ntfyServer: '', ntfyTopic: '', model: 'sonnet', budgetUsd: '0.5',
+      ntfyServer: '', ntfyTopic: '', model: 'sonnet',
     });
     const r = feedInputSchema.safeParse(p);
     expect(r.success).toBe(false);

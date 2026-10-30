@@ -28,7 +28,7 @@ function setup(concurrency = 1, execute?: (id: string, d: PipelineDeps, s: Abort
   const mk = (enabled = true) => feeds.create({
     name: 'F', instructions: 'x', sourceType: 'rss', sourceParams: { urls: ['http://x.test/rss'] },
     frequencyHours: 1, freshnessDays: 30, enabled, notify: false, notifyThreshold: 'low',
-    ntfyServer: null, ntfyTopic: null, model: 'sonnet', budgetUsd: 0.5,
+    ntfyServer: null, ntfyTopic: null, model: 'sonnet',
   }, NOW);
   const deps = { db: { feeds, runs }, bus: new RunEventBus(), clock, logger } as unknown as PipelineDeps;
   const queue = new RunQueue(deps, { concurrency: () => concurrency, execute: execute as never });

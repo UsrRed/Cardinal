@@ -10,7 +10,7 @@ function slug(s: string): string {
 
 export function digestToMarkdown(d: Digest): string {
   const byRef = new Map(d.items.map((i) => [i.ref, i]));
-  const out = [`# ${d.title}`, '', `*${d.feedName} — ${d.createdAt}${d.partial ? ' — partiel' : ''}*`, '', d.lede, ''];
+  const out = [`# ${d.title}`, '', `*${d.feedName} — ${d.createdAt}*`, '', d.lede, ''];
   for (const s of d.sections) {
     out.push(`## ${s.heading}`, '', s.body, '');
     for (const ref of s.itemRefs) {
