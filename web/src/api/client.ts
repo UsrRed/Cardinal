@@ -30,6 +30,11 @@ const NO_CSRF = new Set(['/api/auth/login']);
 async function getCsrf(force = false): Promise<string> {
   if (csrf && !force) return csrf;
   const res = await fetch('/api/csrf', { credentials: 'same-origin' });
+  // Exposed mode, anonymous reader: writing needs the password.
+  if (res.status === 401) {
+    goLogin();
+    throw new ApiError(401, 'unauthorized');
+  }
   if (!res.ok) throw new ApiError(res.status, 'internal_error');
   csrf = ((await res.json()) as { token: string }).token;
   return csrf;

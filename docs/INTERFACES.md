@@ -410,7 +410,7 @@ Cookie : `pflux_session` ; attributs `HttpOnly; SameSite=Lax; Path=/; Max-Age=25
 
 ## 13. API HTTP
 
-Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Erreurs : `{ error: <code>, requestId?: string, fields?: Record<string,string> }` ; codes : `validation_error`(400), `unauthorized`(401), `csrf_failed`(403), `forbidden_origin`(403), `not_found`(404), `run_already_active`(409), `rate_limited`(429), `destination_blocked`(422), `internal_error`(500).
+Toutes les réponses JSON. Mutations : en-tête `X-CSRF-Token` requis. Mode exposé, sans session : les `GET` de lecture passent (flux, éléments, digests, résumé, runs) ; 401 pour toute mutation et pour `/api/csrf`, `/api/settings*`, `/api/claude/*`, `/api/feeds/export`, `/api/ws/console` ; pages `/settings`, `/feeds/new`, `/feeds/:id/edit` → 302 `/login` (`readableAnonymously`, `src/auth/plugin.ts`). Erreurs : `{ error: <code>, requestId?: string, fields?: Record<string,string> }` ; codes : `validation_error`(400), `unauthorized`(401), `csrf_failed`(403), `forbidden_origin`(403), `not_found`(404), `run_already_active`(409), `rate_limited`(429), `destination_blocked`(422), `internal_error`(500).
 
 | Méthode | Route | Corps / query | Réponse |
 |---|---|---|---|
@@ -454,7 +454,7 @@ Hors `/api/*` : ni session ni CSRF. `Authorization: Bearer <PFLUX_MCP_TOKEN>` si
 
 ## 14. WebSocket
 
-Upgrade soumis à la garde d'accès (401 sans session en exposé) et à `originAllowed` (403).
+Upgrade soumis à la garde d'accès (`/api/ws/console` : 401 sans session en exposé ; `/api/ws/runs` en lecture libre) et à `originAllowed` (403).
 
 - `GET /api/ws/runs?runId=<id>` (runId optionnel : tous les runs) — serveur → client : `RunEvent` JSON ; à la connexion avec runId : `{type:'run.snapshot', run: Run, logs: RunLog[]}`. Client → serveur : rien.
 - `GET /api/ws/console` — une seule console active (sinon close `4409`). Client → serveur : `{type:'input', data:string}` | `{type:'resize', cols:number, rows:number}`. Serveur → client : `{type:'output', data:string}` | `{type:'exit', code:number}` | `{type:'closed', reason:'idle'|'replaced'|'error'}`. Inactivité 10 min → kill pty + close `4408`.

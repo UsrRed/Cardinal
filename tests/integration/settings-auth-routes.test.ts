@@ -88,6 +88,6 @@ describe('auth routes', () => {
     const headers = { cookie, 'x-csrf-token': r.json().token };
     expect((await t.app.inject({ method: 'GET', url: '/api/auth/me', headers })).json().authenticated).toBe(true);
     expect((await t.app.inject({ method: 'POST', url: '/api/auth/logout', headers })).statusCode).toBe(200);
-    expect((await t.app.inject({ method: 'GET', url: '/api/auth/me', headers })).statusCode).toBe(401);
+    expect((await t.app.inject({ method: 'GET', url: '/api/auth/me', headers })).json().authenticated).toBe(false);
   });
 });

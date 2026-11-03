@@ -58,9 +58,9 @@ const until = async (f: () => boolean) => {
 };
 
 describe('ws auth', () => {
-  it('refuses without session when exposed, and foreign origin', async () => {
+  it('refuses the console without session when exposed, and foreign origin', async () => {
     const { port, deps } = await start({ PFLUX_EXPOSE: '1', PFLUX_PASSWORD: 'correct horse battery' });
-    const a = open(`ws://127.0.0.1:${port}/api/ws/runs`);
+    const a = open(`ws://127.0.0.1:${port}/api/ws/console`);
     await expect(a.opened).rejects.toMatchObject({ status: 401 });
     const s = deps.sessions.create(true);
     const { signCookie, SESSION_COOKIE } = await import('../../src/auth/session.js');
