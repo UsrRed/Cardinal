@@ -46,7 +46,7 @@ function goLogin(): void {
   if (typeof window !== 'undefined' && window.location.pathname !== '/login') window.location.assign('/login');
 }
 
-export async function api<T>(method: string, path: string, body?: unknown, retried = false): Promise<T> {
+export async function api<T>(method: string, path: string, body?: unknown, retried = false, redirectOn401 = true): Promise<T> {
   const m = method.toUpperCase();
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -56,7 +56,7 @@ export async function api<T>(method: string, path: string, body?: unknown, retri
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (res.status === 401) {
-    goLogin();
+    if (redirectOn401) goLogin();
     throw new ApiError(401, 'unauthorized');
   }
   if (!res.ok) {
@@ -64,7 +64,7 @@ export async function api<T>(method: string, path: string, body?: unknown, retri
     try { data = (await res.json()) as typeof data; } catch { /* non-JSON */ }
     if (res.status === 403 && data.error === 'csrf_failed' && !retried && !SAFE.has(m)) {
       csrf = null;
-      return api<T>(method, path, body, true);
+      return api<T>(method, path, body, true, redirectOn401);
     }
     throw new ApiError(res.status, data.error ?? 'internal_error', data.fields, data.requestId);
   }
@@ -73,6 +73,15 @@ export async function api<T>(method: string, path: string, body?: unknown, retri
 }
 
 export const get = <T>(path: string) => api<T>('GET', path);
+/** GET that resolves to null on 401 instead of sending to /login (exposed mode, anonymous reader). */
+export async function getIfAuthed<T>(path: string): Promise<T | null> {
+  try {
+    return await api<T>('GET', path, undefined, false, false);
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 401) return null;
+    throw e;
+  }
+}
 export const post = <T>(path: string, body?: unknown) => api<T>('POST', path, body ?? {});
 export const put = <T>(path: string, body?: unknown) => api<T>('PUT', path, body ?? {});
 export const patch = <T>(path: string, body?: unknown) => api<T>('PATCH', path, body ?? {});
