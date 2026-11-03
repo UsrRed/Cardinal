@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useTheme } from '../theme/theme.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useRunEvents } from '../api/ws.js';
-import { get } from '../api/client.js';
+import { get, getIfAuthed } from '../api/client.js';
 import type { ClaudeStatus, FeedSummary } from '../../../src/shared/types.js';
 
 const CLAUDE_LABEL: Record<string, string> = {
@@ -14,7 +14,8 @@ const CLAUDE_LABEL: Record<string, string> = {
 function useSidebarData(): SidebarProps {
   const { pathname } = useLocation();
   const feeds = useAsync(() => get<FeedSummary[]>('/api/feeds'), [pathname]);
-  const claude = useAsync(() => get<ClaudeStatus>('/api/claude/status'), []);
+  // Anonymous readers (exposed mode) may not see the Claude status: no redirect to /login.
+  const claude = useAsync(() => getIfAuthed<ClaudeStatus>('/api/claude/status'), []);
   useRunEvents(undefined, (e) => {
     if (e.type === 'run.status') feeds.reload();
   });
@@ -28,7 +29,7 @@ function useSidebarData(): SidebarProps {
       id: f.id, name: f.name, unread: f.unreadCount, enabled: f.enabled, deferred: f.lastRunStatus === 'deferred',
     })),
     footer: {
-      claude: claude.data ? (CLAUDE_LABEL[claude.data.state] ?? 'inconnu') : '…',
+      claude: claude.loading ? '…' : claude.data ? (CLAUDE_LABEL[claude.data.state] ?? 'inconnu') : '—',
       queue: active ? `${active} en cours` : 'vide',
     },
   };
