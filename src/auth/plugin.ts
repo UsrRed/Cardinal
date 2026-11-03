@@ -18,6 +18,26 @@ function isPublic(path: string): boolean {
   return path === '/mcp' || path === '/login' || path === '/api/auth/login' || path === '/healthz' || path.startsWith('/assets/');
 }
 
+/**
+ * Exposed mode: reading (digests, items, runs) is open, only writes need the
+ * password. Except what is not mere reading: settings, the Claude status and
+ * login console (it drives the Claude session), the feed export.
+ */
+function readableAnonymously(method: string, path: string): boolean {
+  if (method !== 'GET' && method !== 'HEAD') return false;
+  if (path.startsWith('/api/')) {
+    return !(
+      path === '/api/csrf' ||
+      path === '/api/settings' ||
+      path.startsWith('/api/settings/') ||
+      path.startsWith('/api/claude/') ||
+      path === '/api/ws/console' ||
+      path === '/api/feeds/export'
+    );
+  }
+  return !(path === '/settings' || path === '/feeds/new' || /^\/feeds\/[^/]+\/edit$/.test(path));
+}
+
 /** Registered directly on the root instance (not encapsulated) so hooks cover every route. */
 export async function authPlugin(app: FastifyInstance, deps: AppDeps): Promise<void> {
   const { config, sessions, sessionSecret } = deps;
@@ -35,7 +55,7 @@ export async function authPlugin(app: FastifyInstance, deps: AppDeps): Promise<v
     const sid = sessionIdFromCookieHeader(req.headers.cookie, sessionSecret);
     req.session = sid ? sessions.get(sid) : null;
 
-    if (config.expose && !isPublic(path) && !req.session?.authenticated) {
+    if (config.expose && !isPublic(path) && !readableAnonymously(req.method, path) && !req.session?.authenticated) {
       if (isApi) return reply.code(401).send({ error: 'unauthorized' });
       return reply.redirect('/login', 302);
     }

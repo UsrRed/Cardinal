@@ -161,7 +161,7 @@ Une variable d'environnement prime sur le réglage équivalent de l'interface (s
 ## Modèle de menaces et limites
 
 - **Usage prévu** : un seul utilisateur, sur sa machine ou derrière un proxy HTTPS. Pas de comptes multiples ni de rôles.
-- **Par défaut** : écoute sur la boucle locale uniquement. En mode exposé, mot de passe obligatoire, cookies de session signés, protection CSRF, limitation des tentatives de connexion.
+- **Par défaut** : écoute sur la boucle locale uniquement. En mode exposé, mot de passe obligatoire pour écrire (ajouter/modifier des flux, marquer lu, réglages, console Claude) — la lecture des flux, du fil et des digests reste libre —, cookies de session signés, protection CSRF, limitation des tentatives de connexion.
 - **SSRF** : les requêtes sortantes (flux, ntfy) refusent les adresses privées, loopback et métadonnées cloud, avec vérification de l'IP de connexion (anti-rebinding), sauf entrées explicites de `PFLUX_SSRF_ALLOWLIST`.
 - **Contenu non fiable** : les articles sont traités comme des données ; le XML est analysé sans entités ni DTD ; la sortie de Claude est validée par schéma ; l'interface n'affiche que du texte échappé.
 - **Limites** : les résumés de Claude peuvent être inexacts, vérifiez les sources avant d'agir ; une injection de prompt dans un article peut fausser un résumé ou une priorité (sans accès à des outils ni à vos secrets) ; les identifiants Claude et les secrets résident dans le répertoire de données **non chiffré** : protégez le volume et ses sauvegardes ; pas de TLS intégré.

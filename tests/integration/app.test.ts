@@ -32,8 +32,9 @@ describe('app skeleton', () => {
 
   it('guards access in exposed mode', async () => {
     const { app } = await make({ PFLUX_EXPOSE: '1', PFLUX_PASSWORD: 'correct-horse-battery' });
-    expect((await app.inject('/api/feeds')).statusCode).toBe(401);
-    const page = await app.inject('/');
+    expect((await app.inject('/api/feeds')).statusCode).toBe(200);
+    expect((await app.inject('/api/settings')).statusCode).toBe(401);
+    const page = await app.inject('/settings');
     expect(page.statusCode).toBe(302);
     expect(page.headers.location).toBe('/login');
     const h = await app.inject('/healthz');

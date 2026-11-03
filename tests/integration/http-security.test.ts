@@ -43,30 +43,39 @@ const MUTATIONS: Array<['POST' | 'PUT' | 'PATCH' | 'DELETE', string, object?]> =
 ];
 
 describe('exposed mode without session', () => {
-  it('rejects API, export, page and WS', async () => {
+  it('lets reads through, rejects writes, settings, export, console', async () => {
     const { app, deps } = await make(EXPOSED);
-    const gets = ['/api/feeds', '/api/feeds/export', '/api/runs', '/api/runs/x/logs', '/api/digests/1', '/api/digests/1/export.md', '/api/digests/1/export.json', '/api/items', '/api/settings', '/api/claude/status'];
+    const reads = ['/api/feeds', '/api/runs', '/api/runs/x/logs', '/api/digests/1', '/api/digests/1/export.md', '/api/digests/1/export.json', '/api/items', '/api/daily', '/api/auth/me'];
+    for (const url of reads) {
+      const r = await app.inject({ method: 'GET', url });
+      expect([401, 302], url).not.toContain(r.statusCode);
+    }
+    const gets = ['/api/csrf', '/api/feeds/export', '/api/settings', '/api/claude/status'];
     for (const url of gets) {
       const r = await app.inject({ method: 'GET', url });
-      expect([401, 302], url).toContain(r.statusCode);
+      expect(r.statusCode, url).toBe(401);
     }
-    const page = await app.inject({ method: 'GET', url: '/digests/1' });
-    expect(page.statusCode).toBe(302);
-    expect(page.headers.location).toBe('/login');
+    expect((await app.inject({ method: 'GET', url: '/digests/1' })).statusCode).not.toBe(302);
+    for (const url of ['/settings', '/feeds/new', '/feeds/x/edit']) {
+      const page = await app.inject({ method: 'GET', url });
+      expect(page.statusCode, url).toBe(302);
+      expect(page.headers.location).toBe('/login');
+    }
     for (const [method, url, payload] of MUTATIONS) {
       const r = await app.inject({ method, url, payload });
       expect([401, 302], url).toContain(r.statusCode);
     }
     await app.listen({ port: 0, host: '127.0.0.1' });
     const port = (app.server.address() as AddressInfo).port;
-    for (const p of ['runs', 'console']) {
+    for (const [p, expected] of [['runs', 101], ['console', 401]] as const) {
       const ws = new WebSocket(`ws://127.0.0.1:${port}/api/ws/${p}`);
       const status = await new Promise<number>((res) => {
         ws.on('unexpected-response', (_q: unknown, r: { statusCode: number }) => res(r.statusCode));
         ws.on('open', () => res(101));
         ws.on('error', () => res(0));
       });
-      expect(status, p).toBe(401);
+      ws.close();
+      expect(status, p).toBe(expected);
     }
     expect((await app.inject({ method: 'GET', url: '/healthz' })).statusCode).toBe(200);
     void deps;
