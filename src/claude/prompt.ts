@@ -79,10 +79,10 @@ export interface DailyPromptItem {
 
 export const DAILY_MARKER = 'Tâche : résumé journalier';
 
-export function buildDailyPrompt(o: { day: string; items: DailyPromptItem[] }): string {
+export function buildDailyPrompt(o: { day: string; startHour?: number; items: DailyPromptItem[] }): string {
   return [
     SYSTEM_HEADER,
-    `${DAILY_MARKER} du ${o.day}, toutes sources de veille confondues.`,
+    `${DAILY_MARKER} du ${o.day}${o.startHour ? ` (de ${o.startHour} h au lendemain ${o.startHour} h, nuit comprise)` : ''}, toutes sources de veille confondues.`,
     [
       'Les éléments ci-dessous ont déjà été retenus et triés (priorité high/medium/low) par chaque flux.',
       '- "overview" : une passe globale sur l\'essentiel de la journée, en commençant par le plus important.',

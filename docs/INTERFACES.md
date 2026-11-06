@@ -351,13 +351,15 @@ export function deferDelayMs(deferMinutes: number, deferCount: number): number; 
 ```ts
 // src/daily/index.ts — résumé journalier global (un appel Claude sans outil, 1 retry, items ≤ 150 triés par priorité)
 export class DailyService {
-  constructor(o: { daily: DailyRepo; runner: ClaudeRunner; clock: Clock; logger: Logger; timezone: () => string; model: string });
-  today(): string; counts(day: string): { total: number; high: number };
-  start(day: string): void;   // asynchrone ; AppError('daily_running', 409) | AppError('no_items', 409)
-  tick(): void;               // après 06:00 locale, génère la veille si absente (index.ts, toutes les 10 min)
+  constructor(o: { daily: DailyRepo; runner: ClaudeRunner; clock: Clock; logger: Logger; timezone: () => string; model: string;
+    notify?: (n: DailyNotice /*{day,title,body}*/) => Promise<void> });   // deps.ts : ntfy sujet/serveur des Réglages, Click → /daily?day=
+  today(): string; counts(day: string): { total: number; high: number };   // jour = D 08:00 → D+1 08:00 (DAILY_START_HOUR)
+  start(day: string, opts?: { notify?: boolean }): void;   // asynchrone ; AppError('daily_running', 409) | AppError('no_items', 409)
+  tick(): void;               // dès 08:00 locale, génère la période échue si absente, avec notify (index.ts, toutes les 10 min)
 }
+// dailyNotice(day, out, highCount, itemCount) : titre « [Cardinal] Résumé du D — titre », corps overview + catégories par niveau, ≤ DAILY_NOTIFY_MAX (3000)
 // src/claude : buildDailyPrompt({day, items}), validateDailyOutput(json, refs) — refs connues, citées une fois, un niveau par priorité
-// src/shared/day.ts : localDay, localHour, dayBounds, shiftDay, isValidDay, safeTz
+// src/shared/day.ts : localDay, localHour, dayBounds(day, tz, hour=0), periodDay(ms, tz, hour=0), shiftDay, isValidDay, safeTz
 ```
 Codes d'erreur de run (`Run.errorCode`) : `fetch_failed`, `claude_invalid_output`, `claude_failed`, `claude_usage_limit`, `claude_unauthenticated`, `claude_overloaded`, `cancelled`, `internal_error`.
 
@@ -365,7 +367,7 @@ Codes d'erreur de run (`Run.errorCode`) : `fetch_failed`, `claude_invalid_output
 
 ```ts
 export interface NtfyTarget { server: string; topic: string; token: string | null }
-export interface NtfyMessage { title: string; body: string /*≤300*/; priority: 1|2|3|4|5; click?: string }
+export interface NtfyMessage { title: string; body: string /*≤ maxBody, 300 par défaut*/; priority: 1|2|3|4|5; click?: string; maxBody?: number }
 export class NtfyNotifier {
   constructor(fetch: SafeFetch);
   send(t: NtfyTarget, m: NtfyMessage): Promise<void>;     // POST `${server}/${topic}`, headers Title, Priority, Click?, Authorization: Bearer?, body texte UTF-8

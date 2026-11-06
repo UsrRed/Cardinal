@@ -25,7 +25,7 @@ import { FakeClaudeRunner } from './claude/fakeRunner.js';
 import { NtfyNotifier } from './notify/ntfy.js';
 import { RunEventBus } from './pipeline/runEvents.js';
 import { RunQueue } from './queue/index.js';
-import { DailyService } from './daily/index.js';
+import { DAILY_NOTIFY_MAX, DailyService } from './daily/index.js';
 import { LoginConsole } from './console/loginConsole.js';
 import { SessionStore, loadSessionSecret } from './auth/session.js';
 import { systemClock } from './shared/clock.js';
@@ -115,6 +115,15 @@ export function createDeps(config: Config, overrides: Partial<AppDeps> = {}): Ap
     new DailyService({
       daily: repos.daily, runner, clock, logger, timezone: () => settings().timezone,
       model: config.defaultModel,
+      notify: async (n) => {
+        const s = settings();
+        if (!s.ntfyTopic) return;
+        const base = (s.publicUrl || config.publicUrl || '').replace(/\/+$/, '');
+        await notifier.send(
+          { server: s.ntfyServer, topic: s.ntfyTopic, token: secrets.get('ntfyToken') },
+          { title: n.title, body: n.body, priority: 3, click: base ? `${base}/daily?day=${n.day}` : undefined, maxBody: DAILY_NOTIFY_MAX },
+        );
+      },
     });
   const sessionSecret = overrides.sessionSecret ?? loadSessionSecret(config);
   return {

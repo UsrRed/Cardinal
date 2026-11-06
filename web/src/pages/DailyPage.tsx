@@ -19,6 +19,8 @@ export function shiftDay(day: string, delta: number): string {
 }
 /** Noon UTC keeps the calendar day stable whatever the display timezone. */
 const dayIso = (day: string) => `${day}T12:00:00Z`;
+/** "8 h → 8 h" period label (midnight start: the plain calendar day). */
+const period = (h: number) => (h ? `${h} h → lendemain ${h} h` : null);
 
 function ItemLink({ item }: { item: DailyItemRef }) {
   const href = item.url ? safeHref(item.url) : null;
@@ -43,7 +45,7 @@ export function DailySummaryView({ view }: { view: DailyView }) {
       <div className="kicker">Résumé journalier</div>
       <h1>{s.title}</h1>
       <div className="byline">
-        <b>{formatLongDate(dayIso(s.day))}</b> · {getTimezone()} · {s.itemCount} élément(s) · généré {formatDateTime(s.finishedAt)}
+        <b>{formatLongDate(dayIso(s.day))}</b>{period(view.startHour) && <> · {period(view.startHour)}</>} · {getTimezone()} · {s.itemCount} élément(s) · généré {formatDateTime(s.finishedAt)}
       </div>
       <SafeText className="lede" text={s.overview} />
       {s.tiers.map((t) => (
@@ -97,7 +99,7 @@ export function DailyPage() {
   return (
     <>
       <Masthead title="Résumé du jour" actions={actions}
-        meta={data ? [formatLongDate(dayIso(data.day)), `${data.itemCount} élément(s)`, `${data.highCount} prioritaire(s)`] : []} />
+        meta={data ? [formatLongDate(dayIso(data.day)), ...(period(data.startHour) ? [period(data.startHour)!] : []), `${data.itemCount} élément(s)`, `${data.highCount} prioritaire(s)`] : []} />
       {actionError && <p className="note" role="alert">{actionError}</p>}
       {error ? <ErrorState error={error} onRetry={reload} />
         : loading && !data ? <Loading />
@@ -112,7 +114,7 @@ export function DailyPage() {
             {!s && data.itemCount > 0 && (
               <Empty title="Pas encore de résumé">
                 {data.day === data.today
-                  ? 'Le résumé de la veille est généré automatiquement chaque matin ; celui du jour se lance avec « Générer ».'
+                  ? `Le résumé est généré automatiquement le lendemain à ${data.startHour} h (nuit comprise) ; « Générer » le lance dès maintenant sur les éléments déjà reçus.`
                   : 'Lancez la génération avec « Générer ».'}
               </Empty>
             )}

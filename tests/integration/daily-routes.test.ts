@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { csrfToken } from '../../src/auth/csrf.js';
 import { signCookie } from '../../src/auth/session.js';
 import { feedInputSchema } from '../../src/shared/schemas.js';
-import { localDay } from '../../src/shared/day.js';
+import { periodDay } from '../../src/shared/day.js';
+import { DAILY_START_HOUR } from '../../src/daily/index.js';
 import { buildTestApp } from '../helpers/buildTestApp.js';
 
 let closer: (() => Promise<void>) | null = null;
@@ -44,10 +45,10 @@ describe('daily summary routes', () => {
       feedId: feed.id, digestId: d, runId: run.id, ref, title: `Titre ${ref}`, url: `https://src.example/${ref}`,
       priority: i === 0 ? 'high' as const : 'low' as const, justification: 'j', summary: 's', sources: [], publishedAt: null,
     })), now);
-    const today = localDay(now, deps.settings().timezone);
+    const today = periodDay(now, deps.settings().timezone, DAILY_START_HOUR);
 
     const empty = JSON.parse((await call('GET', '/api/daily')).body);
-    expect(empty).toMatchObject({ day: today, today, itemCount: 2, highCount: 1, summary: null });
+    expect(empty).toMatchObject({ day: today, startHour: 8, today, itemCount: 2, highCount: 1, summary: null });
 
     const gen = await call('POST', `/api/daily/${today}/generate`);
     expect(gen.statusCode).toBe(202);

@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type { AppDeps } from '../../deps.js';
 import { isValidDay } from '../../shared/day.js';
 import { AppError } from '../../shared/errors.js';
+import { DAILY_START_HOUR } from '../../daily/index.js';
 import type { DailyView } from '../../shared/types.js';
 
 export async function registerDailyRoutes(app: FastifyInstance, deps: AppDeps): Promise<void> {
@@ -13,7 +14,7 @@ export async function registerDailyRoutes(app: FastifyInstance, deps: AppDeps): 
   };
   const view = (day: string, today: string): DailyView => {
     const c = deps.daily.counts(day);
-    return { day, today, itemCount: c.total, highCount: c.high, summary: daily.get(day), recent: daily.recent(14) };
+    return { day, startHour: DAILY_START_HOUR, today, itemCount: c.total, highCount: c.high, summary: daily.get(day), recent: daily.recent(14) };
   };
 
   app.get('/api/daily', async (req) => {
