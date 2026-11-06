@@ -60,13 +60,14 @@ Exemples : RSS `https://hnrss.org/frontpage` ; OSV `lodash` / `npm` ; NVD `opens
 ## Fil et résumé du jour
 
 - **Fil** : tous les éléments retenus, filtrables par priorité et lecture. Le sélecteur *Vue* bascule entre la *Liste* compacte et la vue *Détaillée* en cartes (priorité, titre, résumé, lien vers l'article) ; le choix est mémorisé dans le navigateur.
-- **Résumé du jour** : une synthèse globale de tous les flux pour un jour (fuseau des Réglages) — une passe d'ensemble, puis les éléments *À retenir*, *À surveiller* et *En bref*, regroupés par Claude en catégories, avec un lien vers chaque article cité. Celui de la veille est généré automatiquement chaque matin après 6 h ; *Générer* / *Régénérer* le lance à la demande (un appel Claude, modèle `PFLUX_DEFAULT_MODEL`). Seuls les titres, URL, noms de flux, priorités et résumés déjà produits sont envoyés.
+- **Résumé du jour** : une synthèse globale de tous les flux pour un jour (fuseau des Réglages) — une passe d'ensemble, puis les éléments *À retenir*, *À surveiller* et *En bref*, regroupés par Claude en catégories, avec un lien vers chaque article cité. Une journée court de 8 h à 8 h le lendemain (la nuit est rattachée à la veille) : elle est résumée automatiquement chaque matin à 8 h ; *Générer* / *Régénérer* le lance à la demande (un appel Claude, modèle `PFLUX_DEFAULT_MODEL`). Seuls les titres, URL, noms de flux, priorités et résumés déjà produits sont envoyés.
 
 ## Notifications ntfy
 
 - **ntfy.sh** : dans *Réglages*, serveur `https://ntfy.sh`, choisissez un sujet difficile à deviner, puis activez *Notifier* sur le flux avec un seuil de priorité. Pour un serveur protégé, ajoutez `PFLUX_NTFY_TOKEN`.
 - **ntfy sur le réseau local** : les adresses privées sont bloquées par défaut (protection SSRF). Autorisez explicitement l'hôte, par exemple `PFLUX_SSRF_ALLOWLIST=192.168.1.20:8080`, puis indiquez le serveur `http://192.168.1.20:8080`.
-- `PFLUX_PUBLIC_URL` ajoute un lien de retour vers le digest dans la notification.
+- **Résumé du jour** : celui généré automatiquement à 8 h est aussi envoyé sur le sujet ntfy des *Réglages* (titre, passe d'ensemble, catégories par niveau). Les générations à la demande ne notifient pas.
+- `PFLUX_PUBLIC_URL` ajoute un lien de retour vers le digest (ou le résumé du jour) dans la notification.
 
 ## Ajouter des flux par MCP
 

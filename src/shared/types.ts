@@ -146,6 +146,8 @@ export interface DailySummary {
 /** GET /api/daily: one local day (settings timezone) and its summary, if any. */
 export interface DailyView {
   day: string;
+  /** Local hour the day starts at: `day` covers day startHour:00 → next day startHour:00. */
+  startHour: number;
   today: string;
   itemCount: number;
   highCount: number;

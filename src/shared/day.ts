@@ -48,15 +48,21 @@ export function shiftDay(day: string, delta: number): string {
   return new Date(Date.UTC(y, m - 1, d + delta)).toISOString().slice(0, 10);
 }
 
-/** UTC instant of local midnight starting `day`. */
-export function dayStart(day: string, tz: string): number {
+/** UTC instant of local `hour`:00 (midnight by default) on `day`. */
+export function dayStart(day: string, tz: string, hour = 0): number {
   const [y, m, d] = day.split('-').map(Number) as [number, number, number];
-  const guess = Date.UTC(y, m - 1, d);
+  const guess = Date.UTC(y, m - 1, d, hour);
   const first = guess - offsetMs(guess, tz);
   return guess - offsetMs(first, tz);
 }
 
-/** [start, end) of a local day, in UTC ms. */
-export function dayBounds(day: string, tz: string): [number, number] {
-  return [dayStart(day, tz), dayStart(shiftDay(day, 1), tz)];
+/** [start, end) of a local day, in UTC ms; with `hour`, from `day` hour:00 to the next day hour:00. */
+export function dayBounds(day: string, tz: string, hour = 0): [number, number] {
+  return [dayStart(day, tz, hour), dayStart(shiftDay(day, 1), tz, hour)];
+}
+
+/** The day whose `hour`-to-`hour` period contains instant `ms` (before `hour`, still the previous day). */
+export function periodDay(ms: number, tz: string, hour = 0): string {
+  const day = localDay(ms, tz);
+  return localHour(ms, tz) < hour ? shiftDay(day, -1) : day;
 }

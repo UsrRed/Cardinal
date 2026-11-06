@@ -11,6 +11,8 @@ export interface NtfyMessage {
   body: string;
   priority: 1 | 2 | 3 | 4 | 5;
   click?: string;
+  /** Body cap (default 300; ntfy accepts up to 4 KiB). */
+  maxBody?: number;
 }
 
 export const PRIORITY_MAP: Record<Priority, 2 | 3 | 4> = { high: 4, medium: 3, low: 2 };
@@ -39,7 +41,7 @@ export class NtfyNotifier {
     const url = `${t.server.replace(/\/+$/, '')}/${encodeURIComponent(t.topic)}`;
     let res;
     try {
-      res = await this.fetch(url, { method: 'POST', headers, body: m.body.slice(0, 300) });
+      res = await this.fetch(url, { method: 'POST', headers, body: m.body.slice(0, m.maxBody ?? 300) });
     } catch (e) {
       if (e instanceof SsrfError && e.code === 'destination_blocked') throw new Error(BLOCKED_MSG);
       throw new Error("échec de l'envoi de la notification");
