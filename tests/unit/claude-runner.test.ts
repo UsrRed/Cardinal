@@ -87,6 +87,8 @@ describe('parse / classify', () => {
     const c = (stderr: string) => classifyError({ stdout: '', stderr, code: 1 });
     expect(c('Claude usage limit reached')).toBe('usage_limit');
     expect(c('Not logged in')).toBe('unauthenticated');
+    expect(c('Failed to authenticate: OAuth session expired and could not be refreshed')).toBe('unauthenticated');
+    expect(c('{"error":"authentication_failed"}')).toBe('unauthenticated');
     expect(c('overloaded_error')).toBe('overloaded');
     expect(c('segfault')).toBe('unknown');
   });
