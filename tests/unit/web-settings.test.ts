@@ -65,3 +65,14 @@ describe('LoginTerminal paste', () => {
     expect(h({ connected: true, fallback: true })).toContain('Envoyer');
   });
 });
+
+describe('KeyControls', () => {
+  it('sends arrow/enter/escape sequences, disabled when disconnected', async () => {
+    const { KeyControls, CONSOLE_KEYS } = await import('../../web/src/components/LoginTerminal.js');
+    const h = (connected: boolean) => renderToStaticMarkup(createElement(KeyControls, { connected, onKey() {} }));
+    expect(h(false).match(/disabled=""/g)).toHaveLength(4);
+    expect(h(true)).not.toContain('disabled');
+    expect(h(true)).toContain('aria-label="Flèche bas"');
+    expect(CONSOLE_KEYS.map((k) => k.seq)).toEqual(['\x1b[A', '\x1b[B', '\r', '\x1b']);
+  });
+});

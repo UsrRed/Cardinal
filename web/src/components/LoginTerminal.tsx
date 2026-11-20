@@ -33,6 +33,25 @@ export function PasteControls({ connected, fallback, onPaste, onSend }: {
   );
 }
 
+/** Keys a phone keyboard lacks, needed by claude's menus (choose the login method, confirm). */
+export const CONSOLE_KEYS = [
+  { label: '↑', title: 'Flèche haut', seq: '\x1b[A' },
+  { label: '↓', title: 'Flèche bas', seq: '\x1b[B' },
+  { label: '⏎', title: 'Entrée', seq: '\r' },
+  { label: 'Échap', title: 'Échap', seq: '\x1b' },
+] as const;
+
+export function KeyControls({ connected, onKey }: { connected: boolean; onKey: (seq: string) => void }) {
+  return (
+    <span className="console-keys">
+      {CONSOLE_KEYS.map((k) => (
+        <button key={k.title} type="button" className="btn sm" title={k.title} aria-label={k.title}
+          disabled={!connected} onClick={() => onKey(k.seq)}>{k.label}</button>
+      ))}
+    </span>
+  );
+}
+
 /** xterm bound to /api/ws/console (server runs `claude /login` in a pty). */
 export function LoginTerminal({ onClose }: { onClose?: () => void }) {
   const host = useRef<HTMLDivElement>(null);
@@ -84,6 +103,7 @@ export function LoginTerminal({ onClose }: { onClose?: () => void }) {
     <div className="console">
       <div className="console-bar">
         <span className="tag" role="status">{status}</span>
+        <KeyControls connected={connected} onKey={sendText} />
         <PasteControls connected={connected} fallback={fallback} onPaste={() => void paste()} onSend={sendText} />
         {onClose && <button type="button" className="btn sm" onClick={onClose}>Fermer la console</button>}
       </div>
